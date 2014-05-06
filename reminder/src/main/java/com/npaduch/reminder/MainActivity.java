@@ -26,8 +26,7 @@ public class MainActivity extends Activity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     public CharSequence mTitle;
-    // TODO: move to resource string
-    public CharSequence mDrawerTitle = "Drawer";
+    public CharSequence mDrawerTitle;
     private ActionBarDrawerToggle mDrawerToggle;
 
 
@@ -137,7 +136,6 @@ public class MainActivity extends Activity {
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
-        // TODO: Set fragment title to actual string
         setTitle(getResources().getStringArray(R.array.drawer_titles)[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
     }
