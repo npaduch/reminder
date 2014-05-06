@@ -138,7 +138,7 @@ public class MainActivity extends Activity {
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
         // TODO: Set fragment title to actual string
-        setTitle("fragment title");
+        setTitle(getResources().getStringArray(R.array.drawer_titles)[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
     }
 
