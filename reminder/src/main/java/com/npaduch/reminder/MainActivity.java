@@ -5,7 +5,6 @@ import android.app.FragmentManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,7 +50,7 @@ public class MainActivity extends Activity {
         /* Fragment Manager */
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.drawer_layout, new MainFragment())
+                    .add(R.id.content_frame, new MainFragment())
                     .commit();
         }
 
