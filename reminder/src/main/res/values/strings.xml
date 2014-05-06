@@ -11,6 +11,8 @@
     <string-array name="drawer_titles">
         <item>New Reminder</item>
         <item>All Reminders</item>
+        <item>Timer</item>
+        <item>Settings</item>
     </string-array>
 
 </resources>
