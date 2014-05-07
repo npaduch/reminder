@@ -16,10 +16,27 @@
     </string-array>
 
     <!-- New Reminder Strings -->
-    <string name="new_reminder_hint">What will you forget about?</string>
+    <string name="new_reminder_hint">          What will you forget about?</string>
     <string name="new_reminder_button">Remind Me</string>
+    <string name="new_reminder_details">Details</string>
+    <string name="new_reminder_time">When</string>
 
     <!-- Menu Strings -->
     <string name="action_add_reminder">Add Reminder</string>
 
+    <!-- Spinner Day Strings -->
+    <string-array name="spinner_day">
+        <item>Today</item>
+        <item>Tomorrow</item>
+        <item>Set date...</item>
+    </string-array>
+    <!-- Spinner Time Strings -->
+    <string-array name="spinner_time">
+        <item>Morning</item>
+        <item>Noon</item>
+        <item>Afternoon</item>
+        <item>Evening</item>
+        <item>Night</item>
+        <item>Set time...</item>
+    </string-array>
 </resources>
