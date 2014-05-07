@@ -35,7 +35,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /* Navigation Drawer */
+        /** Navigation Drawer */
         mDrawerLabels = getResources().getStringArray(R.array.drawer_titles);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -47,13 +47,14 @@ public class MainActivity extends Activity {
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         /* Fragment Manager */
+        // load initial fragment
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.content_frame, new MainFragment())
                     .commit();
         }
 
-        /* Handle open and close drawer events */
+        /** Handle open and close drawer events */
         mTitle = mDrawerTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(
@@ -82,12 +83,13 @@ public class MainActivity extends Activity {
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
+        // set to enable drawer from action bar
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
 
     }
 
-    /* Called whenever we call invalidateOptionsMenu() */
+    /** Called whenever we call invalidateOptionsMenu() */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
@@ -116,7 +118,7 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    /* Navigation Drawer */
+    /** Navigation Drawer Item Click Listener */
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id) {
@@ -147,8 +149,7 @@ public class MainActivity extends Activity {
         getActionBar().setTitle(mTitle);
     }
 
-    /* Navigation Draw */
-
+    /** Navigation Draw */
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
