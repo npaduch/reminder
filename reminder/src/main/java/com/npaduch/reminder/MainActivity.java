@@ -93,6 +93,7 @@ public class MainActivity extends Activity {
         // If the nav drawer is open, hide action items related to the content view
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
         menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
+        menu.findItem(R.id.action_add_reminder).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
