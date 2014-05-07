@@ -30,8 +30,8 @@ public class MainFragment extends Fragment {
     public  void initializeSpinners(View view){
 
         // locate spinners
-        Spinner daySpinner = (Spinner) view.findViewById(R.id.newNoteDaySpinner);
-        Spinner timeSpinner = (Spinner) view.findViewById(R.id.newNoteTimeSpinner);
+        Spinner daySpinner = (Spinner) view.findViewById(R.id.newReminderDaySpinner);
+        Spinner timeSpinner = (Spinner) view.findViewById(R.id.newReminderTimeSpinner);
 
         // setup day spin adapter
         ArrayAdapter<CharSequence> dayAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.spinner_day, android.R.layout.simple_spinner_item);
