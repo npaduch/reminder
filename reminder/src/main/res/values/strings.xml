@@ -15,4 +15,8 @@
         <item>Settings</item>
     </string-array>
 
+    <!-- New Reminder Strings -->
+    <string name="new_reminder_hint">What will you forget about?</string>
+    <string name="new_reminder_button">Remind Me</string>
+
 </resources>

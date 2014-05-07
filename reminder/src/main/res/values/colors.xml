@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- TextView colors -->
+    <color name="textview_background">#FFFFFF</color>
+    <color name="textview_medium_text">#808080</color>
+    <color name="textview_selected">#D8D8D8</color>
+
+
+    <!-- colors for white list -->
+    <color name="blue">#6dcaec</color>
+    <color name="purple">#cf9fe7</color>
+    <color name="green">#b6db49</color>
+    <color name="orange">#ffd060</color>
+    <color name="red">#ff7979</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- colors for white scheme -->
+    <color name="new_reminder_option_text">@color/textview_medium_text</color>
+    <color name="new_reminder_option_divider">#C0C0C0</color>
+    <color name="new_reminder_option_button_background">#F0F0F0</color>
+
+
+    <!-- Drawer -->
+    <color name="drawer_background">#FFFFFF</color>
+    <color name="drawer_titles">@color/textview_medium_text</color>
+
+</resources>
