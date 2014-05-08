@@ -21,6 +21,10 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         //initializeSpinners(rootView);
+
+        ReminderCardView myCard = new ReminderCardView(getActivity());
+        myCard.description.setText("This is another description, purely to avoid warnings...");
+
         return rootView;
     }
 
