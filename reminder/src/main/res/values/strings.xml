@@ -15,6 +15,11 @@
         <item>Settings</item>
     </string-array>
 
+    <!-- Reminder Card Strings -->
+    <string name="reminder_time_beginning">You will be reminded</string>
+    <string name="reminder_time_once">once</string>
+    <string name="reminder_time_recurring">every</string>
+
     <!-- New Reminder Strings -->
     <string name="new_reminder_hint">          What will you forget about?</string>
     <string name="new_reminder_button">Remind Me</string>
@@ -39,4 +44,7 @@
         <item>Night</item>
         <item>Set time...</item>
     </string-array>
+
+    <!-- Debug strings -->
+    <string name="reminder_example">This is a sample reminder. These will vary in length.</string>
 </resources>

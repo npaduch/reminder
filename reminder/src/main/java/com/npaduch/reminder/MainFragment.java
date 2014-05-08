@@ -5,8 +5,6 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 
 /**
  * Created by nolanpaduch on 5/3/14.
@@ -22,11 +20,11 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        initializeSpinners(rootView);
+        //initializeSpinners(rootView);
         return rootView;
     }
 
-
+/*
     public  void initializeSpinners(View view){
 
         // locate spinners
@@ -43,4 +41,5 @@ public class MainFragment extends Fragment {
         timeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         timeSpinner.setAdapter(timeAdapter);
     }
+    */
 }
