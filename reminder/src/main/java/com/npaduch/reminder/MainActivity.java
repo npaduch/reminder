@@ -1,11 +1,14 @@
 package com.npaduch.reminder;
 
-import android.app.Activity;
-import android.app.FragmentManager;
+
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,30 +16,45 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-
 /**
+ *
  * Created by nolanpaduch on 5/3/14.
  *
  * Main Activity to spawn necessary fragments
  */
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity
+        implements MainFragment.FragmentCommunicationListener,
+        NewReminderFragment.FragmentCommunicationListener  {
+
+    // Debugging attributes
+    String LOG = "MainActivity";
 
     /*  Navigation Drawer */
     private String[] mDrawerLabels;
     // Drawer Label Offsets
     public static int NEW_REMINDER_TITLE = 0;
-    /* Comment out until we need to use these...
+    /* Comment these out until we need them.
     public static int ALL_REMINDERS_TITLE = 1;
     public static int TIMER_TITLE = 2;
     public static int SETTINGS_TITLE = 3;
     */
+
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     public CharSequence mTitle;
     public CharSequence mDrawerTitle;
     private ActionBarDrawerToggle mDrawerToggle;
+
+    /* Fragment Transitions */
+    public static final int REMINDER_LIST = 0;
+    public static final int NEW_REMINDER = 1;
+
+    // Holders for fragments to preserve state
+    MainFragment mainFragment;
+    NewReminderFragment newReminderFragment;
+    public int currentFragment; // keep track of what we currently are
 
 
     @Override
@@ -58,9 +76,8 @@ public class MainActivity extends Activity {
         /* Fragment Manager */
         // load initial fragment
         if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.content_frame, new MainFragment())
-                    .commit();
+            mainFragment = new MainFragment();
+            changeFragment(mainFragment, REMINDER_LIST);
         }
 
         /** Handle open and close drawer events */
@@ -104,7 +121,6 @@ public class MainActivity extends Activity {
         // If the nav drawer is open, hide action items related to the content view
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
         menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
-        menu.findItem(R.id.action_add_reminder).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -128,10 +144,7 @@ public class MainActivity extends Activity {
             NewReminderFragment fragment = new NewReminderFragment();
 
             // Insert the fragment by replacing any existing fragment
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame, fragment)
-                    .commit();
+            changeFragment(mainFragment, REMINDER_LIST);
 
             setTitle(getResources().getStringArray(R.array.drawer_titles)[NEW_REMINDER_TITLE]);
 
@@ -154,10 +167,7 @@ public class MainActivity extends Activity {
         MainFragment fragment = new MainFragment();
 
         // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.content_frame, fragment)
-                .commit();
+        changeFragment(mainFragment, REMINDER_LIST);
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
@@ -183,6 +193,41 @@ public class MainActivity extends Activity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+   /** Handle Communication between fragments */
+   // Handle communication from other fragments
+   public void send(Bundle bundle) {
+       Log.d(LOG, "Task Received: " + bundle.getString("Task"));
+       int value = bundle.getInt("page");
+       switch(value){
+           case NEW_REMINDER:
+               if(newReminderFragment == null){
+                   newReminderFragment = new NewReminderFragment();
+               }
+               changeFragment(newReminderFragment, NEW_REMINDER);
+               break;
+           case REMINDER_LIST:
+               newReminderFragment = null;
+               if(mainFragment == null){
+                   mainFragment = new MainFragment();
+               }
+               changeFragment(mainFragment, REMINDER_LIST);
+       }
+   }
+
+    public void changeFragment(Fragment fragment, int fragmentType){
+        // Insert the fragment by replacing any existing fragment
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        if(fragmentType == NEW_REMINDER)
+            ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+        else if(fragmentType == REMINDER_LIST)
+            ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+        else
+            return; // do nothing
+        ft.replace(R.id.content_frame, fragment);
+        ft.commit();
+        currentFragment = fragmentType;
     }
 
 }
