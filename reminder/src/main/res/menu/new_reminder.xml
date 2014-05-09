@@ -1,10 +1,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.npaduch.reminder.MainActivity" >
-    <item android:id="@+id/action_add_reminder"
-        android:title="@string/action_add_reminder"
+    xmlns:tools="http://schemas.android.com/tools" >
+    <item android:id="@+id/action_cancel_new_reminder"
+        android:title="@string/action_cancel_reminder"
         android:orderInCategory="1"
-        android:icon="@drawable/ic_action_new"
+        android:icon="@drawable/ic_action_cancel"
         android:showAsAction="always" />
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"

@@ -28,6 +28,7 @@
 
     <!-- Menu Strings -->
     <string name="action_add_reminder">Add Reminder</string>
+    <string name="action_cancel_reminder">Cancel</string>
 
     <!-- Spinner Day Strings -->
     <string-array name="spinner_day">
