@@ -16,6 +16,8 @@ import android.widget.ListView;
 
 /**
  * Created by nolanpaduch on 5/3/14.
+ *
+ * Main Activity to spawn necessary fragments
  */
 
 
@@ -23,6 +25,13 @@ public class MainActivity extends Activity {
 
     /*  Navigation Drawer */
     private String[] mDrawerLabels;
+    // Drawer Label Offsets
+    public static int NEW_REMINDER_TITLE = 0;
+    /* Comment out until we need to use these...
+    public static int ALL_REMINDERS_TITLE = 1;
+    public static int TIMER_TITLE = 2;
+    public static int SETTINGS_TITLE = 3;
+    */
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     public CharSequence mTitle;
@@ -114,6 +123,19 @@ public class MainActivity extends Activity {
             return true;
         }
         // Handle your other action bar items...
+        if(item.getItemId() == R.id.action_add_reminder){
+            // Create a new fragment and specify the planet to show based on position
+            NewReminderFragment fragment = new NewReminderFragment();
+
+            // Insert the fragment by replacing any existing fragment
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, fragment)
+                    .commit();
+
+            setTitle(getResources().getStringArray(R.array.drawer_titles)[NEW_REMINDER_TITLE]);
+
+        }
 
         return super.onOptionsItemSelected(item);
     }
