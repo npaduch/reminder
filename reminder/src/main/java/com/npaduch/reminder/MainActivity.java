@@ -118,9 +118,12 @@ public class MainActivity extends FragmentActivity
     /** Called whenever we call invalidateOptionsMenu() */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+
         // If the nav drawer is open, hide action items related to the content view
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
+        for(int i = 0; i < menu.size(); i++)
+            menu.getItem(i).setVisible(!drawerOpen);
+
         return super.onPrepareOptionsMenu(menu);
     }
 
