@@ -143,9 +143,10 @@ public class MainActivity extends FragmentActivity
         }
         // Handle your other action bar items...
         if(item.getItemId() == R.id.action_add_reminder){
-            // Create a new fragment and specify the planet to show based on position
-            NewReminderFragment fragment = new NewReminderFragment();
-
+            // re-initialize in case it was cancelled last time
+            if(newReminderFragment == null){
+                newReminderFragment = new NewReminderFragment();
+            }
             // Insert the fragment by replacing any existing fragment
             changeFragment(mainFragment, REMINDER_LIST);
 
@@ -166,11 +167,16 @@ public class MainActivity extends FragmentActivity
 
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
-        // Create a new fragment and specify the planet to show based on position
-        MainFragment fragment = new MainFragment();
-
-        // Insert the fragment by replacing any existing fragment
-        changeFragment(mainFragment, REMINDER_LIST);
+        // change to correct fragment
+        if(position == NEW_REMINDER_TITLE) {
+            // re-initialize in case it was cancelled last time
+            if(newReminderFragment == null){
+                newReminderFragment = new NewReminderFragment();
+            }
+            changeFragment(newReminderFragment, NEW_REMINDER);
+        }
+        else
+            changeFragment(mainFragment, REMINDER_LIST);
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
