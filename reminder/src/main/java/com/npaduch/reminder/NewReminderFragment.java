@@ -1,7 +1,6 @@
 package com.npaduch.reminder;
 
 import android.app.Activity;
-import android.app.LauncherActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,9 +9,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-
-import java.util.ArrayList;
 
 /**
  * Created by nolanpaduch on 5/8/14.
@@ -82,5 +78,7 @@ public class NewReminderFragment extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    // TODO: Override back button to return to list fragment
 
 }
