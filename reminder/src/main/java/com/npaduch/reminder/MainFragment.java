@@ -15,6 +15,8 @@ import android.view.ViewGroup;
  *
  */
 
+// TODO: Add custom listview for current main layout
+
 public class MainFragment extends Fragment {
 
     private final static String LOG = "MainFragment";

@@ -31,5 +31,9 @@ public class ReminderCardView {
         description = new TextView(context);
         time = new TextView(context);
 
+
+        main.addView(editButton);
+        main.addView(description);
+        main.addView(time);
     }
 }
