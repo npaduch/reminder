@@ -1,6 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.npaduch.reminder.MainActivity" >
+    <!-- For now use linear layout -->
+    <!-- Will think of clever animation later... -->
     <item android:id="@+id/action_add_reminder"
         android:title="@string/action_add_reminder"
         android:orderInCategory="1"
