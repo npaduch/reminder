@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!-- For now use linear layout -->
+<!-- Will think of clever animation later... -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/newNoteView"
