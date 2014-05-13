@@ -9,6 +9,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+
+import java.util.ArrayList;
 
 /**
  * Created by nolanpaduch on 5/3/14.
@@ -22,6 +25,8 @@ public class MainFragment extends Fragment {
     private final static String LOG = "MainFragment";
 
     FragmentCommunicationListener messenger;
+
+    public Reminder reminders[];
 
     public MainFragment() {
     }
@@ -49,9 +54,12 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        ReminderCardView myCard = new ReminderCardView(getActivity());
-        myCard.description.setText("This is another description, purely to avoid warnings...");
+        populateSampleReminders();
 
+        ListView list = (ListView) rootView.findViewById(R.id.mainFragmentListView);
+        ReminderList myListViewArrayAdapter = new ReminderList(
+                getActivity(), R.id.mainFragmentListView, reminders);
+        list.setAdapter(myListViewArrayAdapter);
         setHasOptionsMenu(true);
 
         return rootView;
@@ -79,6 +87,18 @@ public class MainFragment extends Fragment {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void populateSampleReminders(){
+
+        ArrayList<Reminder> remindersArray = new ArrayList<Reminder>();
+
+        for(int i=0; i< 20; i++)
+            remindersArray.add(new Reminder());
+
+        reminders = new Reminder[remindersArray.size()];
+        reminders = remindersArray.toArray(reminders);
+
     }
 
 /*
