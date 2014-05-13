@@ -46,12 +46,12 @@ public class ReminderList extends ArrayAdapter<Reminder> {
 
         View rowView = inflater.inflate(R.layout.reminder_entry, parent, false);
         TextView reminderBody = (TextView)rowView.findViewById(R.id.reminderDetailText);
-        reminderBody.setText("temp_string");
+        reminderBody.setText((R.string.reminder_example));
         if(values[position].getColor() == 0){ // no color has been set
             values[position].setColor(getColor());
         }
 
-        rowView.setBackgroundResource(getBackground());
+        //rowView.setBackgroundResource(getBackground());
 
         return rowView;
     }
