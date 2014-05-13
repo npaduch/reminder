@@ -1,7 +1,6 @@
 package com.npaduch.reminder;
 
 import android.content.Context;
-import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,13 @@ import java.util.ArrayList;
 public class ReminderList extends ArrayAdapter<Reminder> {
 
     private Context context;
+
+    private final int BG_RED      = 0;
+    private final int BG_BLUE     = 1;
+    private final int BG_GREEN    = 2;
+    private final int BG_PURPLE   = 3;
+    private final int BG_ORANGE   = 4;
+    private int currentBackground = 0;
 
     ArrayList<Integer> colors;
     public Reminder values[];
@@ -39,14 +45,32 @@ public class ReminderList extends ArrayAdapter<Reminder> {
         context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View rowView = inflater.inflate(R.layout.reminder_entry, parent, false);
-        TextView noteBody = (TextView)rowView.findViewById(R.id.reminderDetailText);
-        noteBody.setText("temp_string");
+        TextView reminderBody = (TextView)rowView.findViewById(R.id.reminderDetailText);
+        reminderBody.setText("temp_string");
         if(values[position].getColor() == 0){ // no color has been set
             values[position].setColor(getColor());
         }
-        rowView.setBackgroundResource(values[position].getColor());
+
+        rowView.setBackgroundResource(getBackground());
 
         return rowView;
+    }
+
+    private int getBackground(){
+        int bg = currentBackground++ % 5;
+        switch(bg) {
+            case BG_RED:
+                return R.drawable.shadow_red;
+            case BG_BLUE:
+                return R.drawable.shadow_blue;
+            case BG_GREEN:
+                return R.drawable.shadow_green;
+            case BG_PURPLE:
+                return R.drawable.shadow_purple;
+            case BG_ORANGE:
+                return R.drawable.shadow_orange;
+        }
+        return R.drawable.shadow_red;
     }
 
     private int getColor(){
