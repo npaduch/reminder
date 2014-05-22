@@ -50,6 +50,7 @@ public class MainActivity extends FragmentActivity
     /* Fragment Transitions */
     public static final int REMINDER_LIST = 0;
     public static final int NEW_REMINDER = 1;
+    public static final String FRAGMENT_TAG = "FRAGMENT_TAG"; // handle back button
 
     // Holders for fragments to preserve state
     MainFragment mainFragment;
@@ -225,6 +226,11 @@ public class MainActivity extends FragmentActivity
        }
    }
 
+    /**
+     * Change fragment
+     * fragment - fragment to change to
+     * fragmentType - type of new fragment
+     */
     public void changeFragment(Fragment fragment, int fragmentType){
         // Insert the fragment by replacing any existing fragment
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -234,9 +240,23 @@ public class MainActivity extends FragmentActivity
             ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
         else
             return; // do nothing
-        ft.replace(R.id.content_frame, fragment);
+        ft.replace(R.id.content_frame, fragment, FRAGMENT_TAG);
+        ft.addToBackStack(null); // handle back button
         ft.commit();
         currentFragment = fragmentType;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(currentFragment == NEW_REMINDER){
+            if(mainFragment == null){
+                mainFragment = new MainFragment();
+            }
+            changeFragment(mainFragment, REMINDER_LIST);
+        }
+        else{
+            super.onBackPressed();
+        }
     }
 
 }
