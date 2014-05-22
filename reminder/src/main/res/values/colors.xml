@@ -20,9 +20,11 @@
     <color name="new_reminder_option_divider">#C0C0C0</color>
     <color name="new_reminder_option_button_background">#F0F0F0</color>
 
-
     <!-- Drawer -->
     <color name="drawer_background">#FFFFFF</color>
     <color name="drawer_titles">@color/textview_medium_text</color>
+
+    <!-- New reminder colors -->
+    <color name="create_reminder_button">#0066FF</color>
 
 </resources>
