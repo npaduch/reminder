@@ -1,6 +1,7 @@
 package com.npaduch.reminder;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ public class ReminderList extends ArrayAdapter<Reminder> {
 
     private Context context;
 
+    private String TAG = "ReminderList";
+
     private final int BG_RED      = 0;
     private final int BG_BLUE     = 1;
     private final int BG_GREEN    = 2;
@@ -24,10 +27,10 @@ public class ReminderList extends ArrayAdapter<Reminder> {
     private int currentBackground = 0;
 
     ArrayList<Integer> colors;
-    public Reminder values[];
+    public ArrayList<Reminder> values;
     int currentColor = 0;
 
-    public ReminderList(Context context, int textViewResourceId, Reminder values[]){
+    public ReminderList(Context context, int textViewResourceId, ArrayList<Reminder> values){
         super(context, textViewResourceId, values);
 
         this.context = context;
@@ -46,9 +49,14 @@ public class ReminderList extends ArrayAdapter<Reminder> {
 
         View rowView = inflater.inflate(R.layout.reminder_entry, parent, false);
         TextView reminderBody = (TextView)rowView.findViewById(R.id.reminderDetailText);
-        reminderBody.setText((R.string.reminder_example));
-        if(values[position].getColor() == 0){ // no color has been set
-            values[position].setColor(getColor());
+        if(MainActivity.reminders.get(position).getDescription().equals(Reminder.STRING_INIT)) {
+            reminderBody.setText((R.string.reminder_example));
+        }
+        else {
+            reminderBody.setText(MainActivity.reminders.get(position).getDescription());
+        }
+        if(values.get(position).getColor() == 0){ // no color has been set
+            values.get(position).setColor(getColor());
         }
 
         //rowView.setBackgroundResource(getBackground());

@@ -5,6 +5,9 @@ package com.npaduch.reminder;
  */
 public class Reminder {
 
+    // initialize values
+    public static final String STRING_INIT = "STRING_INVALID";
+
     // color of item
     private int color;
 
@@ -16,12 +19,30 @@ public class Reminder {
     private int dateDay;
     private int dateTime;
     private int dateWeekday;
+    private String dateString;
+    private String timeString;
 
     // specific time or "afternoon"
     private boolean isVague;
 
     public Reminder() {
+        setDescription(STRING_INIT);
+    }
 
+    public String getDateString() {
+        return dateString;
+    }
+
+    public void setDateString(String dayString) {
+        this.dateString = dayString;
+    }
+
+    public String getTimeString() {
+        return timeString;
+    }
+
+    public void setTimeString(String timeString) {
+        this.timeString = timeString;
     }
 
     public String getDescription() {

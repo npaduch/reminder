@@ -16,6 +16,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+
 /**
  *
  * Created by nolanpaduch on 5/3/14.
@@ -29,7 +31,7 @@ public class MainActivity extends FragmentActivity
         NewReminderFragment.FragmentCommunicationListener  {
 
     // Debugging attributes
-    String LOG = "MainActivity";
+    String TAG = "MainActivity";
 
     /*  Navigation Drawer */
     private String[] mDrawerLabels;
@@ -40,7 +42,6 @@ public class MainActivity extends FragmentActivity
     public static int TIMER_TITLE = 2;
     public static int SETTINGS_TITLE = 3;
     */
-
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     public CharSequence mTitle;
@@ -56,6 +57,9 @@ public class MainActivity extends FragmentActivity
     MainFragment mainFragment;
     NewReminderFragment newReminderFragment;
     public int currentFragment; // keep track of what we currently are
+
+    // Reminders
+    public static ArrayList<Reminder> reminders;
 
 
     @Override
@@ -208,7 +212,7 @@ public class MainActivity extends FragmentActivity
    /** Handle Communication between fragments */
    // Handle communication from other fragments
    public void send(Bundle bundle) {
-       Log.d(LOG, "Task Received: " + bundle.getString("Task"));
+       Log.d(TAG, "Task Received: " + bundle.getString("Task"));
        int value = bundle.getInt("page");
        switch(value){
            case NEW_REMINDER:
