@@ -9,6 +9,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 /**
  * Created by nolanpaduch on 5/8/14.
@@ -42,6 +44,7 @@ public class NewReminderFragment extends Fragment {
                     + " must implement NewNoteFragment.FragmentCommunicationListener");
         }
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -49,6 +52,9 @@ public class NewReminderFragment extends Fragment {
 
         ReminderCardView myCard = new ReminderCardView(getActivity());
         myCard.description.setText("This is another description, purely to avoid warnings...");
+
+        // initialize Spinners with string data
+        initializeSpinners(rootView);
 
         setHasOptionsMenu(true);
 
@@ -79,6 +85,23 @@ public class NewReminderFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    // TODO: Override back button to return to list fragment
+
+    public  void initializeSpinners(View view){
+
+        // locate spinners
+        Spinner daySpinner = (Spinner) view.findViewById(R.id.newReminderDaySpinner);
+        Spinner timeSpinner = (Spinner) view.findViewById(R.id.newReminderTimeSpinner);
+
+        // setup day spin adapter
+        ArrayAdapter<CharSequence> dayAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.spinner_day, android.R.layout.simple_spinner_item);
+        dayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        daySpinner.setAdapter(dayAdapter);
+
+        // setup time spin adapter
+        ArrayAdapter<CharSequence> timeAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.spinner_time, android.R.layout.simple_spinner_item);
+        timeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        timeSpinner.setAdapter(timeAdapter);
+    }
+
 
 }
