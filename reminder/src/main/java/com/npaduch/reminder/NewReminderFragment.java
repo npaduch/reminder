@@ -1,6 +1,7 @@
 package com.npaduch.reminder;
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -158,7 +160,12 @@ public class NewReminderFragment extends Fragment {
         Log.d(TAG,"Description: "+r.getDescription());
         Log.d(TAG,"Date: "+r.getDateString());
         Log.d(TAG,"Time: "+r.getTimeString());
-        MainActivity.reminders.add(0,r);
+        MainActivity.reminders.add(0, r);
+
+        // Hide soft keyboard
+        InputMethodManager myInputMethodManager = (InputMethodManager)getActivity().getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+        myInputMethodManager.hideSoftInputFromWindow(et.getWindowToken(), 0);
 
         Log.d(TAG,"Note saved.");
         Toast.makeText(getActivity(), getString(R.string.new_reminder_created), Toast.LENGTH_SHORT).show();
