@@ -18,7 +18,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 
 /**
  * Created by nolanpaduch on 5/8/14.
@@ -74,6 +73,13 @@ public class NewReminderFragment extends Fragment {
         TextView createButton = (TextView) rootView.findViewById(R.id.newReminderCreateButton);
         createButton.setOnClickListener(newReminderOnClickListener);
 
+        // Set focus on edit text
+        EditText et = (EditText) rootView.findViewById(R.id.newReminderEditText);
+        et.requestFocus();
+        // force keyboard to open
+        showKeyboard(true);
+
+        // Enable menu items for this fragment
         setHasOptionsMenu(true);
 
         return rootView;
@@ -94,6 +100,7 @@ public class NewReminderFragment extends Fragment {
             case R.id.action_settings:
                 return true;
             case R.id.action_cancel_new_reminder:
+                showKeyboard(false);
                 Bundle b = new Bundle();
                 b.putString("Task","Change Fragment");
                 b.putInt("page",MainActivity.REMINDER_LIST);
@@ -143,7 +150,16 @@ public class NewReminderFragment extends Fragment {
 
         // Get text view for description
         EditText et = (EditText)rootView.findViewById(R.id.newReminderEditText);
-        String description = et.getText().toString();
+        String description;
+
+        // make sure string is not null or empty
+        if(et.getText() != null && !et.getText().toString().isEmpty()) {
+            description = et.getText().toString();
+        }
+        else {
+            Toast.makeText(getActivity(), getString(R.string.new_reminder_no_description), Toast.LENGTH_SHORT).show();
+            return;
+        }
         r.setDescription(description);
 
         // Get Day
@@ -163,9 +179,7 @@ public class NewReminderFragment extends Fragment {
         MainActivity.reminders.add(0, r);
 
         // Hide soft keyboard
-        InputMethodManager myInputMethodManager = (InputMethodManager)getActivity().getSystemService(
-                Context.INPUT_METHOD_SERVICE);
-        myInputMethodManager.hideSoftInputFromWindow(et.getWindowToken(), 0);
+        showKeyboard(false);
 
         Log.d(TAG,"Note saved.");
         Toast.makeText(getActivity(), getString(R.string.new_reminder_created), Toast.LENGTH_SHORT).show();
@@ -176,6 +190,21 @@ public class NewReminderFragment extends Fragment {
         b.putInt("page",MainActivity.REMINDER_LIST);
         messenger.send(b);
 
+    }
+
+    public void showKeyboard(boolean show){
+
+        InputMethodManager myInputMethodManager = (InputMethodManager)getActivity().getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+
+        // Show the keyboard
+        if(show) {
+            myInputMethodManager.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
+        }
+        // hide the keyboard
+        else {
+            myInputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+        }
     }
 
 }

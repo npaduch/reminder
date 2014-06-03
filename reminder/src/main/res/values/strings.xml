@@ -25,6 +25,7 @@
     <string name="new_reminder_button">Remind Me</string>
     <string name="new_reminder_details">Details</string>
     <string name="new_reminder_time">When</string>
+    <string name="new_reminder_no_description">Please enter a description</string>
     <string name="new_reminder_created">Reminder Created</string>
 
     <!-- Menu Strings -->
