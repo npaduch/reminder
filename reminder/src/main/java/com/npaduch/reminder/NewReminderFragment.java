@@ -161,6 +161,7 @@ public class NewReminderFragment extends Fragment {
         MainActivity.reminders.add(0,r);
 
         Log.d(TAG,"Note saved.");
+        Toast.makeText(getActivity(), getString(R.string.new_reminder_created), Toast.LENGTH_SHORT).show();
 
         // return to main View
         Bundle b = new Bundle();
