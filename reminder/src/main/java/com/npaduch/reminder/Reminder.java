@@ -21,13 +21,18 @@ public class Reminder {
     private int dateWeekday;
     private String dateString;
     private String timeString;
+    private String dateTimeString;
 
     // specific time or "afternoon"
     private boolean isVague;
 
     public Reminder() {
         setDescription(STRING_INIT);
+        setDateString(STRING_INIT);
+        setTimeString(STRING_INIT);
+        setDateTimeString(STRING_INIT);
     }
+
 
     public String getDateString() {
         return dateString;
@@ -101,6 +106,15 @@ public class Reminder {
         this.isVague = isVague;
     }
 
+    public String getDateTimeString() {
+        return dateTimeString;
+    }
+
+    public void setDateTimeString(String dateTimeString) {
+        this.dateTimeString = dateTimeString;
+    }
+
+
 
     public int getColor() {
         return color;
@@ -109,4 +123,5 @@ public class Reminder {
     public void setColor(int color) {
         this.color = color;
     }
+
 }

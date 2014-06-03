@@ -18,6 +18,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 
 /**
  * Created by nolanpaduch on 5/8/14.
@@ -172,6 +175,9 @@ public class NewReminderFragment extends Fragment {
         String time = (String)sTime.getSelectedItem();
         r.setTimeString(time);
 
+        // build date-time string
+        buildDateTimeString(r);
+
         // Save reminder
         Log.d(TAG,"Description: "+r.getDescription());
         Log.d(TAG,"Date: "+r.getDateString());
@@ -205,6 +211,42 @@ public class NewReminderFragment extends Fragment {
         else {
             myInputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
         }
+    }
+
+    private void buildDateTimeString(Reminder r){
+        String date = r.getDateString();
+        String time = r.getTimeString();
+        String returnString = "";
+        String[] dateArray = getResources().getStringArray(R.array.spinner_day);
+        String[] timeArray = getResources().getStringArray(R.array.spinner_time);
+
+        // Beginning of string
+        returnString += getString(R.string.reminder_time_beginning);
+        returnString += " ";
+
+        // Add date
+        if(Arrays.asList(dateArray).contains(date)){
+            returnString += date;
+        }
+        // specific day
+        else {
+            returnString += "on "+date;
+        }
+        returnString += " ";
+
+        // Check if time is relative
+        if(Arrays.asList(timeArray).contains(time)){
+            // if "today" add "in the "
+            if(date.equals(dateArray[0])){
+                returnString += "in the ";
+            }
+            returnString += time;
+        }
+        else {
+            returnString += "at "+time;
+        }
+
+        r.setDateTimeString(returnString);
     }
 
 }
