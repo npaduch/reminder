@@ -18,7 +18,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 
@@ -78,9 +77,20 @@ public class NewReminderFragment extends Fragment {
 
         // Set focus on edit text
         EditText et = (EditText) rootView.findViewById(R.id.newReminderEditText);
+        et.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                Log.d(TAG,"Focus Changed: "+hasFocus);
+                if(hasFocus){
+                    showKeyboard(true);
+                }
+                else{
+                    showKeyboard(false);
+                }
+            }
+        });
+        // open keyboard
         et.requestFocus();
-        // force keyboard to open
-        showKeyboard(true);
 
         // Enable menu items for this fragment
         setHasOptionsMenu(true);
@@ -103,7 +113,6 @@ public class NewReminderFragment extends Fragment {
             case R.id.action_settings:
                 return true;
             case R.id.action_cancel_new_reminder:
-                showKeyboard(false);
                 Bundle b = new Bundle();
                 b.putString("Task","Change Fragment");
                 b.putInt("page",MainActivity.REMINDER_LIST);
@@ -184,9 +193,6 @@ public class NewReminderFragment extends Fragment {
         Log.d(TAG,"Time: "+r.getTimeString());
         MainActivity.reminders.add(0, r);
 
-        // Hide soft keyboard
-        showKeyboard(false);
-
         Log.d(TAG,"Note saved.");
         Toast.makeText(getActivity(), getString(R.string.new_reminder_created), Toast.LENGTH_SHORT).show();
 
@@ -205,10 +211,12 @@ public class NewReminderFragment extends Fragment {
 
         // Show the keyboard
         if(show) {
+            Log.d(TAG, "Showing keyboard");
             myInputMethodManager.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
         }
         // hide the keyboard
         else {
+            Log.d(TAG, "Hiding keyboard");
             myInputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
         }
     }
