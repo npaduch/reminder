@@ -84,7 +84,7 @@ public class MainActivity extends FragmentActivity
         // load initial fragment
         if (savedInstanceState == null) {
             mainFragment = new MainFragment();
-            changeFragment(mainFragment, REMINDER_LIST);
+            changeFragment(mainFragment, REMINDER_LIST, false);
         }
 
         /** Handle open and close drawer events */
@@ -165,7 +165,7 @@ public class MainActivity extends FragmentActivity
                 newReminderFragment = new NewReminderFragment();
             }
             // Insert the fragment by replacing any existing fragment
-            changeFragment(mainFragment, REMINDER_LIST);
+            changeFragment(mainFragment, REMINDER_LIST, false);
 
             setTitle(getResources().getStringArray(R.array.drawer_titles)[NEW_REMINDER_TITLE]);
 
@@ -190,10 +190,10 @@ public class MainActivity extends FragmentActivity
             if(newReminderFragment == null){
                 newReminderFragment = new NewReminderFragment();
             }
-            changeFragment(newReminderFragment, NEW_REMINDER);
+            changeFragment(newReminderFragment, NEW_REMINDER, false);
         }
         else
-            changeFragment(mainFragment, REMINDER_LIST);
+            changeFragment(mainFragment, REMINDER_LIST, false);
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
@@ -231,14 +231,13 @@ public class MainActivity extends FragmentActivity
                if(newReminderFragment == null){
                    newReminderFragment = new NewReminderFragment();
                }
-               changeFragment(newReminderFragment, NEW_REMINDER);
+               changeFragment(newReminderFragment, NEW_REMINDER, false);
                break;
            case REMINDER_LIST:
-               newReminderFragment = null;
                if(mainFragment == null){
                    mainFragment = new MainFragment();
                }
-               changeFragment(mainFragment, REMINDER_LIST);
+               changeFragment(mainFragment, REMINDER_LIST, true);
        }
    }
 
@@ -247,7 +246,19 @@ public class MainActivity extends FragmentActivity
      * fragment - fragment to change to
      * fragmentType - type of new fragment
      */
-    public void changeFragment(Fragment fragment, int fragmentType){
+    public void changeFragment(Fragment fragment, int fragmentType, boolean nullifyNewReminderFragment){
+        if(currentFragment == NEW_REMINDER){
+            if(newReminderFragment == null){
+                Log.e(TAG, "NewReminderFragment is null. This should never happen.");
+            }
+            else{
+                newReminderFragment.hideKeyboard();
+            }
+        }
+        // Start next new reminder from scratch if requested
+        if(nullifyNewReminderFragment){
+            newReminderFragment = null;
+        }
         // Insert the fragment by replacing any existing fragment
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         if(fragmentType == NEW_REMINDER)
@@ -268,7 +279,7 @@ public class MainActivity extends FragmentActivity
             if(mainFragment == null){
                 mainFragment = new MainFragment();
             }
-            changeFragment(mainFragment, REMINDER_LIST);
+            changeFragment(mainFragment, REMINDER_LIST, false);
         }
         else{
             super.onBackPressed();

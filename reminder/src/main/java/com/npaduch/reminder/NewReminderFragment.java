@@ -2,6 +2,7 @@ package com.npaduch.reminder;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -31,6 +33,9 @@ public class NewReminderFragment extends Fragment {
 
     // Logging
     public final static String TAG = "NewReminderFragment";
+
+    // delay time for keyboard popup on entry
+    public final static int KEYBOARD_POPUP_DELAY = 200;
 
     // Communication with main activity
     FragmentCommunicationListener messenger;
@@ -77,20 +82,18 @@ public class NewReminderFragment extends Fragment {
 
         // Set focus on edit text
         EditText et = (EditText) rootView.findViewById(R.id.newReminderEditText);
-        et.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                Log.d(TAG,"Focus Changed: "+hasFocus);
-                if(hasFocus){
-                    showKeyboard(true);
-                }
-                else{
-                    showKeyboard(false);
-                }
+
+        // show keyboard on fragment entry
+        et.postDelayed(new Runnable() {
+            public void run() {
+                EditText editText = (EditText) rootView.findViewById(R.id.newReminderEditText);
+
+                editText.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
+                editText.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
+                // If something already typed, go to end of section
+                editText.setSelection(editText.getText().length());
             }
-        });
-        // open keyboard
-        et.requestFocus();
+        }, KEYBOARD_POPUP_DELAY);
 
         // Enable menu items for this fragment
         setHasOptionsMenu(true);
@@ -204,21 +207,16 @@ public class NewReminderFragment extends Fragment {
 
     }
 
-    public void showKeyboard(boolean show){
+    public void hideKeyboard(){
 
         InputMethodManager myInputMethodManager = (InputMethodManager)getActivity().getSystemService(
                 Context.INPUT_METHOD_SERVICE);
 
-        // Show the keyboard
-        if(show) {
-            Log.d(TAG, "Showing keyboard");
-            myInputMethodManager.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
-        }
-        // hide the keyboard
-        else {
-            Log.d(TAG, "Hiding keyboard");
-            myInputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-        }
+        EditText et = (EditText) rootView.findViewById(R.id.newReminderEditText);
+
+        Log.d(TAG, "Hiding keyboard");
+        myInputMethodManager.hideSoftInputFromWindow(et.getWindowToken(), 0);
+
     }
 
     private void buildDateTimeString(Reminder r){
