@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Theme colors -->
-    <color name="actionbar_background">#33CCFF</color>
+    <color name="app_color_theme">#33CCFF</color>
 
     <!-- TextView colors -->
     <color name="textview_background">#FFFFFF</color>

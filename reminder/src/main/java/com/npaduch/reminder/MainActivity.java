@@ -2,7 +2,6 @@ package com.npaduch.reminder;
 
 
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
@@ -125,7 +124,7 @@ public class MainActivity extends FragmentActivity
         // enable navigation bar tint
         //tintManager.setNavigationBarTintEnabled(true);// set a custom tint color for all system bars
         // Set color
-        tintManager.setTintColor(getResources().getColor(R.color.actionbar_background));
+        tintManager.setTintColor(getResources().getColor(R.color.app_color_theme));
 
         // set to enable drawer from action bar
         getActionBar().setDisplayHomeAsUpEnabled(true);
