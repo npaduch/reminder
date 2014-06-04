@@ -6,20 +6,25 @@
         <!-- Customize your theme here. -->
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">@bool/transparent_nav</item>
-        <item name="android:actionBarStyle">@style/ColoredActionBar</item>
+        <item name="android:actionBarStyle">@style/AppTheme.ColoredActionBar</item>
         <item name="android:windowContentOverlay">@null</item>
+        <item name="android:actionOverflowButtonStyle">@style/AppTheme.OverFlow</item>
     </style>
 
-    <style name="TranslucentActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
+    <style name="AppTheme.OverFlow" parent="Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_action_overflow</item>
+    </style>
+
+    <style name="AppTheme.TranslucentActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
         <item name="android:background">@android:color/transparent</item>
     </style>
 
-    <style name="ColoredActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
+    <style name="AppTheme.ColoredActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
         <item name="android:background">@color/app_color_theme</item>
-        <item name="android:titleTextStyle">@style/ActionBarTitleStyle</item>
+        <item name="android:titleTextStyle">@style/AppTheme.ActionBarTitleStyle</item>
     </style>
 
-    <style name="ActionBarTitleStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+    <style name="AppTheme.ActionBarTitleStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">24sp</item>
     </style>
