@@ -2,6 +2,7 @@ package com.npaduch.reminder;
 
 
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.util.ArrayList;
 
@@ -113,6 +116,16 @@ public class MainActivity extends FragmentActivity
 
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        /** Handle Status Bar Tint */
+        // create our manager instance after the content view is set
+        SystemBarTintManager tintManager = new SystemBarTintManager(this);
+        // enable status bar tint
+        tintManager.setStatusBarTintEnabled(true);
+        // enable navigation bar tint
+        //tintManager.setNavigationBarTintEnabled(true);// set a custom tint color for all system bars
+        // Set color
+        tintManager.setTintColor(getResources().getColor(R.color.actionbar_background));
 
         // set to enable drawer from action bar
         getActionBar().setDisplayHomeAsUpEnabled(true);

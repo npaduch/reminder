@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Theme colors -->
+    <color name="actionbar_background">#33CCFF</color>
+
     <!-- TextView colors -->
     <color name="textview_background">#FFFFFF</color>
     <color name="textview_medium_text">#808080</color>
