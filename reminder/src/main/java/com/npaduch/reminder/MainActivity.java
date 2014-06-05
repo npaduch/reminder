@@ -158,18 +158,6 @@ public class MainActivity extends FragmentActivity
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        // Handle your other action bar items...
-        if(item.getItemId() == R.id.action_add_reminder){
-            // re-initialize in case it was cancelled last time
-            if(newReminderFragment == null){
-                newReminderFragment = new NewReminderFragment();
-            }
-            // Insert the fragment by replacing any existing fragment
-            changeFragment(mainFragment, REMINDER_LIST, false);
-
-            setTitle(getResources().getStringArray(R.array.drawer_titles)[NEW_REMINDER_TITLE]);
-
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -191,14 +179,19 @@ public class MainActivity extends FragmentActivity
                 newReminderFragment = new NewReminderFragment();
             }
             changeFragment(newReminderFragment, NEW_REMINDER, false);
+            // Highlight the selected item, update the title, and close the drawer
+            mDrawerList.setItemChecked(position, true);
+            setTitle(getResources().getStringArray(R.array.drawer_titles)[position]);
+            mDrawerLayout.closeDrawer(mDrawerList);
         }
-        else
+        else {
             changeFragment(mainFragment, REMINDER_LIST, false);
+            // Highlight the selected item, update the title, and close the drawer
+            mDrawerList.setItemChecked(position, true);
+            setTitle(getString(R.string.app_name));
+            mDrawerLayout.closeDrawer(mDrawerList);
+        }
 
-        // Highlight the selected item, update the title, and close the drawer
-        mDrawerList.setItemChecked(position, true);
-        setTitle(getResources().getStringArray(R.array.drawer_titles)[position]);
-        mDrawerLayout.closeDrawer(mDrawerList);
     }
 
     @Override
@@ -232,12 +225,17 @@ public class MainActivity extends FragmentActivity
                    newReminderFragment = new NewReminderFragment();
                }
                changeFragment(newReminderFragment, NEW_REMINDER, false);
+               Log.d(TAG, "Setting title to new reminder title");
+               setTitle(getResources().getStringArray(R.array.drawer_titles)[NEW_REMINDER_TITLE]);
                break;
            case REMINDER_LIST:
                if(mainFragment == null){
                    mainFragment = new MainFragment();
                }
                changeFragment(mainFragment, REMINDER_LIST, true);
+               Log.d(TAG, "Setting title to app name");
+               setTitle(R.string.app_name);
+               break;
        }
    }
 
