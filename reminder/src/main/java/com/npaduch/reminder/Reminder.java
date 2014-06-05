@@ -23,6 +23,9 @@ public class Reminder {
     private String timeString;
     private String dateTimeString;
 
+    private int dateOffset;
+    private int timeOffset;
+
     // specific time or "afternoon"
     private boolean isVague;
 
@@ -33,6 +36,21 @@ public class Reminder {
         setDateTimeString(STRING_INIT);
     }
 
+    public int getDateOffset() {
+        return dateOffset;
+    }
+
+    public void setDateOffset(int dateOffset) {
+        this.dateOffset = dateOffset;
+    }
+
+    public int getTimeOffset() {
+        return timeOffset;
+    }
+
+    public void setTimeOffset(int timeOffset) {
+        this.timeOffset = timeOffset;
+    }
 
     public String getDateString() {
         return dateString;

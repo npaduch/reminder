@@ -5,6 +5,9 @@ import android.content.Context;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
+import android.text.format.DateFormat;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,13 +17,16 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Arrays;
+import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
+import com.doomonafireball.betterpickers.radialtimepicker.RadialPickerLayout;
+import com.doomonafireball.betterpickers.radialtimepicker.RadialTimePickerDialog;
 
 
 /**
@@ -29,7 +35,9 @@ import java.util.Arrays;
  * Fragment to create a new reminder.
  */
 
-public class NewReminderFragment extends Fragment {
+public class NewReminderFragment extends Fragment
+        implements RadialTimePickerDialog.OnTimeSetListener,
+        CalendarDatePickerDialog.OnDateSetListener {
 
     // Logging
     public final static String TAG = "NewReminderFragment";
@@ -38,14 +46,21 @@ public class NewReminderFragment extends Fragment {
     public final static int KEYBOARD_POPUP_DELAY = 200;
 
     // Time offsets
-    public static final String TIME_MORNING    = "Morning";
-    public static final String TIME_NOON       = "Noon";
-    public static final String TIME_AFTERNOON  = "Afternoon";
-    public static final String TIME_EVENING    = "Evening";
-    public static final String TIME_NIGHT      = "Night";
+    public static final int TIME_MORNING    = 0;
+    public static final int TIME_NOON       = 1;
+    public static final int TIME_AFTERNOON  = 2;
+    public static final int TIME_EVENING    = 3;
+    public static final int TIME_NIGHT      = 4;
+    public static final int TIME_OTHER      = 5;
+
 
     // Communication with main activity
     FragmentCommunicationListener messenger;
+    private static final String FRAG_TAG_TIME_PICKER = "timePickerDialogFragment";
+
+    // Keep track of time picker state
+    private boolean mHasDialogFrame;
+
 
     // Main view
     View rootView;
@@ -86,6 +101,11 @@ public class NewReminderFragment extends Fragment {
         // Set on click listeners
         TextView createButton = (TextView) rootView.findViewById(R.id.newReminderCreateButton);
         createButton.setOnClickListener(newReminderOnClickListener);
+
+        // for time picker
+        if (savedInstanceState == null) {
+            mHasDialogFrame = rootView.findViewById(R.id.content_frame) != null;
+        }
 
         // Set focus on edit text
         EditText et = (EditText) rootView.findViewById(R.id.newReminderEditText);
@@ -148,6 +168,7 @@ public class NewReminderFragment extends Fragment {
         ArrayAdapter<CharSequence> timeAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.spinner_time, android.R.layout.simple_spinner_item);
         timeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         timeSpinner.setAdapter(timeAdapter);
+        timeSpinner.setOnItemSelectedListener(newReminderOnItemSelectedListener);
     }
 
 
@@ -165,6 +186,43 @@ public class NewReminderFragment extends Fragment {
             }
         }
     };
+
+    private AdapterView.OnItemSelectedListener newReminderOnItemSelectedListener
+            = new AdapterView.OnItemSelectedListener(){
+        @Override
+        public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+            Log.d(TAG, "Item selected");
+            switch(parentView.getId()) {
+                case R.id.newReminderTimeSpinner:
+                    Log.d(TAG, "In spinner");
+                    if (position == TIME_OTHER) {
+                        Log.d(TAG,"Item selected");
+                        Time now = new Time();
+                        now.setToNow();
+                        RadialTimePickerDialog timePickerDialog = RadialTimePickerDialog
+                                .newInstance(NewReminderFragment.this, now.hour, now.minute,
+                                        DateFormat.is24HourFormat(getActivity())
+                                        );
+
+                        if (mHasDialogFrame) {
+                            FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+
+                            ft.add(R.id.content_frame, timePickerDialog, FRAG_TAG_TIME_PICKER);
+                            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                            ft.commit();
+                        } else {
+                            timePickerDialog.show(getActivity().getSupportFragmentManager(), FRAG_TAG_TIME_PICKER);
+                        }
+                    }
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parentView) {
+            // your code here
+        }
+    };
+
 
 
     private void saveNoteAndReturn(){
@@ -186,13 +244,13 @@ public class NewReminderFragment extends Fragment {
 
         // Get Day
         Spinner sDate = (Spinner)rootView.findViewById(R.id.newReminderDaySpinner);
-        String day = (String)sDate.getSelectedItem();
-        r.setDateString(day);
+        int day = sDate.getSelectedItemPosition();
+        r.setDateOffset(day);
 
         // Get Time
         Spinner sTime = (Spinner)rootView.findViewById(R.id.newReminderTimeSpinner);
-        String time = (String)sTime.getSelectedItem();
-        r.setTimeString(time);
+        int time = sTime.getSelectedItemPosition();
+        r.setTimeOffset(time);
 
         // build date-time string
         buildDateTimeString(r);
@@ -227,8 +285,8 @@ public class NewReminderFragment extends Fragment {
     }
 
     private void buildDateTimeString(Reminder r){
-        String date = r.getDateString();
-        String time = r.getTimeString();
+        int date = r.getDateOffset();
+        int time = r.getTimeOffset();
         String returnString = "";
         String[] dateArray = getResources().getStringArray(R.array.spinner_day);
         String[] timeArray = getResources().getStringArray(R.array.spinner_time);
@@ -237,7 +295,7 @@ public class NewReminderFragment extends Fragment {
         returnString += "";
 
         // Add date
-        returnString += date;
+        returnString += dateArray[date];
 
         returnString += " ";
 
@@ -251,12 +309,12 @@ public class NewReminderFragment extends Fragment {
          *  Date in the Evening
          *  Date at Night
          */
-        if( time.equals(TIME_MORNING) ||
-            time.equals(TIME_AFTERNOON) ||
-            time.equals(TIME_EVENING) ){
+        if( (time == TIME_MORNING) ||
+            (time == TIME_AFTERNOON) ||
+            (time == TIME_EVENING) ){
             returnString += "in the";
         }
-        else if(time.equals(TIME_NOON) || time.equals(TIME_NIGHT)) {
+        else if((time == TIME_NOON) || (time == TIME_NIGHT)) {
             returnString += "at";
         }
         else{
@@ -266,9 +324,36 @@ public class NewReminderFragment extends Fragment {
 
         returnString += " ";
 
-        returnString += time;
+        returnString += timeArray[time];
 
         r.setDateTimeString(returnString);
+    }
+
+
+    /**
+     * Date and Time Dialog handlers
+     */
+    @Override
+    public void onDateSet(CalendarDatePickerDialog dialog, int year, int month, int day) {
+        Log.d(TAG, "Custom Date Set");
+        Log.d(TAG, "Year "+year+" Month "+month+" Day "+day);
+    }
+
+    @Override
+    public void onTimeSet(RadialPickerLayout dialog, int hour, int minute) {
+        Log.d(TAG, "Custom Time Set");
+        Log.d(TAG, "Hour "+hour+" Minute "+hour);
+    }
+
+    @Override
+    public void onResume() {
+        // Reattach to time-picker
+        super.onResume();
+        RadialTimePickerDialog rtpd = (RadialTimePickerDialog) getActivity().getSupportFragmentManager().findFragmentByTag(
+                FRAG_TAG_TIME_PICKER);
+        if (rtpd != null) {
+            rtpd.setOnTimeSetListener(this);
+        }
     }
 
 }
