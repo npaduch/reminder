@@ -15,7 +15,7 @@
         android:id="@+id/reminderColorBlock"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:background="@color/red"
+        android:background="@color/new_reminder_option_divider"
         android:layout_weight="0.01"/>
 
    <RelativeLayout
@@ -49,7 +49,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:layout_below="@id/reminderDetailText"
-            android:background="@color/new_reminder_option_divider"/>
+            android:background="@color/app_color_theme"/>
 
         <TextView
             android:id="@+id/reminderTimeText"
