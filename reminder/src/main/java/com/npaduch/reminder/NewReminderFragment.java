@@ -37,6 +37,13 @@ public class NewReminderFragment extends Fragment {
     // delay time for keyboard popup on entry
     public final static int KEYBOARD_POPUP_DELAY = 200;
 
+    // Time offsets
+    public static final String TIME_MORNING    = "Morning";
+    public static final String TIME_NOON       = "Noon";
+    public static final String TIME_AFTERNOON  = "Afternoon";
+    public static final String TIME_EVENING    = "Evening";
+    public static final String TIME_NIGHT      = "Night";
+
     // Communication with main activity
     FragmentCommunicationListener messenger;
 
@@ -227,30 +234,39 @@ public class NewReminderFragment extends Fragment {
         String[] timeArray = getResources().getStringArray(R.array.spinner_time);
 
         // Beginning of string
-        returnString += getString(R.string.reminder_time_beginning);
-        returnString += " ";
+        returnString += "";
 
         // Add date
-        if(Arrays.asList(dateArray).contains(date)){
-            returnString += date;
-        }
-        // specific day
-        else {
-            returnString += "on "+date;
-        }
+        returnString += date;
+
         returnString += " ";
 
-        // Check if time is relative
-        if(Arrays.asList(timeArray).contains(time)){
-            // if "today" add "in the "
-            if(date.equals(dateArray[0])){
-                returnString += "in the ";
-            }
-            returnString += time;
+        /**
+         *  Syntactical Possibilites
+         *
+         *  Date at Time
+         *  Date in the Morning
+         *  Date at Noon
+         *  Date in the Afternoon
+         *  Date in the Evening
+         *  Date at Night
+         */
+        if( time.equals(TIME_MORNING) ||
+            time.equals(TIME_AFTERNOON) ||
+            time.equals(TIME_EVENING) ){
+            returnString += "in the";
         }
-        else {
-            returnString += "at "+time;
+        else if(time.equals(TIME_NOON) || time.equals(TIME_NIGHT)) {
+            returnString += "at";
         }
+        else{
+            // Specific Time
+            returnString += "at";
+        }
+
+        returnString += " ";
+
+        returnString += time;
 
         r.setDateTimeString(returnString);
     }

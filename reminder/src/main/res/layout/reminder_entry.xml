@@ -56,8 +56,10 @@
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:text="@string/reminder_time_beginning"
+            android:layout_marginLeft="24dp"
             android:layout_below="@id/reminderDetailTimeDivider"
             android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/textview_medium_text"
             android:background="@android:color/background_light"/>
 
     </RelativeLayout>

@@ -16,7 +16,7 @@
     </string-array>
 
     <!-- Reminder Card Strings -->
-    <string name="reminder_time_beginning">You will be reminded</string>
+    <string name="reminder_time_beginning">Today in the Morning</string>
     <string name="reminder_time_once">once</string>
     <string name="reminder_time_recurring">every</string>
 
