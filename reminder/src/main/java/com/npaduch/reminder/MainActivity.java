@@ -109,6 +109,9 @@ public class MainActivity extends FragmentActivity
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 invalidateOptionsMenu();
+                // Hide keyboard if it was shown
+                if(newReminderFragment != null)
+                    newReminderFragment.hideKeyboard();
                 getActionBar().setTitle(mDrawerTitle);
             }
         };
