@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.format.DateFormat;
 import android.text.format.Time;
@@ -52,11 +53,15 @@ public class NewReminderFragment extends Fragment
     public static final int TIME_EVENING    = 3;
     public static final int TIME_NIGHT      = 4;
     public static final int TIME_OTHER      = 5;
-
+    // Date offsets
+    public static final int DATE_TODAY    = 0;
+    public static final int DATE_TOMORROW = 1;
+    public static final int DATE_OTHER    = 2;
 
     // Communication with main activity
     FragmentCommunicationListener messenger;
     private static final String FRAG_TAG_TIME_PICKER = "timePickerDialogFragment";
+    private static final String FRAG_TAG_DATE_PICKER = "datePickerDialogFragment";
 
     // Keep track of time picker state
     private boolean mHasDialogFrame;
@@ -163,6 +168,7 @@ public class NewReminderFragment extends Fragment
         ArrayAdapter<CharSequence> dayAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.spinner_day, android.R.layout.simple_spinner_item);
         dayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         daySpinner.setAdapter(dayAdapter);
+        daySpinner.setOnItemSelectedListener(newReminderOnItemSelectedListener);
 
         // setup time spin adapter
         ArrayAdapter<CharSequence> timeAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.spinner_time, android.R.layout.simple_spinner_item);
@@ -191,12 +197,10 @@ public class NewReminderFragment extends Fragment
             = new AdapterView.OnItemSelectedListener(){
         @Override
         public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-            Log.d(TAG, "Item selected");
             switch(parentView.getId()) {
                 case R.id.newReminderTimeSpinner:
-                    Log.d(TAG, "In spinner");
                     if (position == TIME_OTHER) {
-                        Log.d(TAG,"Item selected");
+                        Log.d(TAG,"Custom time selected");
                         Time now = new Time();
                         now.setToNow();
                         RadialTimePickerDialog timePickerDialog = RadialTimePickerDialog
@@ -213,6 +217,19 @@ public class NewReminderFragment extends Fragment
                         } else {
                             timePickerDialog.show(getActivity().getSupportFragmentManager(), FRAG_TAG_TIME_PICKER);
                         }
+                    }
+                    break;
+                case R.id.newReminderDaySpinner:
+                    if(position == DATE_OTHER){
+                        Log.d(TAG,"Custom date selected");
+                        FragmentManager fm = getActivity().getSupportFragmentManager();
+                        Time now = new Time();
+                        now.setToNow();;
+                        Log.d(TAG,"Initializing with "+now.year+" "+now.month+" "+now.monthDay);
+                        CalendarDatePickerDialog calendarDatePickerDialog = CalendarDatePickerDialog
+                                .newInstance(NewReminderFragment.this, now.year, now.month - 1,
+                                        now.monthDay);
+                        calendarDatePickerDialog.show(fm, FRAG_TAG_DATE_PICKER);
                     }
             }
         }
@@ -353,6 +370,12 @@ public class NewReminderFragment extends Fragment
                 FRAG_TAG_TIME_PICKER);
         if (rtpd != null) {
             rtpd.setOnTimeSetListener(this);
+        }
+        // Reattach date picker
+        CalendarDatePickerDialog calendarDatePickerDialog = (CalendarDatePickerDialog) getActivity().getSupportFragmentManager()
+                .findFragmentByTag(FRAG_TAG_DATE_PICKER);
+        if (calendarDatePickerDialog != null) {
+            calendarDatePickerDialog.setOnDateSetListener(this);
         }
     }
 
