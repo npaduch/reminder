@@ -48,6 +48,10 @@
         <item>Set time...</item>
     </string-array>
 
+    <!-- Time strings -->
+    <string name="time_suffix_AM">AM</string>
+    <string name="time_suffix_PM">PM</string>
+
     <!-- Debug strings -->
     <string name="reminder_example">This is a sample reminder. These will vary in length.</string>
 </resources>

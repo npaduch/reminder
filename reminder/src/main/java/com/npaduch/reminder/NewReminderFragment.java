@@ -29,6 +29,10 @@ import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDi
 import com.doomonafireball.betterpickers.radialtimepicker.RadialPickerLayout;
 import com.doomonafireball.betterpickers.radialtimepicker.RadialTimePickerDialog;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+
 
 /**
  * Created by nolanpaduch on 5/8/14.
@@ -69,6 +73,9 @@ public class NewReminderFragment extends Fragment
 
     // Main view
     View rootView;
+    // spinners
+    ArrayAdapter<CharSequence> dayAdapter;
+    ArrayAdapter<CharSequence> timeAdapter;
 
     public NewReminderFragment() {
     }
@@ -165,14 +172,22 @@ public class NewReminderFragment extends Fragment
         Spinner timeSpinner = (Spinner) view.findViewById(R.id.newReminderTimeSpinner);
 
         // setup day spin adapter
-        ArrayAdapter<CharSequence> dayAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.spinner_day, android.R.layout.simple_spinner_item);
+        ArrayList<String> days = new ArrayList<String>(
+                Arrays.asList(getResources().getStringArray(R.array.spinner_day)));
+        dayAdapter = new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_spinner_item);
         dayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        for(int i = 0; i < days.size(); i++)
+            dayAdapter.add(days.get(i));
         daySpinner.setAdapter(dayAdapter);
         daySpinner.setOnItemSelectedListener(newReminderOnItemSelectedListener);
 
         // setup time spin adapter
-        ArrayAdapter<CharSequence> timeAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.spinner_time, android.R.layout.simple_spinner_item);
+        ArrayList<String> times = new ArrayList<String>(
+                Arrays.asList(getResources().getStringArray(R.array.spinner_time)));
+        timeAdapter = new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_spinner_item);
         timeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        for(int i = 0; i < times.size(); i++)
+            timeAdapter.add(times.get(i));
         timeSpinner.setAdapter(timeAdapter);
         timeSpinner.setOnItemSelectedListener(newReminderOnItemSelectedListener);
     }
@@ -201,10 +216,9 @@ public class NewReminderFragment extends Fragment
                 case R.id.newReminderTimeSpinner:
                     if (position == TIME_OTHER) {
                         Log.d(TAG,"Custom time selected");
-                        Time now = new Time();
-                        now.setToNow();
+                        Calendar now = Calendar.getInstance();
                         RadialTimePickerDialog timePickerDialog = RadialTimePickerDialog
-                                .newInstance(NewReminderFragment.this, now.hour, now.minute,
+                                .newInstance(NewReminderFragment.this, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE),
                                         DateFormat.is24HourFormat(getActivity())
                                         );
 
@@ -223,12 +237,11 @@ public class NewReminderFragment extends Fragment
                     if(position == DATE_OTHER){
                         Log.d(TAG,"Custom date selected");
                         FragmentManager fm = getActivity().getSupportFragmentManager();
-                        Time now = new Time();
-                        now.setToNow();;
-                        Log.d(TAG,"Initializing with "+now.year+" "+now.month+" "+now.monthDay);
+                        Calendar now = Calendar.getInstance();
+                        Log.d(TAG,"Initializing with "+now.get(Calendar.YEAR)+" "+now.get(Calendar.MONTH)+" "+now.get(Calendar.DAY_OF_MONTH));
                         CalendarDatePickerDialog calendarDatePickerDialog = CalendarDatePickerDialog
-                                .newInstance(NewReminderFragment.this, now.year, now.month - 1,
-                                        now.monthDay);
+                                .newInstance(NewReminderFragment.this, now.get(Calendar.YEAR), now.get(Calendar.MONTH) - 1,
+                                        now.get(Calendar.DAY_OF_MONTH));
                         calendarDatePickerDialog.show(fm, FRAG_TAG_DATE_PICKER);
                     }
             }
@@ -302,17 +315,15 @@ public class NewReminderFragment extends Fragment
     }
 
     private void buildDateTimeString(Reminder r){
-        int date = r.getDateOffset();
         int time = r.getTimeOffset();
         String returnString = "";
-        String[] dateArray = getResources().getStringArray(R.array.spinner_day);
         String[] timeArray = getResources().getStringArray(R.array.spinner_time);
 
         // Beginning of string
         returnString += "";
 
         // Add date
-        returnString += dateArray[date];
+        returnString += dayAdapter.getItem(r.getDateOffset());
 
         returnString += " ";
 
@@ -326,22 +337,21 @@ public class NewReminderFragment extends Fragment
          *  Date in the Evening
          *  Date at Night
          */
-        if( (time == TIME_MORNING) ||
-            (time == TIME_AFTERNOON) ||
-            (time == TIME_EVENING) ){
-            returnString += "in the";
-        }
-        else if((time == TIME_NOON) || (time == TIME_NIGHT)) {
-            returnString += "at";
-        }
-        else{
-            // Specific Time
-            returnString += "at";
+        switch (r.getTimeOffset()){
+            case TIME_MORNING:
+            case TIME_AFTERNOON:
+            case TIME_EVENING:
+                returnString += "in the";
+                break;
+            case TIME_NOON:
+            case TIME_NIGHT:
+            default:
+                returnString += "at";
         }
 
         returnString += " ";
 
-        returnString += timeArray[time];
+        returnString += timeAdapter.getItem(time);
 
         r.setDateTimeString(returnString);
     }
@@ -354,12 +364,57 @@ public class NewReminderFragment extends Fragment
     public void onDateSet(CalendarDatePickerDialog dialog, int year, int month, int day) {
         Log.d(TAG, "Custom Date Set");
         Log.d(TAG, "Year "+year+" Month "+month+" Day "+day);
+
+        // Create date string
+        Calendar now = Calendar.getInstance();
+        now.set(year, month, day);
+        String dateString = now.getDisplayName(Calendar.MONTH, Calendar.LONG, getResources().getConfiguration().locale);
+        dateString += " ";
+        dateString += day;
+        dateString += ", ";
+        dateString += year;
+        Log.d(TAG,"Date: "+dateString);
+
+        // update spinner
+        String[] days = getResources().getStringArray(R.array.spinner_day);
+        // replace last entry with date string
+        days[days.length-1] = dateString;
+        dayAdapter.clear();
+        dayAdapter.addAll(days);
+        dayAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onTimeSet(RadialPickerLayout dialog, int hour, int minute) {
         Log.d(TAG, "Custom Time Set");
         Log.d(TAG, "Hour "+hour+" Minute "+hour);
+
+        Calendar now = Calendar.getInstance();
+        now.set(Calendar.HOUR_OF_DAY, hour);
+        now.set(Calendar.MINUTE, minute);
+
+        String timeString = "";
+        timeString += now.get(Calendar.HOUR);
+        timeString += ":";
+        timeString += now.get(Calendar.MINUTE);
+        // Add AM/PM if 12 hour
+        if(!DateFormat.is24HourFormat(getActivity())) {
+            timeString += " ";
+            if(now.get(Calendar.AM_PM) == Calendar.AM)
+                timeString += getResources().getString(R.string.time_suffix_AM);
+            else if(now.get(Calendar.AM_PM) == Calendar.PM)
+                timeString += getResources().getString(R.string.time_suffix_PM);
+        }
+
+        Log.d(TAG,"Time: "+timeString);
+
+        // update spinner
+        String[] times = getResources().getStringArray(R.array.spinner_time);
+        // replace last entry with date string
+        times[times.length-1] = timeString;
+        timeAdapter.clear();
+        timeAdapter.addAll(times);
+        timeAdapter.notifyDataSetChanged();
     }
 
     @Override
