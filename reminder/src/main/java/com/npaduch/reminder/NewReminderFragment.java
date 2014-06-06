@@ -317,7 +317,6 @@ public class NewReminderFragment extends Fragment
     private void buildDateTimeString(Reminder r){
         int time = r.getTimeOffset();
         String returnString = "";
-        String[] timeArray = getResources().getStringArray(R.array.spinner_time);
 
         // Beginning of string
         returnString += "";
