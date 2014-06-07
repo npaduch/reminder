@@ -36,7 +36,7 @@
     <string-array name="spinner_day">
         <item>Today</item>
         <item>Tomorrow</item>
-        <item>Set date…</item>
+        <item>Specific date</item>
     </string-array>
     <!-- Spinner Time Strings -->
     <string-array name="spinner_time">
@@ -45,7 +45,7 @@
         <item>Afternoon</item>
         <item>Evening</item>
         <item>Night</item>
-        <item>Set time…</item>
+        <item>Specific time</item>
     </string-array>
 
     <!-- Time strings -->
