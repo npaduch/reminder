@@ -20,26 +20,13 @@ public class ReminderList extends ArrayAdapter<Reminder> {
 
     private String TAG = "ReminderList";
 
-    private final int BG_RED      = 0;
-    private final int BG_BLUE     = 1;
-    private final int BG_GREEN    = 2;
-    private final int BG_PURPLE   = 3;
-    private final int BG_ORANGE   = 4;
-    private int currentBackground = 0;
-
-    ArrayList<Integer> colors;
     public ArrayList<Reminder> values;
-    int currentColor = 0;
 
     public ReminderList(Context context, int textViewResourceId, ArrayList<Reminder> values){
         super(context, textViewResourceId, values);
 
         this.context = context;
         this.values = values;
-
-        // Array of colors
-        colors = new ArrayList<Integer>();
-        populateColorList();
 
     }
 
@@ -73,18 +60,6 @@ public class ReminderList extends ArrayAdapter<Reminder> {
 
 
         return rowView;
-    }
-
-    private int getColor(){
-        return colors.get(currentColor++ % 5);
-    }
-
-    private void populateColorList(){
-        colors.add(R.color.blue);
-        colors.add(R.color.purple);
-        colors.add(R.color.green);
-        colors.add(R.color.orange);
-        colors.add(R.color.red);
     }
 
 }
