@@ -5,8 +5,6 @@
       <root url="file://$PROJECT_DIR$/reminder/build/exploded-aar/com.doomonafireball.betterpickers/library/1.5.2/res" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="file://$PROJECT_DIR$/../libraries/android-betterpickers/library/src" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>

@@ -51,14 +51,14 @@
             android:gravity="center"
             android:orientation="horizontal"
             android:background="@color/textview_background">
-            <Spinner
+            <com.npaduch.reminder.AlwaysChangeSpinner
                 android:id="@+id/newReminderDaySpinner"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"/>
             <View
                 android:layout_width="48dp"
                 android:layout_height="match_parent" />
-            <Spinner
+            <com.npaduch.reminder.AlwaysChangeSpinner
                 android:id="@+id/newReminderTimeSpinner"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"/>

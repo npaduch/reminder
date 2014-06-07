@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.format.DateFormat;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -168,8 +167,8 @@ public class NewReminderFragment extends Fragment
     public  void initializeSpinners(View view){
 
         // locate spinners
-        Spinner daySpinner = (Spinner) view.findViewById(R.id.newReminderDaySpinner);
-        Spinner timeSpinner = (Spinner) view.findViewById(R.id.newReminderTimeSpinner);
+        AlwaysChangeSpinner daySpinner = (AlwaysChangeSpinner) view.findViewById(R.id.newReminderDaySpinner);
+        AlwaysChangeSpinner timeSpinner = (AlwaysChangeSpinner) view.findViewById(R.id.newReminderTimeSpinner);
 
         // setup day spin adapter
         ArrayList<String> days = new ArrayList<String>(
@@ -232,6 +231,15 @@ public class NewReminderFragment extends Fragment
                             timePickerDialog.show(getActivity().getSupportFragmentManager(), FRAG_TAG_TIME_PICKER);
                         }
                     }
+                    else{
+                        // update spinner
+                        Log.d(TAG,"Resetting the time spinner");
+                        String[] times = getResources().getStringArray(R.array.spinner_time);
+                        // replace last entry with default string in case this has been changes
+                        timeAdapter.clear();
+                        timeAdapter.addAll(times);
+                        timeAdapter.notifyDataSetChanged();
+                    }
                     break;
                 case R.id.newReminderDaySpinner:
                     if(position == DATE_OTHER){
@@ -243,6 +251,15 @@ public class NewReminderFragment extends Fragment
                                 .newInstance(NewReminderFragment.this, now.get(Calendar.YEAR), now.get(Calendar.MONTH) - 1,
                                         now.get(Calendar.DAY_OF_MONTH));
                         calendarDatePickerDialog.show(fm, FRAG_TAG_DATE_PICKER);
+                    }
+                    else{
+                        // update spinner
+                        Log.d(TAG,"Resetting the date spinner");
+                        String[] days = getResources().getStringArray(R.array.spinner_day);
+                        // replace last entry with default string in case this has been changes
+                        dayAdapter.clear();
+                        dayAdapter.addAll(days);
+                        dayAdapter.notifyDataSetChanged();
                     }
             }
         }
@@ -432,5 +449,4 @@ public class NewReminderFragment extends Fragment
             calendarDatePickerDialog.setOnDateSetListener(this);
         }
     }
-
 }
