@@ -3,6 +3,7 @@ package com.npaduch.reminder;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,6 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import org.json.JSONArray;
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -54,6 +59,9 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+        // Check for file
+        getJSONFileContents();
+
         populateSampleReminders();
 
         ListView list = (ListView) rootView.findViewById(R.id.mainFragmentListView);
@@ -61,7 +69,6 @@ public class MainFragment extends Fragment {
                 getActivity(), R.id.mainFragmentListView, MainActivity.reminders);
         list.setAdapter(myReminderListViewArrayAdapter);
         setHasOptionsMenu(true);
-
 
         return rootView;
     }
@@ -99,5 +106,29 @@ public class MainFragment extends Fragment {
             MainActivity.reminders.add(new Reminder());
 
     }
+
+    private void getJSONFileContents(){
+        Log.d(TAG, "CLooking for file " + getActivity().getFilesDir() + File.pathSeparator + Reminder.filename);
+
+        // Check for file
+        File file = new File(getActivity().getFilesDir(), Reminder.filename);
+        if(!file.exists()){
+            // it doesn't exist. Write an empty JSON array to it
+            Log.d(TAG, "Initializing JSON file.");
+            JSONArray jsonArray = new JSONArray();
+            String s = jsonArray.toString();
+            try {
+                FileOutputStream fileOutputStream = new FileOutputStream(file);
+                fileOutputStream.write(s.getBytes());
+                fileOutputStream.close();
+            } catch (Exception e){
+                Log.e(TAG, "Error creating JSON file: "+e);
+            }
+            return;
+        }
+        Log.d(TAG,"JSON file found. Loading in reminders.");
+
+    }
+
 
 }

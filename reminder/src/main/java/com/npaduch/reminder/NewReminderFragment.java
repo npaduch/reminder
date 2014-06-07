@@ -308,6 +308,9 @@ public class NewReminderFragment extends Fragment
         Log.d(TAG,"Time: "+r.getTimeString());
         MainActivity.reminders.add(0, r);
 
+        // output to file
+        r.writeToFile(getActivity());
+
         Log.d(TAG,"Note saved.");
         Toast.makeText(getActivity(), getString(R.string.new_reminder_created), Toast.LENGTH_SHORT).show();
 
