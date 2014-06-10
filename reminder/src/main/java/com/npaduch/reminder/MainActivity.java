@@ -35,8 +35,6 @@ public class MainActivity extends FragmentActivity
     // Debugging attributes
     String TAG = "MainActivity";
 
-    /*  Navigation Drawer */
-    private String[] mDrawerLabels;
     // Drawer Label Offsets
     public static int NEW_REMINDER_TITLE = 0;
     /* Comment these out until we need them.
@@ -70,7 +68,7 @@ public class MainActivity extends FragmentActivity
         setContentView(R.layout.activity_main);
 
         /** Navigation Drawer */
-        mDrawerLabels = getResources().getStringArray(R.array.drawer_titles);
+        String[] mDrawerLabels = getResources().getStringArray(R.array.drawer_titles);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 

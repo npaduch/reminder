@@ -1,15 +1,9 @@
 package com.npaduch.reminder;
 
 import android.content.Context;
-import android.os.Message;
 import android.util.JsonReader;
-import android.util.JsonToken;
 import android.util.JsonWriter;
 import android.util.Log;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,7 +14,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by nolanpaduch on 5/12/14.

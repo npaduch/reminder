@@ -17,6 +17,7 @@ public class AlwaysChangeSpinner extends Spinner {
 
     private final static String TAG = "AlwaysChangeSpinner";
 
+
     OnItemSelectedListener listener;
 
     public AlwaysChangeSpinner(Context context, AttributeSet attrs)
