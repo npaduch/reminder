@@ -123,35 +123,16 @@ public class Reminder {
         this.completed = completed;
     }
 
-    public void writeToFile(Context context) {
+    public static void initFile(Context context) {
 
-        Log.d(TAG, "Creating file "+context.getFilesDir()+File.pathSeparator+filename);
+        Log.d(TAG, "Initializing file "+context.getFilesDir()+File.pathSeparator+filename);
         File file = new File(context.getFilesDir(), filename);
 
-        String jsonString;
-        JSONArray jsonArray;
-        ArrayList reminders = null;
-
-        // 1. Read in JSON file content
-        try {
-            // Open file
-            FileInputStream fileInputStream = new FileInputStream(file);
-            reminders = readJsonStream(fileInputStream);
-            Log.d(TAG, "Output To file successful.");
-        } catch (Exception e) {
-            Log.e(TAG, "Exception when writing to file. "+e);
-        }
-
-        if(reminders == null){
-            reminders = new ArrayList<Reminder>();
-        }
-
-        // add new item
-        reminders.add(this);
+        ArrayList<Reminder> reminders = new ArrayList<Reminder>();
 
         try {
             // Append to file if it exists
-            FileOutputStream fOutputStream = new FileOutputStream(file, true);
+            FileOutputStream fOutputStream = new FileOutputStream(file, false);
             writeJsonStream(fOutputStream, reminders);
             Log.d(TAG, "Output To file successful.");
         } catch (Exception e) {
@@ -159,26 +140,44 @@ public class Reminder {
         }
     }
 
-    /*
-    private  buildJSONString(){
+    public void writeToFile(Context context) {
 
-        JSONObject object = new JSONObject();
+        Log.d(TAG, "Adding to file "+context.getFilesDir()+File.pathSeparator+filename);
+        File file = new File(context.getFilesDir(), filename);
+
+        ArrayList<Reminder> reminderList = null;
+
+        // 1. Read in JSON file content
         try {
-            object.put(JSON_DESCRIPTION, getDescription());
-            object.put(JSON_DATETIME, getDateTimeString());
-            object.put(JSON_COMPLETED, isCompleted());
-        } catch (JSONException e) {
-            e.printStackTrace();
+            // Open file
+            FileInputStream fileInputStream = new FileInputStream(file);
+            reminderList = readJsonStream(fileInputStream);
+            Log.d(TAG, "File read successful.");
+        } catch (Exception e) {
+            Log.e(TAG, "Exception when writing to file."+e);
         }
 
-        String s = object.toString();
+        if(reminderList == null){
+            Log.d(TAG, "Reminder list null. Creating a new list.");
+            reminderList = new ArrayList<Reminder>();
+        }
 
-        return s;
+        // add new item to the beginning of the list
+        reminderList.add(0, this);
+
+        try {
+            // Append to file if it exists
+            FileOutputStream fOutputStream = new FileOutputStream(file, false);
+            writeJsonStream(fOutputStream, reminderList);
+            Log.d(TAG, "Output To file successful.");
+        } catch (Exception e) {
+            Log.e(TAG, "Exception when writing to file. "+e);
+        }
     }
-    */
 
     /** All required for JSON Parsing **/
-    public ArrayList readJsonStream(InputStream in) throws IOException {
+    public static ArrayList readJsonStream(InputStream in) throws IOException {
+        Log.d(TAG, "Begin readJsonStream");
         JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
         try {
             return readRemindersArray(reader);
@@ -188,22 +187,26 @@ public class Reminder {
         }
     }
 
-    public ArrayList readRemindersArray(JsonReader reader) throws IOException {
-        ArrayList reminders = new ArrayList();
+    public static ArrayList readRemindersArray(JsonReader reader) throws IOException {
+        Log.d(TAG,"Begin readReminderArray");
+        ArrayList<Reminder> reminderList = new ArrayList<Reminder>();
 
         reader.beginArray();
+        Log.d(TAG,"beginArray");
         while (reader.hasNext()) {
-            reminders.add(readReminder(reader));
+            reminderList.add(readReminder(reader));
         }
+        Log.d(TAG,"endArray");
         reader.endArray();
-        return reminders;
+        return reminderList;
     }
 
-    public Reminder readReminder(JsonReader reader) throws IOException {
+    public static Reminder readReminder(JsonReader reader) throws IOException {
         String description = "";
         String dateTimeString = "";
         Boolean completed = false;
 
+        Log.d(TAG, "Begin to read reminder");
         reader.beginObject();
         while (reader.hasNext()) {
             String name = reader.nextName();
@@ -218,31 +221,43 @@ public class Reminder {
             }
         }
         reader.endObject();
-        return new Reminder(description, dateTimeString, completed);
+        Reminder r = new Reminder(description, dateTimeString, completed);
+        outputReminderToLog(r);
+
+        Log.d(TAG, "End read reminder");
+        return r;
     }
 
     /** JSON Writing **/
-    public void writeJsonStream(OutputStream out, List reminders) throws IOException {
+    public static void writeJsonStream(OutputStream out, ArrayList<Reminder> reminders) throws IOException {
         JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
         writer.setIndent("  ");
         writeMessagesArray(writer, reminders);
         writer.close();
     }
 
-    public void writeMessagesArray(JsonWriter writer, List reminders) throws IOException {
+    public static void writeMessagesArray(JsonWriter writer, ArrayList<Reminder> reminders) throws IOException {
         writer.beginArray();
         for(int i = 0; i < reminders.size(); i++) {
-            writeMessage(writer, (Reminder)reminders.get(i));
+            writeMessage(writer, reminders.get(i));
         }
         writer.endArray();
     }
 
-    public void writeMessage(JsonWriter writer, Reminder reminder) throws IOException {
+    public static void writeMessage(JsonWriter writer, Reminder reminder) throws IOException {
         writer.beginObject();
         writer.name(JSON_DESCRIPTION).value(reminder.getDescription());
         writer.name(JSON_DATETIME).value(reminder.getDateTimeString());
         writer.name(JSON_COMPLETED).value(reminder.isCompleted());
         writer.endObject();
+    }
+
+    public static void outputReminderToLog(Reminder r){
+        Log.d(TAG,"Reminder: START");
+        Log.d(TAG,"Reminder: Description: "+r.getDescription());
+        Log.d(TAG,"Reminder: Date/Time: "+r.getDateTimeString());
+        Log.d(TAG,"Reminder: Completed: "+r.isCompleted());
+        Log.d(TAG,"Reminder: END");
     }
 
 }

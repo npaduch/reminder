@@ -12,10 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import org.json.JSONArray;
-
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 
 /**
@@ -59,10 +57,11 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        // Check for file
-        getJSONFileContents();
+        // Check for reminders in file
+        ArrayList<Reminder> oldReminders = getJSONFileContents();
 
-        populateSampleReminders();
+        populateReminders(oldReminders);
+
 
         ListView list = (ListView) rootView.findViewById(R.id.mainFragmentListView);
         myReminderListViewArrayAdapter = new ReminderList(
@@ -97,38 +96,51 @@ public class MainFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void populateSampleReminders(){
+
+    private void populateReminders(ArrayList<Reminder> oldReminders){
 
         if(MainActivity.reminders == null)
             MainActivity.reminders = new ArrayList<Reminder>();
 
-        for(int i=0; i< 20; i++)
-            MainActivity.reminders.add(new Reminder());
+        // TODO: Change to create samples if first time launching?
+        if(oldReminders == null){
+            // set it to be an array list
+            oldReminders = new ArrayList<Reminder>();
+        }
+
+        // Copy reminders over to list view instance
+        MainActivity.reminders.clear();
+        for(int i = 0; i < oldReminders.size(); i++)
+            MainActivity.reminders.add(oldReminders.get(i));
 
     }
 
-    private void getJSONFileContents(){
-        Log.d(TAG, "CLooking for file " + getActivity().getFilesDir() + File.pathSeparator + Reminder.filename);
+
+    private ArrayList<Reminder> getJSONFileContents(){
+        Log.d(TAG, "Looking for file " + getActivity().getFilesDir() + File.pathSeparator + Reminder.filename);
 
         // Check for file
         File file = new File(getActivity().getFilesDir(), Reminder.filename);
         if(!file.exists()){
             // it doesn't exist. Write an empty JSON array to it
             Log.d(TAG, "Initializing JSON file.");
-            JSONArray jsonArray = new JSONArray();
-            String s = jsonArray.toString();
             try {
-                FileOutputStream fileOutputStream = new FileOutputStream(file);
-                fileOutputStream.write(s.getBytes());
-                fileOutputStream.close();
+                Reminder.initFile(getActivity());
             } catch (Exception e){
                 Log.e(TAG, "Error creating JSON file: "+e);
             }
-            return;
+            return null;
         }
         Log.d(TAG,"JSON file found. Loading in reminders.");
 
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            return Reminder.readJsonStream(fileInputStream);
+        } catch (Exception e){
+            Log.e(TAG, "Error reading existing JSON file: "+e);
+        }
+        Log.e(TAG, "Could not read input stream to get existing reminders.");
+        return null;
     }
-
 
 }

@@ -302,16 +302,11 @@ public class NewReminderFragment extends Fragment
         // build date-time string
         buildDateTimeString(r);
 
-        // Save reminder
-        Log.d(TAG,"Description: "+r.getDescription());
-        Log.d(TAG,"Date: "+r.getDateString());
-        Log.d(TAG,"Time: "+r.getTimeString());
-        MainActivity.reminders.add(0, r);
-
-        // output to file
+        // Log and save reminder
+        Reminder.outputReminderToLog(r);
         r.writeToFile(getActivity());
 
-        Log.d(TAG,"Note saved.");
+        Log.d(TAG,"Reminder saved.");
         Toast.makeText(getActivity(), getString(R.string.new_reminder_created), Toast.LENGTH_SHORT).show();
 
         // return to main View
