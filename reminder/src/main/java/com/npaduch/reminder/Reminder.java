@@ -1,9 +1,13 @@
 package com.npaduch.reminder;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.util.JsonReader;
 import android.util.JsonWriter;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,9 +18,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by nolanpaduch on 5/12/14.
+ *
+ * Class to store all reminder attributes and
+ * required functions
  */
 public class Reminder {
 
@@ -169,7 +177,7 @@ public class Reminder {
     }
 
     /** All required for JSON Parsing **/
-    public static ArrayList readJsonStream(InputStream in) throws IOException {
+    public static ArrayList<Reminder> readJsonStream(InputStream in) throws IOException {
         Log.d(TAG, "Begin readJsonStream");
         JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
         try {
@@ -180,7 +188,7 @@ public class Reminder {
         }
     }
 
-    public static ArrayList readRemindersArray(JsonReader reader) throws IOException {
+    public static ArrayList<Reminder> readRemindersArray(JsonReader reader) throws IOException {
         Log.d(TAG,"Begin readReminderArray");
         ArrayList<Reminder> reminderList = new ArrayList<Reminder>();
 
@@ -231,8 +239,9 @@ public class Reminder {
 
     public static void writeMessagesArray(JsonWriter writer, ArrayList<Reminder> reminders) throws IOException {
         writer.beginArray();
-        for(int i = 0; i < reminders.size(); i++) {
-            writeMessage(writer, reminders.get(i));
+
+        for (Reminder r : reminders){
+            writeMessage(writer, r);
         }
         writer.endArray();
     }
@@ -251,6 +260,24 @@ public class Reminder {
         Log.d(TAG,"Reminder: Date/Time: "+r.getDateTimeString());
         Log.d(TAG,"Reminder: Completed: "+r.isCompleted());
         Log.d(TAG,"Reminder: END");
+    }
+
+    public void setAlarm(Context context){
+        Log.d(TAG, "Setting alarm for reminder.");
+
+        // set time for a minute from now
+        Long time = Calendar.getInstance().getTimeInMillis()+60000;
+
+        // create an Intent and set the class which will execute when Alarm triggers
+        Intent intentAlarm = new Intent(context, AlarmReceiver.class);
+
+        // create the object
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        //set the alarm for particular time
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP,time, PendingIntent.getBroadcast(context, 1, intentAlarm, 0));
+        Log.d(TAG, "Alarm scheduled");
+        Toast.makeText(context, "Alarm Scheduled for a minute from now", Toast.LENGTH_SHORT).show();
     }
 
 }

@@ -175,8 +175,8 @@ public class NewReminderFragment extends Fragment
                 Arrays.asList(getResources().getStringArray(R.array.spinner_day)));
         dayAdapter = new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_spinner_item);
         dayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        for(int i = 0; i < days.size(); i++)
-            dayAdapter.add(days.get(i));
+        for(String day : days)
+            dayAdapter.add(day);
         daySpinner.setAdapter(dayAdapter);
         daySpinner.setOnItemSelectedListener(newReminderOnItemSelectedListener);
 
@@ -185,8 +185,8 @@ public class NewReminderFragment extends Fragment
                 Arrays.asList(getResources().getStringArray(R.array.spinner_time)));
         timeAdapter = new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_spinner_item);
         timeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        for(int i = 0; i < times.size(); i++)
-            timeAdapter.add(times.get(i));
+        for(String time : times)
+            timeAdapter.add(time);
         timeSpinner.setAdapter(timeAdapter);
         timeSpinner.setOnItemSelectedListener(newReminderOnItemSelectedListener);
     }
@@ -305,6 +305,9 @@ public class NewReminderFragment extends Fragment
         // Log and save reminder
         Reminder.outputReminderToLog(r);
         r.writeToFile(getActivity());
+
+        // kick off reminder
+        r.setAlarm(getActivity());
 
         Log.d(TAG,"Reminder saved.");
         Toast.makeText(getActivity(), getString(R.string.new_reminder_created), Toast.LENGTH_SHORT).show();
