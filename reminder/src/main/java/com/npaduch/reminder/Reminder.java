@@ -30,10 +30,16 @@ public class Reminder {
 
     // initialize values
     public static final String STRING_INIT = "STRING_INVALID";
+    public static final int INT_INIT = -1;
 
     private String description;
 
     // timing
+    private double year;
+    private double month;
+    private double monthDay;
+    private double hour;
+    private double minute;
     private String dateString;
     private String timeString;
     private String dateTimeString;
@@ -59,6 +65,12 @@ public class Reminder {
         setDateString(STRING_INIT);
         setTimeString(STRING_INIT);
         setDateTimeString(STRING_INIT);
+        setYear(INT_INIT);
+        setMonth(INT_INIT);
+        setMonthDay(INT_INIT);
+        setHour(INT_INIT);
+        setMinute(INT_INIT);
+
         setCompleted(false);
     }
 
@@ -66,6 +78,14 @@ public class Reminder {
         this.description = description;
         this.dateTimeString = dateTimeString;
         this.completed = completed;
+
+        setYear(INT_INIT);
+        setMonth(INT_INIT);
+        setMonthDay(INT_INIT);
+        setHour(INT_INIT);
+        setMinute(INT_INIT);
+
+        setCompleted(false);
     }
 
     public int getDateOffset() {
@@ -122,6 +142,46 @@ public class Reminder {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    public double getYear() {
+        return year;
+    }
+
+    public void setYear(double year) {
+        this.year = year;
+    }
+
+    public double getMonth() {
+        return month;
+    }
+
+    public void setMonth(double month) {
+        this.month = month;
+    }
+
+    public double getHour() {
+        return hour;
+    }
+
+    public void setHour(double hour) {
+        this.hour = hour;
+    }
+
+    public double getMonthDay() {
+        return monthDay;
+    }
+
+    public void setMonthDay(double monthDay) {
+        this.monthDay = monthDay;
+    }
+
+    public double getMinute() {
+        return minute;
+    }
+
+    public void setMinute(double minute) {
+        this.minute = minute;
     }
 
     public static void initFile(Context context) {
@@ -275,7 +335,7 @@ public class Reminder {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         //set the alarm for particular time
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP,time, PendingIntent.getBroadcast(context, 1, intentAlarm, 0));
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, PendingIntent.getBroadcast(context, 1, intentAlarm, 0));
         Log.d(TAG, "Alarm scheduled");
         Toast.makeText(context, "Alarm Scheduled for a minute from now", Toast.LENGTH_SHORT).show();
     }
