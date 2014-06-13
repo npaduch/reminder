@@ -39,6 +39,9 @@ import java.util.Calendar;
  * Fragment to create a new reminder.
  */
 
+/** To-do list for this fragment */
+// TODO: Make a way to edit reminders
+
 public class NewReminderFragment extends Fragment
         implements RadialTimePickerDialog.OnTimeSetListener,
         CalendarDatePickerDialog.OnDateSetListener {
