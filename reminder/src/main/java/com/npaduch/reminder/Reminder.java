@@ -335,7 +335,7 @@ public class Reminder {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         //set the alarm for particular time
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, PendingIntent.getBroadcast(context, 1, intentAlarm, 0));
+        alarmManager.set(AlarmManager.RTC_WAKEUP, time, PendingIntent.getBroadcast(context, 1, intentAlarm, 0));
         Log.d(TAG, "Alarm scheduled");
         Toast.makeText(context, "Alarm Scheduled for a minute from now", Toast.LENGTH_SHORT).show();
     }
