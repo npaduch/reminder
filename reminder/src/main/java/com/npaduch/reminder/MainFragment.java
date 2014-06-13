@@ -21,8 +21,6 @@ import java.util.ArrayList;
  *
  */
 
-// TODO: Add custom listview for current main layout
-
 public class MainFragment extends Fragment {
 
     private final static String TAG = "MainFragment";

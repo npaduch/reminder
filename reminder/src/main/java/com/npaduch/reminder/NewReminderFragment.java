@@ -72,6 +72,15 @@ public class NewReminderFragment extends Fragment
     // Keep track of time picker state
     private boolean mHasDialogFrame;
 
+    // Preserve previous spinner date and time
+    private boolean customTimeSelected = false;
+    private int spinner_hour = 0;
+    private int spinner_minute = 0;
+    private boolean customDateSelected = false;
+    private int spinner_year = 0;
+    private int spinner_month = 0;
+    private int spinner_day = 0;
+
 
     // Main view
     View rootView;
@@ -219,10 +228,22 @@ public class NewReminderFragment extends Fragment
                     if (position == TIME_OTHER) {
                         Log.d(TAG,"Custom time selected");
                         Calendar now = Calendar.getInstance();
-                        RadialTimePickerDialog timePickerDialog = RadialTimePickerDialog
-                                .newInstance(NewReminderFragment.this, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE),
-                                        DateFormat.is24HourFormat(getActivity())
-                                        );
+                        RadialTimePickerDialog timePickerDialog;
+                        // check if we are initializing it with last entries data
+                        // If user selected custom time, then wants to change it, we want the picker
+                        // to start with the other custom time
+                        if(customTimeSelected) {
+                            timePickerDialog = RadialTimePickerDialog
+                                    .newInstance(NewReminderFragment.this, spinner_hour, spinner_minute,
+                                            DateFormat.is24HourFormat(getActivity())
+                                    );
+                        } else {
+                            // initialize with time right now
+                            timePickerDialog = RadialTimePickerDialog
+                                    .newInstance(NewReminderFragment.this, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE),
+                                            DateFormat.is24HourFormat(getActivity())
+                                    );
+                        }
 
                         if (mHasDialogFrame) {
                             FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
@@ -233,6 +254,7 @@ public class NewReminderFragment extends Fragment
                         } else {
                             timePickerDialog.show(getActivity().getSupportFragmentManager(), FRAG_TAG_TIME_PICKER);
                         }
+                        customTimeSelected = true;
                     }
                     else{
                         // update spinner
@@ -242,6 +264,7 @@ public class NewReminderFragment extends Fragment
                         timeAdapter.clear();
                         timeAdapter.addAll(times);
                         timeAdapter.notifyDataSetChanged();
+                        customTimeSelected = false;
                     }
                     break;
                 case R.id.newReminderDaySpinner:
@@ -250,10 +273,23 @@ public class NewReminderFragment extends Fragment
                         FragmentManager fm = getActivity().getSupportFragmentManager();
                         Calendar now = Calendar.getInstance();
                         Log.d(TAG,"Initializing with "+now.get(Calendar.YEAR)+" "+now.get(Calendar.MONTH)+" "+now.get(Calendar.DAY_OF_MONTH));
-                        CalendarDatePickerDialog calendarDatePickerDialog = CalendarDatePickerDialog
-                                .newInstance(NewReminderFragment.this, now.get(Calendar.YEAR), now.get(Calendar.MONTH),
-                                        now.get(Calendar.DAY_OF_MONTH));
+
+                        CalendarDatePickerDialog calendarDatePickerDialog;
+                        // check if we are initializing it with last entries data
+                        // If user selected custom time, then wants to change it, we want the picker
+                        // to start with the other custom date
+                        if(customDateSelected){
+                            calendarDatePickerDialog = CalendarDatePickerDialog
+                                    .newInstance(NewReminderFragment.this, spinner_year, spinner_month,
+                                            spinner_day);
+
+                        } else {
+                            calendarDatePickerDialog = CalendarDatePickerDialog
+                                    .newInstance(NewReminderFragment.this, now.get(Calendar.YEAR), now.get(Calendar.MONTH),
+                                            now.get(Calendar.DAY_OF_MONTH));
+                        }
                         calendarDatePickerDialog.show(fm, FRAG_TAG_DATE_PICKER);
+                        customDateSelected = true;
                     }
                     else{
                         // update spinner
@@ -263,6 +299,7 @@ public class NewReminderFragment extends Fragment
                         dayAdapter.clear();
                         dayAdapter.addAll(days);
                         dayAdapter.notifyDataSetChanged();
+                        customDateSelected = false;
                     }
             }
         }
@@ -385,6 +422,11 @@ public class NewReminderFragment extends Fragment
         Log.d(TAG, "Custom Date Set");
         Log.d(TAG, "Year "+year+" Month "+month+" Day "+day);
 
+        // record values for spinner
+        spinner_year = year;
+        spinner_month = month;
+        spinner_day = day;
+
         // Create date string
         Calendar now = Calendar.getInstance();
         now.set(year, month, day);
@@ -408,6 +450,10 @@ public class NewReminderFragment extends Fragment
     public void onTimeSet(RadialPickerLayout dialog, int hour, int minute) {
         Log.d(TAG, "Custom Time Set");
         Log.d(TAG, "Hour "+hour+" Minute "+hour);
+
+        // record values for spinner
+        spinner_hour = hour;
+        spinner_minute = minute;
 
         Calendar now = Calendar.getInstance();
         now.set(Calendar.HOUR_OF_DAY, hour);
