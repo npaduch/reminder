@@ -251,7 +251,7 @@ public class NewReminderFragment extends Fragment
                         Calendar now = Calendar.getInstance();
                         Log.d(TAG,"Initializing with "+now.get(Calendar.YEAR)+" "+now.get(Calendar.MONTH)+" "+now.get(Calendar.DAY_OF_MONTH));
                         CalendarDatePickerDialog calendarDatePickerDialog = CalendarDatePickerDialog
-                                .newInstance(NewReminderFragment.this, now.get(Calendar.YEAR), now.get(Calendar.MONTH) - 1,
+                                .newInstance(NewReminderFragment.this, now.get(Calendar.YEAR), now.get(Calendar.MONTH),
                                         now.get(Calendar.DAY_OF_MONTH));
                         calendarDatePickerDialog.show(fm, FRAG_TAG_DATE_PICKER);
                     }
