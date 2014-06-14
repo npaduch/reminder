@@ -343,6 +343,9 @@ public class NewReminderFragment extends Fragment
         // build date-time string
         buildDateTimeString(r);
 
+        // find time for reminder
+        r.calculateMsTime(spinner_year, spinner_month, spinner_day, spinner_hour, spinner_minute);
+
         // Log and save reminder
         r.outputReminderToLog();
         r.writeToFile(getActivity());

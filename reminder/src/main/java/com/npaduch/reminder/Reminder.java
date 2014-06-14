@@ -41,6 +41,8 @@ public class Reminder {
     private double monthDay;
     private double hour;
     private double minute;
+    private long msTime;
+
     private String dateString;
     private String timeString;
     private String dateTimeString;
@@ -208,6 +210,47 @@ public class Reminder {
     public void setReminderID(int reminderID) {
         this.reminderID = reminderID;
     }
+
+    public long getMsTime() {
+        return msTime;
+    }
+
+    public void setMsTime(long msTime) {
+        this.msTime = msTime;
+    }
+
+    public void calculateMsTime(int year, int month, int day, int hour, int minute){
+        // This inititializes the class with the time RIGHT NOW
+        Calendar reminderCal = Calendar.getInstance();
+
+        // handle day
+        if(getDateOffset() == NewReminderFragment.DATE_TODAY){
+            // we don't have to change anything
+            Log.d(TAG,"Date is today");
+        } else if(getDateOffset() == NewReminderFragment.DATE_TOMORROW) {
+            // add time for 1 day
+            reminderCal.add(Calendar.DAY_OF_MONTH, 1);
+        } else {
+            // Custom date was given
+            reminderCal.set(year, month, day);
+        }
+
+        // handle time
+        if(getTimeOffset() == NewReminderFragment.TIME_MORNING){
+
+        }
+
+        // set values
+        reminderCal.set(year, month, day, hour, minute);
+        long ms = reminderCal.getTimeInMillis();
+        setMsTime(ms);
+    }
+
+    /************************************************************
+     *
+     *          FILE HANDLING
+     *
+     ************************************************************/
 
     public static void initFile(Context context) {
 
