@@ -213,7 +213,7 @@ public class NewReminderFragment extends Fragment
             switch (view.getId()) {
                 case R.id.newReminderCreateButton:
                     Log.d(TAG, "New reminder button clicked.");
-                    Toast.makeText(getActivity(), "Saving Reminder", Toast.LENGTH_SHORT);
+                    Toast.makeText(getActivity(), getResources().getString(R.string.toast_saving_reminder), Toast.LENGTH_SHORT).show();
                     saveNoteAndReturn();
                     break;
             }
@@ -325,7 +325,7 @@ public class NewReminderFragment extends Fragment
             description = et.getText().toString();
         }
         else {
-            Toast.makeText(getActivity(), getString(R.string.new_reminder_no_description), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getString(R.string.toast_new_reminder_no_description), Toast.LENGTH_SHORT).show();
             return;
         }
         r.setDescription(description);
@@ -351,7 +351,7 @@ public class NewReminderFragment extends Fragment
         r.setAlarm(getActivity());
 
         Log.d(TAG,"Reminder saved.");
-        Toast.makeText(getActivity(), getString(R.string.new_reminder_created), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.toast_new_reminder_created), Toast.LENGTH_SHORT).show();
 
         // return to main View
         Bundle b = new Bundle();

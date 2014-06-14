@@ -26,8 +26,6 @@
     <string name="new_reminder_button">Remind Me</string>
     <string name="new_reminder_details">Details</string>
     <string name="new_reminder_time">When</string>
-    <string name="new_reminder_no_description">Please enter a description</string>
-    <string name="new_reminder_created">Reminder Created</string>
 
     <!-- Menu Strings -->
     <string name="action_add_reminder">Add Reminder</string>
@@ -55,4 +53,9 @@
 
     <!-- Debug strings -->
     <string name="reminder_example">This is a sample reminder. These will vary in length.</string>
+
+    <!-- TOAST Messages -->
+    <string name="toast_new_reminder_no_description">Please enter a description</string>
+    <string name="toast_saving_reminder">Saving Reminder…</string>
+    <string name="toast_new_reminder_created">Reminder Saved</string>
 </resources>
