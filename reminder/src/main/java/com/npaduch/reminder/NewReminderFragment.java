@@ -213,6 +213,7 @@ public class NewReminderFragment extends Fragment
             switch (view.getId()) {
                 case R.id.newReminderCreateButton:
                     Log.d(TAG, "New reminder button clicked.");
+                    Toast.makeText(getActivity(), "Saving Reminder", Toast.LENGTH_SHORT);
                     saveNoteAndReturn();
                     break;
             }
@@ -343,7 +344,7 @@ public class NewReminderFragment extends Fragment
         buildDateTimeString(r);
 
         // Log and save reminder
-        Reminder.outputReminderToLog(r);
+        r.outputReminderToLog();
         r.writeToFile(getActivity());
 
         // kick off reminder

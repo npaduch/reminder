@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Random;
 
 /**
  * Created by nolanpaduch on 5/12/14.
@@ -56,10 +57,18 @@ public class Reminder {
     private final static String JSON_DESCRIPTION = "description";
     private final static String JSON_DATETIME = "datetime";
     private final static String JSON_COMPLETED = "completed";
+    private final static String JSON_REMINDER_ID= "reminder_id";
+
+    // ID
+    private int reminderID;
+    public final static String INTENT_REMINDER_ID = "intent_reminder_id";
+    // reminder ID should be greater than 0
+    public static final int BAD_REMINDER_ID = -1;
 
     // logging
     private final static String TAG = "RaminderClass";
 
+    // Called when reminder created for the first time
     public Reminder() {
         setDescription(STRING_INIT);
         setDateString(STRING_INIT);
@@ -72,9 +81,15 @@ public class Reminder {
         setMinute(INT_INIT);
 
         setCompleted(false);
+
+        // random value greater than 0
+        // TODO: make sure reminder ID not already in use
+        setReminderID(new Random().nextInt(Integer.MAX_VALUE));
     }
 
-    public Reminder(String description, String dateTimeString, boolean completed){
+    // Called when read from file
+    public Reminder(String description, String dateTimeString, boolean completed,
+                    int reminderID){
         this.description = description;
         this.dateTimeString = dateTimeString;
         this.completed = completed;
@@ -86,6 +101,8 @@ public class Reminder {
         setMinute(INT_INIT);
 
         setCompleted(false);
+
+        setReminderID(reminderID);
     }
 
     public int getDateOffset() {
@@ -184,6 +201,14 @@ public class Reminder {
         this.minute = minute;
     }
 
+    public int getReminderID() {
+        return reminderID;
+    }
+
+    public void setReminderID(int reminderID) {
+        this.reminderID = reminderID;
+    }
+
     public static void initFile(Context context) {
 
         Log.d(TAG, "Initializing file "+context.getFilesDir()+File.pathSeparator+filename);
@@ -266,6 +291,7 @@ public class Reminder {
         String description = "";
         String dateTimeString = "";
         Boolean completed = false;
+        int reminderId = Reminder.BAD_REMINDER_ID;
 
         Log.d(TAG, "Begin to read reminder");
         reader.beginObject();
@@ -277,13 +303,15 @@ public class Reminder {
                 dateTimeString = reader.nextString();
             } else if (name.equals(JSON_COMPLETED)) {
                 completed = reader.nextBoolean();
+            } else if (name.equals(JSON_REMINDER_ID)) {
+                reminderId = reader.nextInt();
             } else {
                 reader.skipValue();
             }
         }
         reader.endObject();
-        Reminder r = new Reminder(description, dateTimeString, completed);
-        outputReminderToLog(r);
+        Reminder r = new Reminder(description, dateTimeString, completed, reminderId);
+        r.outputReminderToLog();
 
         Log.d(TAG, "End read reminder");
         return r;
@@ -311,14 +339,15 @@ public class Reminder {
         writer.name(JSON_DESCRIPTION).value(reminder.getDescription());
         writer.name(JSON_DATETIME).value(reminder.getDateTimeString());
         writer.name(JSON_COMPLETED).value(reminder.isCompleted());
+        writer.name(JSON_REMINDER_ID).value(reminder.getReminderID());
         writer.endObject();
     }
 
-    public static void outputReminderToLog(Reminder r){
+    public void outputReminderToLog(){
         Log.d(TAG,"Reminder: START");
-        Log.d(TAG,"Reminder: Description: "+r.getDescription());
-        Log.d(TAG,"Reminder: Date/Time: "+r.getDateTimeString());
-        Log.d(TAG,"Reminder: Completed: "+r.isCompleted());
+        Log.d(TAG,"Reminder: Description: "+getDescription());
+        Log.d(TAG,"Reminder: Date/Time: "+getDateTimeString());
+        Log.d(TAG,"Reminder: Completed: "+isCompleted());
         Log.d(TAG,"Reminder: END");
     }
 
@@ -330,6 +359,8 @@ public class Reminder {
 
         // create an Intent and set the class which will execute when Alarm triggers
         Intent intentAlarm = new Intent(context, AlarmReceiver.class);
+        intentAlarm.putExtra(INTENT_REMINDER_ID, getReminderID());
+
 
         // create the object
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

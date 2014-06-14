@@ -11,6 +11,10 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.ArrayList;
+
 /**
  * Created by nolanpaduch on 6/11/14.
  *
@@ -28,16 +32,30 @@ public class AlarmReceiver extends BroadcastReceiver{
     // length to flash LED  in ms
     private static final int LED_ON_TIME = 3000;
     private static final int LED_OFF_TIME = 3000;
+    private static final int LED_COLOR = Color.CYAN;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "Reminder Due.");
-        throwNotification(context);
+
+        ArrayList<Reminder> reminders = getJSONFileContents(context);
+        if(reminders == null){
+            Log.e(TAG, "Reminder list null, can't throw notification.");
+            return;
+        }
+
+        Reminder r = findReminder(intent, reminders);
+        if(r == null){
+            Log.e(TAG, "Couldn't find reminder. Can't throw notification.");
+            return;
+        }
+
+        throwNotification(context, r);
 
         //vibrateDevice(context);
     }
 
-    public void throwNotification(Context context){
+    public void throwNotification(Context context, Reminder r){
 
         // Create instance of notification builder
         // TODO: replace with a real notification icon
@@ -45,8 +63,8 @@ public class AlarmReceiver extends BroadcastReceiver{
         NotificationCompat.Builder mBuilder =
             new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.ic_launcher)
-                    .setContentTitle("My notification")
-                    .setContentText("Hello World!");
+                    .setContentTitle(r.getDescription())
+                    .setContentText(r.getDateTimeString());
         // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(context, MainActivity.class);
 
@@ -67,7 +85,7 @@ public class AlarmReceiver extends BroadcastReceiver{
         mBuilder.setContentIntent(resultPendingIntent);
 
         // set default alert tones/lights/vibrations
-        mBuilder.setLights(Color.GREEN, LED_ON_TIME, LED_OFF_TIME);
+        mBuilder.setLights(LED_COLOR, LED_ON_TIME, LED_OFF_TIME);
         Notification note = mBuilder.build();
         note.defaults |= Notification.DEFAULT_VIBRATE;
         note.defaults |= Notification.DEFAULT_SOUND;
@@ -78,5 +96,53 @@ public class AlarmReceiver extends BroadcastReceiver{
         mNotificationManager.notify(mId, note);
 
     }
+
+
+    private ArrayList<Reminder> getJSONFileContents(Context context){
+        Log.d(TAG, "Looking for file " + context.getFilesDir() + File.pathSeparator + Reminder.filename);
+
+        // Check for file
+        File file = new File(context.getFilesDir(), Reminder.filename);
+        if(!file.exists()){
+            return null;
+        }
+        Log.d(TAG,"JSON file found. Loading in reminders.");
+
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            return Reminder.readJsonStream(fileInputStream);
+        } catch (Exception e){
+            Log.e(TAG, "Error reading existing JSON file: "+e);
+        }
+        Log.e(TAG, "Could not read input stream to get existing reminders.");
+        return null;
+    }
+
+    private Reminder findReminder(Intent intent, ArrayList<Reminder> reminders){
+
+        int reminderId = Reminder.BAD_REMINDER_ID;
+
+        // Get reminder ID of reminder
+        reminderId = intent.getIntExtra(Reminder.INTENT_REMINDER_ID, reminderId);
+        if(reminderId == Reminder.BAD_REMINDER_ID) {
+            Log.e(TAG, "Intent data did not contain reminder ID. Cannot throw notification");
+            return null;
+        }
+
+        Log.d(TAG,"Reminder ID: " + reminderId);
+
+        for(Reminder r : reminders){
+            if(r.getReminderID() == reminderId){
+                Log.d(TAG, "Found reminder.");
+                r.outputReminderToLog();
+                return r;
+            }
+        }
+
+        // if we're here, we don't have a matching reminder
+        Log.e(TAG, "Reminder ID not in reminder list. Cannot throw notification");
+        return null;
+    }
+
 
 }

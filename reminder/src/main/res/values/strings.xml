@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- TODO: Make all toast messages string resources -->
 
     <string name="app_name">Reminder</string>
     <string name="hello_world">Hello world!</string>
