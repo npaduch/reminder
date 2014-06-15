@@ -60,6 +60,7 @@ public class Reminder {
     private final static String JSON_DATETIME = "datetime";
     private final static String JSON_COMPLETED = "completed";
     private final static String JSON_REMINDER_ID= "reminder_id";
+    private final static String JSON_TIME_MS= "time_ms";
 
     // ID
     private int reminderID;
@@ -69,6 +70,18 @@ public class Reminder {
 
     // logging
     private final static String TAG = "RaminderClass";
+
+    // time definitions
+    public static final int TIME_MORNING_HOUR = 9;
+    public static final int TIME_MORNING_MINUTE = 0;
+    public static final int TIME_NOON_HOUR = 12;
+    public static final int TIME_NOON_MINUTE = 0;
+    public static final int TIME_AFTERNOON_HOUR = 3;
+    public static final int TIME_AFTERNOON_MINUTE = 0;
+    public static final int TIME_EVENING_HOUR = 6;
+    public static final int TIME_EVENING_MINUTE = 0;
+    public static final int TIME_NIGHT_HOUR = 8;
+    public static final int TIME_NIGHT_MINUTE = 0;
 
     // Called when reminder created for the first time
     public Reminder() {
@@ -220,7 +233,7 @@ public class Reminder {
     }
 
     public void calculateMsTime(int year, int month, int day, int hour, int minute){
-        // This inititializes the class with the time RIGHT NOW
+        // This initializes the class with the time RIGHT NOW
         Calendar reminderCal = Calendar.getInstance();
 
         // handle day
@@ -229,19 +242,44 @@ public class Reminder {
             Log.d(TAG,"Date is today");
         } else if(getDateOffset() == NewReminderFragment.DATE_TOMORROW) {
             // add time for 1 day
+            // this will increment across months/years accordingly
             reminderCal.add(Calendar.DAY_OF_MONTH, 1);
         } else {
             // Custom date was given
             reminderCal.set(year, month, day);
         }
 
-        // handle time
-        if(getTimeOffset() == NewReminderFragment.TIME_MORNING){
 
+        // handle time
+        // TODO: Make these settings
+        switch(getTimeOffset()){
+            case NewReminderFragment.TIME_MORNING:
+                reminderCal.set(Calendar.HOUR_OF_DAY, TIME_MORNING_HOUR);
+                reminderCal.set(Calendar.MINUTE, TIME_MORNING_MINUTE);
+                break;
+            case NewReminderFragment.TIME_NOON:
+                reminderCal.set(Calendar.HOUR_OF_DAY, TIME_NOON_HOUR);
+                reminderCal.set(Calendar.MINUTE, TIME_NOON_MINUTE);
+                break;
+            case NewReminderFragment.TIME_AFTERNOON:
+                reminderCal.set(Calendar.HOUR_OF_DAY, TIME_AFTERNOON_HOUR);
+                reminderCal.set(Calendar.MINUTE, TIME_AFTERNOON_MINUTE);
+                break;
+            case NewReminderFragment.TIME_EVENING:
+                reminderCal.set(Calendar.HOUR_OF_DAY, TIME_EVENING_HOUR);
+                reminderCal.set(Calendar.MINUTE, TIME_EVENING_MINUTE);
+                break;
+            case NewReminderFragment.TIME_NIGHT:
+                reminderCal.set(Calendar.HOUR_OF_DAY, TIME_NIGHT_HOUR);
+                reminderCal.set(Calendar.MINUTE, TIME_NIGHT_MINUTE);
+                break;
+            case NewReminderFragment.TIME_OTHER:
+                reminderCal.set(Calendar.HOUR_OF_DAY, hour);
+                reminderCal.set(Calendar.MINUTE, minute);
+                break;
         }
 
         // set values
-        reminderCal.set(year, month, day, hour, minute);
         long ms = reminderCal.getTimeInMillis();
         setMsTime(ms);
     }
@@ -383,6 +421,7 @@ public class Reminder {
         writer.name(JSON_DATETIME).value(reminder.getDateTimeString());
         writer.name(JSON_COMPLETED).value(reminder.isCompleted());
         writer.name(JSON_REMINDER_ID).value(reminder.getReminderID());
+        writer.name(JSON_TIME_MS).value(reminder.getMsTime());
         writer.endObject();
     }
 
@@ -398,7 +437,8 @@ public class Reminder {
         Log.d(TAG, "Setting alarm for reminder.");
 
         // set time for a minute from now
-        Long time = Calendar.getInstance().getTimeInMillis()+60000;
+        Long time = getMsTime();
+
 
         // create an Intent and set the class which will execute when Alarm triggers
         Intent intentAlarm = new Intent(context, AlarmReceiver.class);

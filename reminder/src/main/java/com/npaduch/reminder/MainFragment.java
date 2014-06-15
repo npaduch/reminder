@@ -114,6 +114,7 @@ public class MainFragment extends Fragment {
     }
 
 
+    // TODO: sort with most recent to expire first
     private ArrayList<Reminder> getJSONFileContents(){
         Log.d(TAG, "Looking for file " + getActivity().getFilesDir() + File.pathSeparator + Reminder.filename);
 
