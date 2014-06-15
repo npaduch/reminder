@@ -7,6 +7,8 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <!-- Alarms are used to alert app that a reminder is due -->
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+    <!-- Trigger on boot to reinitialize all alarms -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -23,8 +25,16 @@
             </intent-filter>
         </activity>
 
-        <!-- Broadcast Receiver -->
+        <!-- Broadcast Receivers -->
+        <!-- Receiver for alarm going off -->
         <receiver android:name=".AlarmReceiver"/>
+        <!-- Receiver for phone reboot to reinitialize reminders -->
+        <receiver android:name=".BootCompletedReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

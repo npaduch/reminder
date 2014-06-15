@@ -41,6 +41,7 @@ import java.util.Calendar;
 
 /** To-do list for this fragment */
 // TODO: Make a way to edit reminders
+// TODO: Make sure time is in the future
 
 public class NewReminderFragment extends Fragment
         implements RadialTimePickerDialog.OnTimeSetListener,
