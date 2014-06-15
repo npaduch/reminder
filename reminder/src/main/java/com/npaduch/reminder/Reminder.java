@@ -59,8 +59,8 @@ public class Reminder {
     private final static String JSON_DESCRIPTION = "description";
     private final static String JSON_DATETIME = "datetime";
     private final static String JSON_COMPLETED = "completed";
-    private final static String JSON_REMINDER_ID= "reminder_id";
-    private final static String JSON_TIME_MS= "time_ms";
+    private final static String JSON_REMINDER_ID = "reminder_id";
+    private final static String JSON_TIME_MS = "time_ms";
 
     // ID
     private int reminderID;
@@ -104,10 +104,12 @@ public class Reminder {
 
     // Called when read from file
     public Reminder(String description, String dateTimeString, boolean completed,
-                    int reminderID){
+                    int reminderID, long msTime){
         this.description = description;
         this.dateTimeString = dateTimeString;
         this.completed = completed;
+        this.reminderID = reminderID;
+        this.msTime = msTime;
 
         setYear(INT_INIT);
         setMonth(INT_INIT);
@@ -116,8 +118,6 @@ public class Reminder {
         setMinute(INT_INIT);
 
         setCompleted(false);
-
-        setReminderID(reminderID);
     }
 
     public int getDateOffset() {
@@ -284,6 +284,26 @@ public class Reminder {
         setMsTime(ms);
     }
 
+    public void setAlarm(Context context){
+        Log.d(TAG, "Setting alarm for reminder.");
+
+        // set time for a minute from now
+        Long time = getMsTime();
+
+
+        // create an Intent and set the class which will execute when Alarm triggers
+        Intent intentAlarm = new Intent(context, AlarmReceiver.class);
+        intentAlarm.putExtra(INTENT_REMINDER_ID, getReminderID());
+
+
+        // create the object
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        //set the alarm for particular time
+        alarmManager.set(AlarmManager.RTC_WAKEUP, time, PendingIntent.getBroadcast(context, 1, intentAlarm, 0));
+        Log.d(TAG, "Alarm scheduled");
+    }
+
     /************************************************************
      *
      *          FILE HANDLING
@@ -373,6 +393,7 @@ public class Reminder {
         String dateTimeString = "";
         Boolean completed = false;
         int reminderId = Reminder.BAD_REMINDER_ID;
+        long timeMs = Reminder.INT_INIT;
 
         Log.d(TAG, "Begin to read reminder");
         reader.beginObject();
@@ -386,12 +407,14 @@ public class Reminder {
                 completed = reader.nextBoolean();
             } else if (name.equals(JSON_REMINDER_ID)) {
                 reminderId = reader.nextInt();
+            } else if (name.equals(JSON_TIME_MS)) {
+                timeMs = reader.nextLong();
             } else {
                 reader.skipValue();
             }
         }
         reader.endObject();
-        Reminder r = new Reminder(description, dateTimeString, completed, reminderId);
+        Reminder r = new Reminder(description, dateTimeString, completed, reminderId, timeMs);
         r.outputReminderToLog();
 
         Log.d(TAG, "End read reminder");
@@ -430,27 +453,9 @@ public class Reminder {
         Log.d(TAG,"Reminder: Description: "+getDescription());
         Log.d(TAG,"Reminder: Date/Time: "+getDateTimeString());
         Log.d(TAG,"Reminder: Completed: "+isCompleted());
+        Log.d(TAG,"Reminder: ID: "+getReminderID());
+        Log.d(TAG,"Reminder: Time (ms): "+getMsTime());
         Log.d(TAG,"Reminder: END");
-    }
-
-    public void setAlarm(Context context){
-        Log.d(TAG, "Setting alarm for reminder.");
-
-        // set time for a minute from now
-        Long time = getMsTime();
-
-
-        // create an Intent and set the class which will execute when Alarm triggers
-        Intent intentAlarm = new Intent(context, AlarmReceiver.class);
-        intentAlarm.putExtra(INTENT_REMINDER_ID, getReminderID());
-
-
-        // create the object
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
-        //set the alarm for particular time
-        alarmManager.set(AlarmManager.RTC_WAKEUP, time, PendingIntent.getBroadcast(context, 1, intentAlarm, 0));
-        Log.d(TAG, "Alarm scheduled");
     }
 
 }
