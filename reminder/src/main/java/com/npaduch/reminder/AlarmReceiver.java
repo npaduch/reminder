@@ -95,6 +95,9 @@ public class AlarmReceiver extends BroadcastReceiver{
         // mId allows you to update the notification later on.
         mNotificationManager.notify(mId, note);
 
+        // TODO: move this of the handling
+        r.setCompleted(true);
+
     }
 
 
