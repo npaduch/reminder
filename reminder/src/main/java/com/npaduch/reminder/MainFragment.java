@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.io.File;
@@ -65,6 +66,8 @@ public class MainFragment extends Fragment {
         myReminderListViewArrayAdapter = new ReminderList(
                 getActivity(), R.id.mainFragmentListView, MainActivity.reminders);
         list.setAdapter(myReminderListViewArrayAdapter);
+        list.setOnItemClickListener(listviewOnItemClickListener);
+
         setHasOptionsMenu(true);
 
         return rootView;
@@ -114,7 +117,7 @@ public class MainFragment extends Fragment {
     }
 
 
-    // TODO: sort with most recent to expire first
+    // TODO:
     private ArrayList<Reminder> getJSONFileContents(){
         Log.d(TAG, "Looking for file " + getActivity().getFilesDir() + File.pathSeparator + Reminder.filename);
 
@@ -141,5 +144,14 @@ public class MainFragment extends Fragment {
         Log.e(TAG, "Could not read input stream to get existing reminders.");
         return null;
     }
+
+    AdapterView.OnItemClickListener listviewOnItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+            Reminder clickedReminder = MainActivity.reminders.get(position);
+            Log.d(TAG, "Selected reminder:");
+            clickedReminder.outputReminderToLog();
+        }
+    };
 
 }
