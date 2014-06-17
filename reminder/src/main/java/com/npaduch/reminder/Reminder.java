@@ -61,6 +61,7 @@ public class Reminder {
     private final static String JSON_COMPLETED = "completed";
     private final static String JSON_REMINDER_ID = "reminder_id";
     private final static String JSON_TIME_MS = "time_ms";
+    private final static boolean JSON_DEBUG = false;    // toggle debug prints
 
     // ID
     private int reminderID;
@@ -364,7 +365,7 @@ public class Reminder {
 
     /** All required for JSON Parsing **/
     public static ArrayList<Reminder> readJsonStream(InputStream in) throws IOException {
-        Log.d(TAG, "Begin readJsonStream");
+        if(JSON_DEBUG) Log.d(TAG, "Begin readJsonStream");
         JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
         try {
             return readRemindersArray(reader);
@@ -375,15 +376,15 @@ public class Reminder {
     }
 
     public static ArrayList<Reminder> readRemindersArray(JsonReader reader) throws IOException {
-        Log.d(TAG,"Begin readReminderArray");
+        if(JSON_DEBUG)Log.d(TAG,"Begin readReminderArray");
         ArrayList<Reminder> reminderList = new ArrayList<Reminder>();
 
         reader.beginArray();
-        Log.d(TAG,"beginArray");
+        if(JSON_DEBUG) Log.d(TAG,"beginArray");
         while (reader.hasNext()) {
             reminderList.add(readReminder(reader));
         }
-        Log.d(TAG,"endArray");
+        if(JSON_DEBUG) Log.d(TAG,"endArray");
         reader.endArray();
         return reminderList;
     }
@@ -395,7 +396,7 @@ public class Reminder {
         int reminderId = Reminder.BAD_REMINDER_ID;
         long timeMs = Reminder.INT_INIT;
 
-        Log.d(TAG, "Begin to read reminder");
+        if(JSON_DEBUG) Log.d(TAG, "Begin to read reminder");
         reader.beginObject();
         while (reader.hasNext()) {
             String name = reader.nextName();
@@ -415,9 +416,9 @@ public class Reminder {
         }
         reader.endObject();
         Reminder r = new Reminder(description, dateTimeString, completed, reminderId, timeMs);
-        r.outputReminderToLog();
+        if(JSON_DEBUG) r.outputReminderToLog();
 
-        Log.d(TAG, "End read reminder");
+        if(JSON_DEBUG) Log.d(TAG, "End read reminder");
         return r;
     }
 
