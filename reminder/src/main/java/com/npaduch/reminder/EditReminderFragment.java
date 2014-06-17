@@ -1,5 +1,6 @@
 package com.npaduch.reminder;
 
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 
 import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
@@ -9,7 +10,7 @@ import com.doomonafireball.betterpickers.radialtimepicker.RadialTimePickerDialog
 /**
  * Created by nolanpaduch on 6/14/14.
  */
-public class EditReminderFragment extends Fragment
+public class EditReminderFragment extends DialogFragment
         implements RadialTimePickerDialog.OnTimeSetListener,
         CalendarDatePickerDialog.OnDateSetListener {
 
