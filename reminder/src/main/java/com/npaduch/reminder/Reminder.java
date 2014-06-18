@@ -77,11 +77,11 @@ public class Reminder {
     public static final int TIME_MORNING_MINUTE = 0;
     public static final int TIME_NOON_HOUR = 12;
     public static final int TIME_NOON_MINUTE = 0;
-    public static final int TIME_AFTERNOON_HOUR = 3;
+    public static final int TIME_AFTERNOON_HOUR =15;
     public static final int TIME_AFTERNOON_MINUTE = 0;
-    public static final int TIME_EVENING_HOUR = 6;
+    public static final int TIME_EVENING_HOUR = 18;
     public static final int TIME_EVENING_MINUTE = 0;
-    public static final int TIME_NIGHT_HOUR = 8;
+    public static final int TIME_NIGHT_HOUR = 20;
     public static final int TIME_NIGHT_MINUTE = 0;
 
     // Called when reminder created for the first time
