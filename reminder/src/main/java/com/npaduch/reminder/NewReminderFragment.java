@@ -468,7 +468,7 @@ public class NewReminderFragment extends Fragment
         String timeString = "";
         timeString += now.get(Calendar.HOUR);
         timeString += ":";
-        timeString += now.get(Calendar.MINUTE);
+        timeString += String.format("%02d",now.get(Calendar.MINUTE));
         // Add AM/PM if 12 hour
         if(!DateFormat.is24HourFormat(getActivity())) {
             timeString += " ";
