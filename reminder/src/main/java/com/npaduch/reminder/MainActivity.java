@@ -58,6 +58,11 @@ public class MainActivity extends FragmentActivity
     NewReminderFragment newReminderFragment;
     public int currentFragment; // keep track of what we currently are
 
+    // Message Passing
+    public static final String MESSAGE_TASK = "Task";
+    public static final String TASK_CHANGE_FRAG = "Change Fragment";
+    public static final String TASK_INT = "integer";
+
     // Reminders
     public static ArrayList<Reminder> reminders;
 

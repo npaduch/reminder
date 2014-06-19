@@ -169,8 +169,8 @@ public class NewReminderFragment extends Fragment
                 return true;
             case R.id.action_cancel_new_reminder:
                 Bundle b = new Bundle();
-                b.putString("Task","Change Fragment");
-                b.putInt("page",MainActivity.REMINDER_LIST);
+                b.putString(MainActivity.MESSAGE_TASK,MainActivity.TASK_CHANGE_FRAG);
+                b.putInt(MainActivity.TASK_INT,MainActivity.REMINDER_LIST);
                 messenger.send(b);
                 return true;
         }
@@ -360,8 +360,8 @@ public class NewReminderFragment extends Fragment
 
         // return to main View
         Bundle b = new Bundle();
-        b.putString("Task","Change Fragment");
-        b.putInt("page",MainActivity.REMINDER_LIST);
+        b.putString(MainActivity.MESSAGE_TASK,MainActivity.TASK_CHANGE_FRAG);
+        b.putInt(MainActivity.TASK_INT,MainActivity.REMINDER_LIST);
         messenger.send(b);
 
     }

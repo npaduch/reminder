@@ -89,8 +89,8 @@ public class MainFragment extends Fragment {
                 return true;
             case R.id.action_add_reminder:
                 Bundle b = new Bundle();
-                b.putString("Task","Change Fragment");
-                b.putInt("page",MainActivity.NEW_REMINDER);
+                b.putString(MainActivity.MESSAGE_TASK,MainActivity.TASK_CHANGE_FRAG);
+                b.putInt(MainActivity.TASK_INT,MainActivity.NEW_REMINDER);
                 messenger.send(b);
                 return true;
         }
@@ -149,7 +149,7 @@ public class MainFragment extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
             Reminder clickedReminder = MainActivity.reminders.get(position);
-            Log.d(TAG, "Selected reminder:");
+            Log.d(TAG, "Reminder to be editted:");
             clickedReminder.outputReminderToLog();
         }
     };
