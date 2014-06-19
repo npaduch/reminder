@@ -117,9 +117,6 @@ public class NewReminderFragment extends Fragment
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.new_reminder, container, false);
 
-        ReminderCardView myCard = new ReminderCardView(getActivity());
-        myCard.description.setText("This is another description, purely to avoid warnings...");
-
         // initialize Spinners with string data
         initializeSpinners(rootView);
 
@@ -169,7 +166,7 @@ public class NewReminderFragment extends Fragment
                 return true;
             case R.id.action_cancel_new_reminder:
                 Bundle b = new Bundle();
-                b.putString(MainActivity.MESSAGE_TASK,MainActivity.TASK_CHANGE_FRAG);
+                b.putInt(MainActivity.MESSAGE_TASK,MainActivity.TASK_CHANGE_FRAG);
                 b.putInt(MainActivity.TASK_INT,MainActivity.REMINDER_LIST);
                 messenger.send(b);
                 return true;
@@ -360,7 +357,7 @@ public class NewReminderFragment extends Fragment
 
         // return to main View
         Bundle b = new Bundle();
-        b.putString(MainActivity.MESSAGE_TASK,MainActivity.TASK_CHANGE_FRAG);
+        b.putInt(MainActivity.MESSAGE_TASK,MainActivity.TASK_CHANGE_FRAG);
         b.putInt(MainActivity.TASK_INT,MainActivity.REMINDER_LIST);
         messenger.send(b);
 

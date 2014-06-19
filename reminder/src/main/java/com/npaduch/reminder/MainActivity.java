@@ -58,11 +58,11 @@ public class MainActivity extends FragmentActivity
     NewReminderFragment newReminderFragment;
     public int currentFragment; // keep track of what we currently are
 
-    // Message Passing
-    public static final String MESSAGE_TASK = "Task";
-    public static final String TASK_CHANGE_FRAG = "Change Fragment";
-    public static final String TASK_EDIT_REMINDER = "Edit Reminder";
-    public static final String TASK_INT = "integer";
+    // Message Passing (keys = String, values = int)
+    public static final String  MESSAGE_TASK = "Task";
+    public static final int TASK_CHANGE_FRAG = 10;
+    public static final int TASK_EDIT_REMINDER = 11;
+    public static final String TASK_INT = "int";
 
     // Reminders
     public static ArrayList<Reminder> reminders;
@@ -224,29 +224,48 @@ public class MainActivity extends FragmentActivity
    /** Handle Communication between fragments */
    // Handle communication from other fragments
    public void send(Bundle bundle) {
-       String task = bundle.getString(MESSAGE_TASK);
+       int task = bundle.getInt(MESSAGE_TASK);
        Log.d(TAG, "Task Received: " + task);
-
-       int value = bundle.getInt(TASK_INT);
-       switch(value){
-           case NEW_REMINDER:
-               if(newReminderFragment == null){
-                   newReminderFragment = new NewReminderFragment();
-               }
-               changeFragment(newReminderFragment, NEW_REMINDER, false);
-               Log.d(TAG, "Setting title to new reminder title");
-               setTitle(getResources().getStringArray(R.array.drawer_titles)[NEW_REMINDER_TITLE]);
+       switch(task) {
+           case TASK_CHANGE_FRAG:
+               handleChangeFragment(bundle);
                break;
-           case REMINDER_LIST:
-               if(mainFragment == null){
-                   mainFragment = new MainFragment();
-               }
-               changeFragment(mainFragment, REMINDER_LIST, true);
-               Log.d(TAG, "Setting title to app name");
-               setTitle(R.string.app_name);
+           case TASK_EDIT_REMINDER:
+               handleEditReminder(bundle);
                break;
        }
    }
+
+    // prepare to change fragment
+    public void handleChangeFragment(Bundle bundle){
+        int value = bundle.getInt(TASK_INT);
+        switch (value) {
+            case NEW_REMINDER:
+                if (newReminderFragment == null) {
+                    newReminderFragment = new NewReminderFragment();
+                }
+                changeFragment(newReminderFragment, NEW_REMINDER, false);
+                Log.d(TAG, "Setting title to new reminder title");
+                setTitle(getResources().getStringArray(R.array.drawer_titles)[NEW_REMINDER_TITLE]);
+                break;
+            case REMINDER_LIST:
+                if (mainFragment == null) {
+                    mainFragment = new MainFragment();
+                }
+                changeFragment(mainFragment, REMINDER_LIST, true);
+                Log.d(TAG, "Setting title to app name");
+                setTitle(R.string.app_name);
+                break;
+        }
+
+    }
+
+    // prepare to change fragment to new fragemnt
+    // prepopulate fields first
+    public void handleEditReminder(Bundle bundle){
+
+    }
+
 
     /**
      * Change fragment

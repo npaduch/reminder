@@ -89,7 +89,7 @@ public class MainFragment extends Fragment {
                 return true;
             case R.id.action_add_reminder:
                 Bundle b = new Bundle();
-                b.putString(MainActivity.MESSAGE_TASK,MainActivity.TASK_CHANGE_FRAG);
+                b.putInt(MainActivity.MESSAGE_TASK,MainActivity.TASK_CHANGE_FRAG);
                 b.putInt(MainActivity.TASK_INT,MainActivity.NEW_REMINDER);
                 messenger.send(b);
                 return true;
@@ -153,7 +153,7 @@ public class MainFragment extends Fragment {
             clickedReminder.outputReminderToLog();
 
             Bundle b = new Bundle();
-            b.putString(MainActivity.MESSAGE_TASK, MainActivity.TASK_EDIT_REMINDER);
+            b.putInt(MainActivity.MESSAGE_TASK, MainActivity.TASK_EDIT_REMINDER);
             b.putInt(MainActivity.TASK_INT, position);
             messenger.send(b);
         }
