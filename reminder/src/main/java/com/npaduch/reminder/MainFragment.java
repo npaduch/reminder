@@ -151,6 +151,11 @@ public class MainFragment extends Fragment {
             Reminder clickedReminder = MainActivity.reminders.get(position);
             Log.d(TAG, "Reminder to be editted:");
             clickedReminder.outputReminderToLog();
+
+            Bundle b = new Bundle();
+            b.putString(MainActivity.MESSAGE_TASK, MainActivity.TASK_EDIT_REMINDER);
+            b.putInt(MainActivity.TASK_INT, position);
+            messenger.send(b);
         }
     };
 

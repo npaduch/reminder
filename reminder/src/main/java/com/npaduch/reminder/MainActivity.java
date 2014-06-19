@@ -61,6 +61,7 @@ public class MainActivity extends FragmentActivity
     // Message Passing
     public static final String MESSAGE_TASK = "Task";
     public static final String TASK_CHANGE_FRAG = "Change Fragment";
+    public static final String TASK_EDIT_REMINDER = "Edit Reminder";
     public static final String TASK_INT = "integer";
 
     // Reminders
@@ -223,8 +224,10 @@ public class MainActivity extends FragmentActivity
    /** Handle Communication between fragments */
    // Handle communication from other fragments
    public void send(Bundle bundle) {
-       Log.d(TAG, "Task Received: " + bundle.getString("Task"));
-       int value = bundle.getInt("page");
+       String task = bundle.getString(MESSAGE_TASK);
+       Log.d(TAG, "Task Received: " + task);
+
+       int value = bundle.getInt(TASK_INT);
        switch(value){
            case NEW_REMINDER:
                if(newReminderFragment == null){
