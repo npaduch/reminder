@@ -15,6 +15,8 @@
         <item>Timer</item>
         <item>Settings</item>
     </string-array>
+    <!-- Titles for other reasons -->
+    <string name="edit_title">Edit Reminder</string>
 
     <!-- Reminder Card Strings -->
     <string name="reminder_time_beginning">Today in the Morning</string>

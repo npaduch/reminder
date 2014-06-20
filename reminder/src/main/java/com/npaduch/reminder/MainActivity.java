@@ -261,9 +261,18 @@ public class MainActivity extends FragmentActivity
     }
 
     // prepare to change fragment to new fragemnt
-    // prepopulate fields first
+    // pre-populate fields first
     public void handleEditReminder(Bundle bundle){
-
+        // bundle contains reminder offset to edit
+        int reminderOffset = bundle.getInt(TASK_INT);
+        // reinitialize so we can fill with edit data
+        newReminderFragment = new NewReminderFragment();
+        Bundle args = new Bundle();
+        args.putInt(NewReminderFragment.REMINDER_OFFSET, reminderOffset);
+        newReminderFragment.setArguments(args);
+        changeFragment(newReminderFragment, NEW_REMINDER, false);
+        Log.d(TAG, "Setting title to edit title");
+        setTitle(getResources().getString(R.string.edit_title));
     }
 
 

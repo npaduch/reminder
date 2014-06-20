@@ -83,6 +83,10 @@ public class NewReminderFragment extends Fragment
     private int spinner_month = 0;
     private int spinner_day = 0;
 
+    // Used to find bundled args
+    public static final String REMINDER_OFFSET = "reminder_bundle";
+    public static final int REMINDER_NOT_FOUND = -1;
+
 
     // Main view
     View rootView;
@@ -115,6 +119,7 @@ public class NewReminderFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "New Reminder OnCreateView");
         rootView = inflater.inflate(R.layout.new_reminder, container, false);
 
         // initialize Spinners with string data
@@ -147,6 +152,19 @@ public class NewReminderFragment extends Fragment
         // Enable menu items for this fragment
         setHasOptionsMenu(true);
 
+        // Check if we're actually editing a note
+        if(getArguments() != null) {
+            int reminderOffset = getArguments().getInt(REMINDER_OFFSET, REMINDER_NOT_FOUND);
+            Log.d(TAG, "Reminder offset: " + reminderOffset);
+            if (reminderOffset == REMINDER_NOT_FOUND) {
+                Log.e(TAG,"Reminder offset passed does not exist. Can't edit.");
+            } else {
+                // we must be editing an old reminder
+                initializeEdit(MainActivity.reminders.get(reminderOffset));
+            }
+        }
+
+
         return rootView;
     }
 
@@ -166,8 +184,8 @@ public class NewReminderFragment extends Fragment
                 return true;
             case R.id.action_cancel_new_reminder:
                 Bundle b = new Bundle();
-                b.putInt(MainActivity.MESSAGE_TASK,MainActivity.TASK_CHANGE_FRAG);
-                b.putInt(MainActivity.TASK_INT,MainActivity.REMINDER_LIST);
+                b.putInt(MainActivity.MESSAGE_TASK, MainActivity.TASK_CHANGE_FRAG);
+                b.putInt(MainActivity.TASK_INT, MainActivity.REMINDER_LIST);
                 messenger.send(b);
                 return true;
         }
@@ -200,6 +218,12 @@ public class NewReminderFragment extends Fragment
             timeAdapter.add(time);
         timeSpinner.setAdapter(timeAdapter);
         timeSpinner.setOnItemSelectedListener(newReminderOnItemSelectedListener);
+    }
+
+    public void initializeEdit(Reminder r){
+        Log.d(TAG, "Filling in data for edit reminder");
+        // Get views
+
     }
 
 
@@ -357,8 +381,8 @@ public class NewReminderFragment extends Fragment
 
         // return to main View
         Bundle b = new Bundle();
-        b.putInt(MainActivity.MESSAGE_TASK,MainActivity.TASK_CHANGE_FRAG);
-        b.putInt(MainActivity.TASK_INT,MainActivity.REMINDER_LIST);
+        b.putInt(MainActivity.MESSAGE_TASK, MainActivity.TASK_CHANGE_FRAG);
+        b.putInt(MainActivity.TASK_INT, MainActivity.REMINDER_LIST);
         messenger.send(b);
 
     }
