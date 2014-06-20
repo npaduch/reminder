@@ -43,6 +43,7 @@ import java.util.Calendar;
 // TODO: Make a way to edit reminders
 // TODO: Make sure time is in the future
 // TODO: Recurring reminders
+// TODO: Verify date + time actually selected (i.e. back button clicked on specific date)
 
 public class NewReminderFragment extends Fragment
         implements RadialTimePickerDialog.OnTimeSetListener,
@@ -223,6 +224,25 @@ public class NewReminderFragment extends Fragment
     public void initializeEdit(Reminder r){
         Log.d(TAG, "Filling in data for edit reminder");
         // Get views
+        TextView descriptionTextView = (TextView)rootView.findViewById(R.id.newReminderEditText);
+        Spinner daySpinner = (Spinner)rootView.findViewById(R.id.newReminderDaySpinner);
+        Spinner timeSpinner = (Spinner)rootView.findViewById(R.id.newReminderTimeSpinner);
+        TextView button = (TextView)rootView.findViewById(R.id.newReminderCreateButton);
+
+        // assign values
+        descriptionTextView.setText(r.getDescription());
+        if(r.getDateOffset() == DATE_OTHER){
+            handleNewDate(r.getYear(), r.getMonth(), r.getMonthDay());
+        } else {
+            daySpinner.setSelection(r.getDateOffset());
+        }
+        if(r.getTimeOffset() == TIME_OTHER){
+            handleNewTime(r.getHour(), r.getMinute());
+        } else {
+            timeSpinner.setSelection(r.getTimeOffset());
+        }
+
+        button.setText(R.string.edit_reminder_save);
 
     }
 
@@ -369,6 +389,13 @@ public class NewReminderFragment extends Fragment
         // find time for reminder
         r.calculateMsTime(spinner_year, spinner_month, spinner_day, spinner_hour, spinner_minute);
 
+        // save items
+        r.setYear(spinner_year);
+        r.setMonth(spinner_month);
+        r.setMonthDay(spinner_day);
+        r.setHour(spinner_hour);
+        r.setMinute(spinner_minute);
+
         // Log and save reminder
         r.outputReminderToLog();
         r.writeToFile(getActivity());
@@ -449,6 +476,19 @@ public class NewReminderFragment extends Fragment
         Log.d(TAG, "Custom Date Set");
         Log.d(TAG, "Year "+year+" Month "+month+" Day "+day);
 
+        handleNewDate(year, month, day);
+    }
+
+    @Override
+    public void onTimeSet(RadialPickerLayout dialog, int hour, int minute) {
+        Log.d(TAG, "Custom Time Set");
+        Log.d(TAG, "Hour "+hour+" Minute "+hour);
+
+        handleNewTime(hour, minute);
+    }
+
+    private void handleNewDate(int year, int month, int day){
+
         // record values for spinner
         spinner_year = year;
         spinner_month = month;
@@ -471,12 +511,11 @@ public class NewReminderFragment extends Fragment
         dayAdapter.clear();
         dayAdapter.addAll(days);
         dayAdapter.notifyDataSetChanged();
+
+        return;
     }
 
-    @Override
-    public void onTimeSet(RadialPickerLayout dialog, int hour, int minute) {
-        Log.d(TAG, "Custom Time Set");
-        Log.d(TAG, "Hour "+hour+" Minute "+hour);
+    private void handleNewTime(int hour, int minute){
 
         // record values for spinner
         spinner_hour = hour;
@@ -508,6 +547,7 @@ public class NewReminderFragment extends Fragment
         timeAdapter.clear();
         timeAdapter.addAll(times);
         timeAdapter.notifyDataSetChanged();
+
     }
 
     @Override

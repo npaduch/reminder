@@ -36,11 +36,11 @@ public class Reminder {
     private String description;
 
     // timing
-    private double year;
-    private double month;
-    private double monthDay;
-    private double hour;
-    private double minute;
+    private int year;
+    private int month;
+    private int monthDay;
+    private int hour;
+    private int minute;
     private long msTime;
 
     private String dateString;
@@ -61,6 +61,8 @@ public class Reminder {
     private final static String JSON_COMPLETED = "completed";
     private final static String JSON_REMINDER_ID = "reminder_id";
     private final static String JSON_TIME_MS = "time_ms";
+    private final static String JSON_DATE_OFFSET = "date_offset";
+    private final static String JSON_TIME_OFFSET = "time_offset";
     private final static boolean JSON_DEBUG = false;    // toggle debug prints
 
     // ID
@@ -105,12 +107,14 @@ public class Reminder {
 
     // Called when read from file
     public Reminder(String description, String dateTimeString, boolean completed,
-                    int reminderID, long msTime){
+                    int reminderID, long msTime, int dateOffset, int timeOffset){
         this.description = description;
         this.dateTimeString = dateTimeString;
         this.completed = completed;
         this.reminderID = reminderID;
         this.msTime = msTime;
+        this.dateOffset = dateOffset;
+        this.timeOffset = timeOffset;
 
         setYear(INT_INIT);
         setMonth(INT_INIT);
@@ -177,43 +181,43 @@ public class Reminder {
         this.completed = completed;
     }
 
-    public double getYear() {
+    public int getYear() {
         return year;
     }
 
-    public void setYear(double year) {
+    public void setYear(int year) {
         this.year = year;
     }
 
-    public double getMonth() {
+    public int getMonth() {
         return month;
     }
 
-    public void setMonth(double month) {
+    public void setMonth(int month) {
         this.month = month;
     }
 
-    public double getHour() {
+    public int getHour() {
         return hour;
     }
 
-    public void setHour(double hour) {
+    public void setHour(int hour) {
         this.hour = hour;
     }
 
-    public double getMonthDay() {
+    public int getMonthDay() {
         return monthDay;
     }
 
-    public void setMonthDay(double monthDay) {
+    public void setMonthDay(int monthDay) {
         this.monthDay = monthDay;
     }
 
-    public double getMinute() {
+    public int getMinute() {
         return minute;
     }
 
-    public void setMinute(double minute) {
+    public void setMinute(int minute) {
         this.minute = minute;
     }
 
@@ -395,6 +399,8 @@ public class Reminder {
         Boolean completed = false;
         int reminderId = Reminder.BAD_REMINDER_ID;
         long timeMs = Reminder.INT_INIT;
+        int dateOffset = Reminder.INT_INIT;
+        int timeOffset = Reminder.INT_INIT;
 
         if(JSON_DEBUG) Log.d(TAG, "Begin to read reminder");
         reader.beginObject();
@@ -410,12 +416,17 @@ public class Reminder {
                 reminderId = reader.nextInt();
             } else if (name.equals(JSON_TIME_MS)) {
                 timeMs = reader.nextLong();
+            } else if (name.equals(JSON_TIME_OFFSET)) {
+                timeOffset = reader.nextInt();
+            } else if (name.equals(JSON_DATE_OFFSET)) {
+                dateOffset = reader.nextInt();
             } else {
                 reader.skipValue();
             }
         }
         reader.endObject();
-        Reminder r = new Reminder(description, dateTimeString, completed, reminderId, timeMs);
+        Reminder r = new Reminder(description, dateTimeString, completed, reminderId, timeMs,
+                dateOffset, timeOffset);
         if(JSON_DEBUG) r.outputReminderToLog();
 
         if(JSON_DEBUG) Log.d(TAG, "End read reminder");
@@ -446,6 +457,8 @@ public class Reminder {
         writer.name(JSON_COMPLETED).value(reminder.isCompleted());
         writer.name(JSON_REMINDER_ID).value(reminder.getReminderID());
         writer.name(JSON_TIME_MS).value(reminder.getMsTime());
+        writer.name(JSON_TIME_OFFSET).value(reminder.getTimeOffset());
+        writer.name(JSON_DATE_OFFSET).value(reminder.getDateOffset());
         writer.endObject();
     }
 

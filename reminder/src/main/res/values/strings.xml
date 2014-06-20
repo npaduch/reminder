@@ -28,6 +28,8 @@
     <string name="new_reminder_button">Remind Me</string>
     <string name="new_reminder_details">Details</string>
     <string name="new_reminder_time">When</string>
+    <!-- Edit reminder strings -->
+    <string name="edit_reminder_save">Save</string>
 
     <!-- Menu Strings -->
     <string name="action_add_reminder">Add Reminder</string>
