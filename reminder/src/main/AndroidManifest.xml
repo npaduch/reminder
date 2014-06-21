@@ -28,6 +28,8 @@
         <!-- Broadcast Receivers -->
         <!-- Receiver for alarm going off -->
         <receiver android:name=".AlarmReceiver"/>
+        <!-- Reciever for notification dismissed -->
+        <receiver android:name=".NotificationDismissedReceiver"/>
         <!-- Receiver for phone reboot to reinitialize reminders -->
         <receiver android:name=".BootCompletedReceiver">
             <intent-filter>

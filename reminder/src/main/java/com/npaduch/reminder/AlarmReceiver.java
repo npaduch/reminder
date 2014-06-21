@@ -64,7 +64,8 @@ public class AlarmReceiver extends BroadcastReceiver{
             new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.ic_launcher)
                     .setContentTitle(r.getDescription())
-                    .setContentText(r.getDateTimeString());
+                    .setContentText(r.getDateTimeString())
+                    .setDeleteIntent(createOnDismissedIntent(context, r.getReminderID()));
         // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(context, MainActivity.class);
 
@@ -147,5 +148,13 @@ public class AlarmReceiver extends BroadcastReceiver{
         return null;
     }
 
+    private PendingIntent createOnDismissedIntent(Context context, int reminderID) {
+        Intent intent = new Intent(context, NotificationDismissedReceiver.class);
+        intent.putExtra(Reminder.INTENT_REMINDER_ID, reminderID);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(),
+                        reminderID, intent, 0);
+        return pendingIntent;
+    }
 
 }
