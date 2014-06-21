@@ -11,8 +11,8 @@
     <string name="drawer_close">Drawer Close</string>
     <string-array name="drawer_titles">
         <item>New Reminder</item>
-        <item>All Reminders</item>
-        <item>Timer</item>
+        <item>Pending Reminders</item>
+        <item>Completed Reminders</item>
         <item>Settings</item>
     </string-array>
     <!-- Titles for other reasons -->
