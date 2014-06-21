@@ -320,6 +320,51 @@ public class Reminder {
      *
      ************************************************************/
 
+
+
+    public static ArrayList<Reminder> getJSONFileContents(Context context){
+        Log.d(TAG, "Looking for file " + context.getFilesDir() + File.pathSeparator + Reminder.filename);
+
+        // Check for file
+        File file = new File(context.getFilesDir(), Reminder.filename);
+        if(!file.exists()){
+            return null;
+        }
+        Log.d(TAG,"JSON file found. Loading in reminders.");
+
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            return Reminder.readJsonStream(fileInputStream);
+        } catch (Exception e){
+            Log.e(TAG, "Error reading existing JSON file: "+e);
+        }
+        Log.e(TAG, "Could not read input stream to get existing reminders.");
+        return null;
+    }
+
+    public static Reminder findReminder(int reminderId, ArrayList<Reminder> reminders){
+
+        // Get reminder ID of reminder
+        if(reminderId == Reminder.BAD_REMINDER_ID) {
+            Log.e(TAG, "Intent data did not contain reminder ID. Cannot throw notification");
+            return null;
+        }
+
+        Log.d(TAG,"Reminder ID: " + reminderId);
+
+        for(Reminder r : reminders){
+            if(r.getReminderID() == reminderId){
+                Log.d(TAG, "Found reminder.");
+                r.outputReminderToLog();
+                return r;
+            }
+        }
+
+        // if we're here, we don't have a matching reminder
+        Log.e(TAG, "Reminder ID not in reminder list. Cannot throw notification");
+        return null;
+    }
+
     public static void initFile(Context context) {
 
         Log.d(TAG, "Initializing file "+context.getFilesDir()+File.pathSeparator+filename);

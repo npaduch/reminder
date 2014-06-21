@@ -24,14 +24,16 @@ public class NotificationDismissedReceiver extends BroadcastReceiver {
         Log.d(TAG, "Reminder dismissed");
 
         // Load in reminders
-        ArrayList<Reminder> reminders = getJSONFileContents(context);
+        ArrayList<Reminder> reminders = Reminder.getJSONFileContents(context);
         if(reminders == null){
             Log.e(TAG, "Reminder list null, can't throw notification.");
             return;
         }
 
         // find reminder
-        Reminder r = findReminder(intent, reminders);
+        Reminder r = Reminder.findReminder(
+                intent.getIntExtra(Reminder.INTENT_REMINDER_ID, Reminder.BAD_REMINDER_ID),
+                reminders);
         if(r == null){
             Log.e(TAG, "Couldn't find reminder. Can't throw notification.");
             return;
@@ -42,50 +44,4 @@ public class NotificationDismissedReceiver extends BroadcastReceiver {
         r.writeToFile(context);
     }
 
-
-    private ArrayList<Reminder> getJSONFileContents(Context context){
-        Log.d(TAG, "Looking for file " + context.getFilesDir() + File.pathSeparator + Reminder.filename);
-
-        // Check for file
-        File file = new File(context.getFilesDir(), Reminder.filename);
-        if(!file.exists()){
-            return null;
-        }
-        Log.d(TAG,"JSON file found. Loading in reminders.");
-
-        try {
-            FileInputStream fileInputStream = new FileInputStream(file);
-            return Reminder.readJsonStream(fileInputStream);
-        } catch (Exception e){
-            Log.e(TAG, "Error reading existing JSON file: "+e);
-        }
-        Log.e(TAG, "Could not read input stream to get existing reminders.");
-        return null;
-    }
-
-    private Reminder findReminder(Intent intent, ArrayList<Reminder> reminders){
-
-        int reminderId = Reminder.BAD_REMINDER_ID;
-
-        // Get reminder ID of reminder
-        reminderId = intent.getIntExtra(Reminder.INTENT_REMINDER_ID, reminderId);
-        if(reminderId == Reminder.BAD_REMINDER_ID) {
-            Log.e(TAG, "Intent data did not contain reminder ID. Cannot throw notification");
-            return null;
-        }
-
-        Log.d(TAG,"Reminder ID: " + reminderId);
-
-        for(Reminder r : reminders){
-            if(r.getReminderID() == reminderId){
-                Log.d(TAG, "Found reminder.");
-                r.outputReminderToLog();
-                return r;
-            }
-        }
-
-        // if we're here, we don't have a matching reminder
-        Log.e(TAG, "Reminder ID not in reminder list. Cannot throw notification");
-        return null;
-    }
 }

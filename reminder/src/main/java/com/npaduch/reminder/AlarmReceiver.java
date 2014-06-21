@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
@@ -69,6 +70,8 @@ public class AlarmReceiver extends BroadcastReceiver{
                     .setAutoCancel(true);
         // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(context, MainActivity.class);
+        // add remidner info
+        resultIntent.putExtra(Reminder.INTENT_REMINDER_ID, r.getReminderID());
 
         // The stack builder object will contain an artificial back stack for the
         // started Activity.

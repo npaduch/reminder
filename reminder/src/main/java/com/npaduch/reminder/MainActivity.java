@@ -1,6 +1,7 @@
 package com.npaduch.reminder;
 
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -136,6 +137,43 @@ public class MainActivity extends FragmentActivity
         // set to enable drawer from action bar
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
+
+        // check if this was called from a notification
+        // if it was, set the reminder to ALL DONE
+        checkIfNotification();
+
+    }
+
+    private void checkIfNotification(){
+        int reminderId = getIntent().getIntExtra(
+                Reminder.INTENT_REMINDER_ID,
+                Reminder.BAD_REMINDER_ID);
+        if(reminderId == Reminder.BAD_REMINDER_ID){
+            // this wasn't called started from a notification
+            return;
+        }
+
+        Log.d(TAG, "Activity opened from notification");
+
+        // Load in reminders
+        ArrayList<Reminder> reminders = Reminder.getJSONFileContents(getApplicationContext());
+        if(reminders == null){
+            Log.e(TAG, "Reminder list null, can't throw notification.");
+            return;
+        }
+
+        // find reminder
+        Reminder r = Reminder.findReminder(
+                reminderId,
+                reminders);
+        if(r == null){
+            Log.e(TAG, "Couldn't find reminder. Can't throw notification.");
+            return;
+        }
+
+        Log.d(TAG,"Setting reminder to completed");
+        r.setCompleted(true);
+        r.writeToFile(getApplicationContext());
 
     }
 
