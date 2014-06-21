@@ -94,6 +94,11 @@ public class NewReminderFragment extends Fragment
     // spinners
     ArrayAdapter<CharSequence> dayAdapter;
     ArrayAdapter<CharSequence> timeAdapter;
+    // handle the case if set by code
+    private boolean daySpinnerSetInCode = false;
+    private boolean timeSpinnerSetInCode = false;
+
+    private Reminder reminderHolder;
 
     public NewReminderFragment() {
     }
@@ -153,6 +158,9 @@ public class NewReminderFragment extends Fragment
         // Enable menu items for this fragment
         setHasOptionsMenu(true);
 
+        // initialize Reminder
+        reminderHolder = new Reminder();
+
         // Check if we're actually editing a note
         if(getArguments() != null) {
             int reminderOffset = getArguments().getInt(REMINDER_OFFSET, REMINDER_NOT_FOUND);
@@ -162,6 +170,7 @@ public class NewReminderFragment extends Fragment
             } else {
                 // we must be editing an old reminder
                 initializeEdit(MainActivity.reminders.get(reminderOffset));
+                reminderHolder = MainActivity.reminders.get(reminderOffset);
             }
         }
 
@@ -233,17 +242,20 @@ public class NewReminderFragment extends Fragment
         descriptionTextView.setText(r.getDescription());
         if(r.getDateOffset() == DATE_OTHER){
             handleNewDate(r.getYear(), r.getMonth(), r.getMonthDay());
+            daySpinnerSetInCode = true;
+            daySpinner.setSelection(r.getDateOffset());
         } else {
             daySpinner.setSelection(r.getDateOffset());
         }
         if(r.getTimeOffset() == TIME_OTHER){
             handleNewTime(r.getHour(), r.getMinute());
+            timeSpinnerSetInCode = true;
+            timeSpinner.setSelection(r.getTimeOffset());
         } else {
             timeSpinner.setSelection(r.getTimeOffset());
         }
 
         button.setText(R.string.edit_reminder_save);
-
     }
 
 
@@ -257,7 +269,7 @@ public class NewReminderFragment extends Fragment
                 case R.id.newReminderCreateButton:
                     Log.d(TAG, "New reminder button clicked.");
                     Toast.makeText(getActivity(), getResources().getString(R.string.toast_saving_reminder), Toast.LENGTH_SHORT).show();
-                    saveNoteAndReturn();
+                    saveNoteAndReturn(reminderHolder);
                     break;
             }
         }
@@ -269,6 +281,12 @@ public class NewReminderFragment extends Fragment
         public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
             switch(parentView.getId()) {
                 case R.id.newReminderTimeSpinner:
+                    // check if we put the time in
+                    // if so, we don't want it to run
+                    if(timeSpinnerSetInCode){
+                        timeSpinnerSetInCode = false;
+                        return;
+                    }
                     if (position == TIME_OTHER) {
                         Log.d(TAG,"Custom time selected");
                         Calendar now = Calendar.getInstance();
@@ -312,6 +330,12 @@ public class NewReminderFragment extends Fragment
                     }
                     break;
                 case R.id.newReminderDaySpinner:
+                    // check if we put the date in
+                    // if so, we don't want it to run
+                    if(daySpinnerSetInCode){
+                        daySpinnerSetInCode = false;
+                        return;
+                    }
                     if(position == DATE_OTHER){
                         Log.d(TAG,"Custom date selected");
                         FragmentManager fm = getActivity().getSupportFragmentManager();
@@ -356,8 +380,7 @@ public class NewReminderFragment extends Fragment
 
 
 
-    private void saveNoteAndReturn(){
-        Reminder r = new Reminder();
+    private void saveNoteAndReturn(Reminder r){
 
         // Get text view for description
         EditText et = (EditText)rootView.findViewById(R.id.newReminderEditText);

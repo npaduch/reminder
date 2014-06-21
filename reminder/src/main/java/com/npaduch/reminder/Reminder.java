@@ -63,6 +63,11 @@ public class Reminder {
     private final static String JSON_TIME_MS = "time_ms";
     private final static String JSON_DATE_OFFSET = "date_offset";
     private final static String JSON_TIME_OFFSET = "time_offset";
+    private final static String JSON_TIME_HOUR = "time_hour";
+    private final static String JSON_TIME_MINUTE = "time_minute";
+    private final static String JSON_DATE_YEAR = "date_year";
+    private final static String JSON_DATE_MONTH = "date_month";
+    private final static String JSON_DATE_MONTHDAY = "date_monthday";
     private final static boolean JSON_DEBUG = false;    // toggle debug prints
 
     // ID
@@ -355,7 +360,7 @@ public class Reminder {
         }
 
         // add new item to the beginning of the list
-        reminderList.add(0, this);
+        reminderList = insertReminder(reminderList);
 
         try {
             // Append to file if it exists
@@ -365,6 +370,23 @@ public class Reminder {
         } catch (Exception e) {
             Log.e(TAG, "Exception when writing to file. "+e);
         }
+    }
+
+    public ArrayList<Reminder> insertReminder(ArrayList<Reminder> rList){
+        boolean found = false;
+        // first, check if the reminder already exists
+        for(int i = 0; i < rList.size(); i++){
+           if(rList.get(i).getReminderID() == this.getReminderID()){
+               rList.set(i, this);
+               found = true;
+               break;
+           }
+        }
+        // if not found, insert at the beginning for now
+        if(!found){
+            rList.add(0, this);
+        }
+        return rList;
     }
 
     /** All required for JSON Parsing **/
@@ -394,39 +416,43 @@ public class Reminder {
     }
 
     public static Reminder readReminder(JsonReader reader) throws IOException {
-        String description = "";
-        String dateTimeString = "";
-        Boolean completed = false;
-        int reminderId = Reminder.BAD_REMINDER_ID;
-        long timeMs = Reminder.INT_INIT;
-        int dateOffset = Reminder.INT_INIT;
-        int timeOffset = Reminder.INT_INIT;
+
+        Reminder r = new Reminder();
 
         if(JSON_DEBUG) Log.d(TAG, "Begin to read reminder");
         reader.beginObject();
         while (reader.hasNext()) {
             String name = reader.nextName();
             if (name.equals(JSON_DESCRIPTION)) {
-                description = reader.nextString();
+                r.setDescription(reader.nextString());
             } else if (name.equals(JSON_DATETIME)) {
-                dateTimeString = reader.nextString();
+                r.setDateTimeString(reader.nextString());
             } else if (name.equals(JSON_COMPLETED)) {
-                completed = reader.nextBoolean();
+                r.setCompleted(reader.nextBoolean());
             } else if (name.equals(JSON_REMINDER_ID)) {
-                reminderId = reader.nextInt();
+                r.setReminderID(reader.nextInt());
             } else if (name.equals(JSON_TIME_MS)) {
-                timeMs = reader.nextLong();
+                r.setMsTime(reader.nextLong());
             } else if (name.equals(JSON_TIME_OFFSET)) {
-                timeOffset = reader.nextInt();
+                r.setTimeOffset(reader.nextInt());
             } else if (name.equals(JSON_DATE_OFFSET)) {
-                dateOffset = reader.nextInt();
+                r.setDateOffset(reader.nextInt());
+            } else if (name.equals(JSON_DATE_YEAR)) {
+                r.setYear(reader.nextInt());
+            } else if (name.equals(JSON_DATE_MONTH)) {
+                r.setMonth(reader.nextInt());
+            } else if (name.equals(JSON_DATE_MONTHDAY)) {
+                r.setMonthDay(reader.nextInt());
+            } else if (name.equals(JSON_TIME_HOUR)) {
+                r.setHour(reader.nextInt());
+            } else if (name.equals(JSON_TIME_MINUTE)) {
+                r.setMinute(reader.nextInt());
             } else {
                 reader.skipValue();
             }
         }
         reader.endObject();
-        Reminder r = new Reminder(description, dateTimeString, completed, reminderId, timeMs,
-                dateOffset, timeOffset);
+
         if(JSON_DEBUG) r.outputReminderToLog();
 
         if(JSON_DEBUG) Log.d(TAG, "End read reminder");
@@ -459,6 +485,11 @@ public class Reminder {
         writer.name(JSON_TIME_MS).value(reminder.getMsTime());
         writer.name(JSON_TIME_OFFSET).value(reminder.getTimeOffset());
         writer.name(JSON_DATE_OFFSET).value(reminder.getDateOffset());
+        writer.name(JSON_DATE_YEAR).value(reminder.getYear());
+        writer.name(JSON_DATE_MONTH).value(reminder.getMonth());
+        writer.name(JSON_DATE_MONTHDAY).value(reminder.getMonthDay());
+        writer.name(JSON_TIME_HOUR).value(reminder.getHour());
+        writer.name(JSON_TIME_MINUTE).value(reminder.getMinute());
         writer.endObject();
     }
 
@@ -468,7 +499,7 @@ public class Reminder {
         Log.d(TAG,"Reminder: Date/Time: "+getDateTimeString());
         Log.d(TAG,"Reminder: Completed: "+isCompleted());
         Log.d(TAG,"Reminder: ID: "+getReminderID());
-        Log.d(TAG,"Reminder: Time (ms): "+getMsTime());
+        Log.d(TAG, "Reminder: Time (ms): " + getMsTime());
         Log.d(TAG,"Reminder: END");
     }
 
