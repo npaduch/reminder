@@ -320,7 +320,7 @@ public class MainActivity extends FragmentActivity
     /**
      * Keep reminder lists in sync
      */
-    public void syncReminders(){
+    public static void syncReminders(){
         // make sure they've been initialized
         if(pendingReminders == null)
             pendingReminders = new ArrayList<Reminder>();

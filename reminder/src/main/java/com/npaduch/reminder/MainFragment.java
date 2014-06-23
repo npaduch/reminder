@@ -22,6 +22,8 @@ import java.util.ArrayList;
  *
  */
 
+// TODO: Add samples if first time launching
+
 public class MainFragment extends Fragment {
 
     private final static String TAG = "MainFragment";
@@ -57,14 +59,14 @@ public class MainFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         // Check for reminders in file
-        ArrayList<Reminder> oldReminders = getJSONFileContents();
+        MainActivity.reminders = getJSONFileContents();
 
-        populateReminders(oldReminders);
+        populateReminders();
 
 
         ListView list = (ListView) rootView.findViewById(R.id.mainFragmentListView);
         myReminderListViewArrayAdapter = new ReminderList(
-                getActivity(), R.id.mainFragmentListView, MainActivity.reminders);
+                getActivity(), R.id.mainFragmentListView, MainActivity.pendingReminders);
         list.setAdapter(myReminderListViewArrayAdapter);
         list.setOnItemClickListener(listviewOnItemClickListener);
 
@@ -98,21 +100,13 @@ public class MainFragment extends Fragment {
     }
 
 
-    private void populateReminders(ArrayList<Reminder> oldReminders){
+    private void populateReminders(){
 
         if(MainActivity.reminders == null)
             MainActivity.reminders = new ArrayList<Reminder>();
 
-        // TODO: Change to create samples if first time launching?
-        if(oldReminders == null){
-            // set it to be an array list
-            oldReminders = new ArrayList<Reminder>();
-        }
-
-        // Copy reminders over to list view instance
-        MainActivity.reminders.clear();
-        for(int i = 0; i < oldReminders.size(); i++)
-            MainActivity.reminders.add(oldReminders.get(i));
+        // Get all the pending reminders
+        MainActivity.syncReminders();
 
     }
 
