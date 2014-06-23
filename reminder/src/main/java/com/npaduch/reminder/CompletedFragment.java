@@ -23,16 +23,17 @@ import java.util.ArrayList;
  */
 
 // TODO: Add samples if first time launching
+// TODO: WHY IS COMPLETED SHOWING ALL REMINDERS!!!!
 
-public class MainFragment extends Fragment {
+public class CompletedFragment extends Fragment {
 
-    private final static String TAG = "MainFragment";
+    private final static String TAG = "CompletedFragment";
 
     FragmentCommunicationListener messenger;
 
     public static ReminderList myReminderListViewArrayAdapter;
 
-    public MainFragment() {
+    public CompletedFragment() {
     }
 
     // Container Activity must implement this interface
@@ -50,7 +51,7 @@ public class MainFragment extends Fragment {
             messenger = (FragmentCommunicationListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement MainFragment.FragmentCommunicationListener");
+                    + " must implement CompletedFragment.FragmentCommunicationListener");
         }
     }
     @Override
@@ -62,10 +63,9 @@ public class MainFragment extends Fragment {
 
         ListView list = (ListView) rootView.findViewById(R.id.mainFragmentListView);
         myReminderListViewArrayAdapter = new ReminderList(
-                getActivity(), R.id.mainFragmentListView, MainActivity.pendingReminders);
+                getActivity(), R.id.mainFragmentListView, MainActivity.completedReminders);
         list.setAdapter(myReminderListViewArrayAdapter);
         list.setOnItemClickListener(listviewOnItemClickListener);
-
 
         setHasOptionsMenu(true);
 
@@ -88,8 +88,8 @@ public class MainFragment extends Fragment {
                 return true;
             case R.id.action_add_reminder:
                 Bundle b = new Bundle();
-                b.putInt(MainActivity.MESSAGE_TASK, MainActivity.TASK_CHANGE_FRAG);
-                b.putInt(MainActivity.TASK_INT, MainActivity.NEW_REMINDER);
+                b.putInt(MainActivity.MESSAGE_TASK,MainActivity.TASK_CHANGE_FRAG);
+                b.putInt(MainActivity.TASK_INT,MainActivity.NEW_REMINDER);
                 messenger.send(b);
                 return true;
         }
@@ -114,6 +114,7 @@ public class MainFragment extends Fragment {
     /** This is different from the reminder class's instance!
      *  It will create a new file if one is not found.
      */
+    // TODO: Clean this up, too much duplication, move file init to Reminder class
     private ArrayList<Reminder> getJSONFileContents(){
         Log.d(TAG, "Looking for file " + getActivity().getFilesDir() + File.pathSeparator + Reminder.filename);
 
@@ -144,7 +145,7 @@ public class MainFragment extends Fragment {
     AdapterView.OnItemClickListener listviewOnItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            Reminder clickedReminder = MainActivity.pendingReminders.get(position);
+            Reminder clickedReminder = MainActivity.completedReminders.get(position);
             // find location within main reminder list
             int offset = MainActivity.reminders.indexOf(clickedReminder);
             Log.d(TAG, "Reminder to be editted:");
@@ -153,7 +154,7 @@ public class MainFragment extends Fragment {
             Bundle b = new Bundle();
             b.putInt(MainActivity.MESSAGE_TASK, MainActivity.TASK_EDIT_REMINDER);
             b.putInt(MainActivity.TASK_INT, offset);
-            b.putInt(MainActivity.TASK_INITIATOR, MainActivity.PENDING_REMINDERS);
+            b.putInt(MainActivity.TASK_INITIATOR, MainActivity.COMPLETED_REMINDERS);
             messenger.send(b);
         }
     };

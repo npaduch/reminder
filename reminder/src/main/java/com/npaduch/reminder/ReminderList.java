@@ -40,7 +40,7 @@ public class ReminderList extends ArrayAdapter<Reminder> {
         TextView reminderBody = (TextView)rowView.findViewById(R.id.reminderDetailText);
 
         // Set text description
-        if(MainActivity.reminders.get(position).getDescription().equals(Reminder.STRING_INIT)) {
+        if(values.get(position).getDescription().equals(Reminder.STRING_INIT)) {
             reminderBody.setText((R.string.reminder_example));
         }
         else {
@@ -49,7 +49,7 @@ public class ReminderList extends ArrayAdapter<Reminder> {
 
         // Set reminder date
         TextView reminderDateTime = (TextView) rowView.findViewById(R.id.reminderTimeText);
-        if(MainActivity.reminders.get(position).getDateTimeString().equals(Reminder.STRING_INIT)) {
+        if(values.get(position).getDateTimeString().equals(Reminder.STRING_INIT)) {
             reminderDateTime.setText(R.string.reminder_time_beginning);
         }
         else {
@@ -61,5 +61,4 @@ public class ReminderList extends ArrayAdapter<Reminder> {
 
         return rowView;
     }
-
 }

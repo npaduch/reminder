@@ -31,18 +31,18 @@ import java.util.ArrayList;
 
 public class MainActivity extends FragmentActivity
         implements MainFragment.FragmentCommunicationListener,
-        NewReminderFragment.FragmentCommunicationListener  {
+        NewReminderFragment.FragmentCommunicationListener,
+        CompletedFragment.FragmentCommunicationListener {
 
     // Debugging attributes
     String TAG = "MainActivity";
 
     // Drawer Label Offsets
     public static int NEW_REMINDER_TITLE = 0;
-    /* Comment these out until we need them.
-    public static int ALL_REMINDERS_TITLE = 1;
-    public static int TIMER_TITLE = 2;
+    public static int PENDING_REMINDERS_TITLE = 1;
+    public static int COMPLETED_REMINDERS_TITLE = 2;
     public static int SETTINGS_TITLE = 3;
-    */
+
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     public CharSequence mTitle;
@@ -52,11 +52,13 @@ public class MainActivity extends FragmentActivity
     /* Fragment Transitions */
     public static final int REMINDER_LIST = 0;
     public static final int NEW_REMINDER = 1;
+    public static final int COMPLETED_REMINDER_FRAG = 2;
     public static final String FRAGMENT_TAG = "FRAGMENT_TAG"; // handle back button
 
     // Holders for fragments to preserve state
     MainFragment mainFragment;
     NewReminderFragment newReminderFragment;
+    CompletedFragment completedFragment;
     public int currentFragment; // keep track of what we currently are
 
     // Message Passing (keys = String, values = int)
@@ -64,6 +66,9 @@ public class MainActivity extends FragmentActivity
     public static final int TASK_CHANGE_FRAG = 10;
     public static final int TASK_EDIT_REMINDER = 11;
     public static final String TASK_INT = "int";
+    public static final String TASK_INITIATOR = "initiator";
+    public static final int PENDING_REMINDERS = 20;
+    public static final int COMPLETED_REMINDERS = 21;
 
     // Reminders
     public static ArrayList<Reminder> reminders;
@@ -233,11 +238,24 @@ public class MainActivity extends FragmentActivity
             setTitle(getResources().getStringArray(R.array.drawer_titles)[position]);
             mDrawerLayout.closeDrawer(mDrawerList);
         }
-        else {
+        else if(position == PENDING_REMINDERS_TITLE) {
+            if(mainFragment == null){
+                mainFragment = new MainFragment();
+            }
             changeFragment(mainFragment, REMINDER_LIST, false);
             // Highlight the selected item, update the title, and close the drawer
             mDrawerList.setItemChecked(position, true);
             setTitle(getString(R.string.app_name));
+            mDrawerLayout.closeDrawer(mDrawerList);
+        }
+        else if(position == COMPLETED_REMINDERS_TITLE) {
+            if(completedFragment == null){
+                completedFragment = new CompletedFragment();
+            }
+            changeFragment(completedFragment, COMPLETED_REMINDER_FRAG, false);
+            // Highlight the selected item, update the title, and close the drawer
+            mDrawerList.setItemChecked(position, true);
+            setTitle(getString(R.string.completed_title));
             mDrawerLayout.closeDrawer(mDrawerList);
         }
 
@@ -368,8 +386,7 @@ public class MainActivity extends FragmentActivity
             ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
         else if(fragmentType == REMINDER_LIST)
             ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
-        else
-            return; // do nothing
+
         ft.replace(R.id.content_frame, fragment, FRAGMENT_TAG);
         ft.addToBackStack(null); // handle back button
         ft.commit();
