@@ -27,7 +27,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "System rebooted. Reinitialize reminders.");
 
-        ArrayList<Reminder> reminders = getJSONFileContents(context);
+        ArrayList<Reminder> reminders = Reminder.getJSONFileContents(context);
         if(reminders == null){
             Log.e(TAG, "Reminder list null, can't re-initialize reminders");
             return;
@@ -35,26 +35,6 @@ public class BootCompletedReceiver extends BroadcastReceiver {
 
         setAlarms(context, reminders);
         Log.d(TAG, "BootCompletedReceiver Complete");
-    }
-
-    private ArrayList<Reminder> getJSONFileContents(Context context){
-        Log.d(TAG, "Looking for file " + context.getFilesDir() + File.pathSeparator + Reminder.filename);
-
-        // Check for file
-        File file = new File(context.getFilesDir(), Reminder.filename);
-        if(!file.exists()){
-            return null;
-        }
-        Log.d(TAG,"JSON file found. Loading in reminders.");
-
-        try {
-            FileInputStream fileInputStream = new FileInputStream(file);
-            return Reminder.readJsonStream(fileInputStream);
-        } catch (Exception e){
-            Log.e(TAG, "Error reading existing JSON file: "+e);
-        }
-        Log.e(TAG, "Could not read input stream to get existing reminders.");
-        return null;
     }
 
     private void setAlarms(Context context, ArrayList<Reminder> reminders){

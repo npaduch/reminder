@@ -162,7 +162,7 @@ public class MainActivity extends FragmentActivity
         // Load in reminders
         ArrayList<Reminder> reminders = Reminder.getJSONFileContents(getApplicationContext());
         if(reminders == null){
-            Log.e(TAG, "Reminder list null, can't throw notification.");
+            Log.e(TAG, "Reminder list null, can't set reminder to complete.");
             return;
         }
 
@@ -171,7 +171,7 @@ public class MainActivity extends FragmentActivity
                 reminderId,
                 reminders);
         if(r == null){
-            Log.e(TAG, "Couldn't find reminder. Can't throw notification.");
+            Log.e(TAG, "Couldn't find reminder. Can't set reminder to complete.");
             return;
         }
 

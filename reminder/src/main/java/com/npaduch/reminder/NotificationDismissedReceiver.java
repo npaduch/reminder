@@ -26,7 +26,7 @@ public class NotificationDismissedReceiver extends BroadcastReceiver {
         // Load in reminders
         ArrayList<Reminder> reminders = Reminder.getJSONFileContents(context);
         if(reminders == null){
-            Log.e(TAG, "Reminder list null, can't throw notification.");
+            Log.e(TAG, "Reminder list null, can't set reminder to completed");
             return;
         }
 
@@ -35,7 +35,7 @@ public class NotificationDismissedReceiver extends BroadcastReceiver {
                 intent.getIntExtra(Reminder.INTENT_REMINDER_ID, Reminder.BAD_REMINDER_ID),
                 reminders);
         if(r == null){
-            Log.e(TAG, "Couldn't find reminder. Can't throw notification.");
+            Log.e(TAG, "Couldn't find reminder. Can't set reminder to completed");
             return;
         }
 
