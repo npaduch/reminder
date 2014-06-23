@@ -67,6 +67,10 @@ public class MainActivity extends FragmentActivity
 
     // Reminders
     public static ArrayList<Reminder> reminders;
+    // pending
+    public static ArrayList<Reminder> pendingReminders;
+    // completed
+    public static ArrayList<Reminder> completedReminders;
 
 
     @Override
@@ -313,6 +317,32 @@ public class MainActivity extends FragmentActivity
         setTitle(getResources().getString(R.string.edit_title));
     }
 
+    /**
+     * Keep reminder lists in sync
+     */
+    public void syncReminders(){
+        // make sure they've been initialized
+        if(pendingReminders == null)
+            pendingReminders = new ArrayList<Reminder>();
+        if(completedReminders == null)
+            completedReminders = new ArrayList<Reminder>();
+
+        // clear the lists
+        pendingReminders.clear();
+        completedReminders.clear();
+
+        // populate lists
+        for(Reminder r : reminders){
+            if(r.isCompleted()){
+                completedReminders.add(r);
+            } else {
+                pendingReminders.add(r);
+            }
+        }
+    }
+
+    public void updatePending(){
+    }
 
     /**
      * Change fragment

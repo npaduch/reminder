@@ -117,8 +117,9 @@ public class MainFragment extends Fragment {
     }
 
 
-    // This is different from the reminder class's instance!
-    // It will create a new file if one is not found.
+    /** This is different from the reminder class's instance!
+     *  It will create a new file if one is not found.
+     */
     private ArrayList<Reminder> getJSONFileContents(){
         Log.d(TAG, "Looking for file " + getActivity().getFilesDir() + File.pathSeparator + Reminder.filename);
 
