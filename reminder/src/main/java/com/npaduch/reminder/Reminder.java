@@ -289,6 +289,9 @@ public class Reminder {
                 break;
         }
 
+        // set seconds to 0
+        reminderCal.set(Calendar.SECOND, 0);
+
         // set values
         long ms = reminderCal.getTimeInMillis();
         setMsTime(ms);
