@@ -41,6 +41,7 @@ public class NotificationDismissedReceiver extends BroadcastReceiver {
 
         Log.d(TAG,"Setting reminder to completed");
         r.setCompleted(true);
+        // TODO: find a way to reload views
         r.writeToFile(context);
     }
 

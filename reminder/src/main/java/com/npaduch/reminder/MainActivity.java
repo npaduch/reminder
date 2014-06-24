@@ -182,6 +182,11 @@ public class MainActivity extends FragmentActivity
 
         Log.d(TAG,"Setting reminder to completed");
         r.setCompleted(true);
+        // reload views so it disappears/appears immediately
+        if(mainFragment != null)
+            mainFragment.myReminderListViewArrayAdapter.notifyDataSetChanged();
+        if(completedFragment != null)
+            completedFragment.myReminderListViewArrayAdapter.notifyDataSetChanged();
         r.writeToFile(getApplicationContext());
 
     }
