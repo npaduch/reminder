@@ -44,7 +44,7 @@ public class ReminderList extends ArrayAdapter<Reminder> {
             reminderBody.setText((R.string.reminder_example));
         }
         else {
-            reminderBody.setText(MainActivity.reminders.get(position).getDescription());
+            reminderBody.setText(values.get(position).getDescription());
         }
 
         // Set reminder date
@@ -54,7 +54,7 @@ public class ReminderList extends ArrayAdapter<Reminder> {
         }
         else {
             reminderDateTime.setText(
-                    MainActivity.reminders.get(position).getDateTimeString()
+                    values.get(position).getDateTimeString()
             );
         }
 

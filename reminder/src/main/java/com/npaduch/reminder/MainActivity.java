@@ -386,6 +386,10 @@ public class MainActivity extends FragmentActivity
             ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
         else if(fragmentType == REMINDER_LIST)
             ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+        else if(fragmentType == COMPLETED_REMINDER_FRAG)
+            ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+        else
+            Log.e(TAG, "Invalid fragment tyoe. This should never happen...");
 
         ft.replace(R.id.content_frame, fragment, FRAGMENT_TAG);
         ft.addToBackStack(null); // handle back button
