@@ -217,6 +217,9 @@ public class NewReminderFragment extends Fragment
             dayAdapter.add(day);
         daySpinner.setAdapter(dayAdapter);
         daySpinner.setOnItemSelectedListener(newReminderOnItemSelectedListener);
+        // we need to set the default after the listener is assigned
+        daySpinnerSetInCode = true;
+        daySpinner.setSelection(getNextDayWindow());
 
         // setup time spin adapter
         ArrayList<String> times = new ArrayList<String>(
@@ -227,6 +230,9 @@ public class NewReminderFragment extends Fragment
             timeAdapter.add(time);
         timeSpinner.setAdapter(timeAdapter);
         timeSpinner.setOnItemSelectedListener(newReminderOnItemSelectedListener);
+        // we need to set the default after the listener is assigned
+        timeSpinnerSetInCode = true;
+        timeSpinner.setSelection(getNextTimeWindow());
     }
 
     public void initializeEdit(Reminder r){
@@ -575,6 +581,33 @@ public class NewReminderFragment extends Fragment
         timeAdapter.addAll(times);
         timeAdapter.notifyDataSetChanged();
 
+    }
+
+    public int getNextTimeWindow() {
+        Calendar cal = Calendar.getInstance();
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        if (hour < Reminder.TIME_MORNING_HOUR)
+            return TIME_MORNING;
+        else if (hour < Reminder.TIME_NOON_HOUR)
+            return TIME_NOON;
+        else if (hour < Reminder.TIME_AFTERNOON_HOUR)
+            return TIME_AFTERNOON;
+        else if (hour < Reminder.TIME_EVENING_HOUR)
+            return TIME_EVENING;
+        else if (hour < Reminder.TIME_NIGHT_HOUR)
+            return TIME_NIGHT;
+        // default to tomorrow morning
+        else
+            return TIME_MORNING;
+    }
+
+    public int getNextDayWindow() {
+        Calendar cal = Calendar.getInstance();
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        if (hour < Reminder.TIME_NIGHT_HOUR)
+            return DATE_TODAY;
+        else
+            return DATE_TOMORROW;
     }
 
     @Override
