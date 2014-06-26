@@ -408,6 +408,7 @@ public class MainActivity extends FragmentActivity
                 mainFragment = new MainFragment();
             }
             changeFragment(mainFragment, REMINDER_LIST, false);
+            setTitle(getResources().getString(R.string.app_name));
         }
         else{
             super.onBackPressed();
