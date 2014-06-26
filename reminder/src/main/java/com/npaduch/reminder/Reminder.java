@@ -447,7 +447,7 @@ public class Reminder {
             }
         }
         timeString += ':';
-        timeString += cal.get(Calendar.MINUTE);
+        timeString += String.format("%02d",cal.get(Calendar.MINUTE));
         // Add AM/PM if 12 hour
         if(!DateFormat.is24HourFormat(context)) {
             timeString += " ";
