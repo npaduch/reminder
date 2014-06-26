@@ -38,25 +38,13 @@ public class ReminderList extends ArrayAdapter<Reminder> {
 
         View rowView = inflater.inflate(R.layout.reminder_entry, parent, false);
         TextView reminderBody = (TextView)rowView.findViewById(R.id.reminderDetailText);
+        TextView reminderDateTime = (TextView)rowView.findViewById(R.id.reminderTimeText);
 
         // Set text description
-        if(values.get(position).getDescription().equals(Reminder.STRING_INIT)) {
-            reminderBody.setText((R.string.reminder_example));
-        }
-        else {
-            reminderBody.setText(values.get(position).getDescription());
-        }
+        reminderBody.setText(values.get(position).getDescription());
 
-        // Set reminder date
-        TextView reminderDateTime = (TextView) rowView.findViewById(R.id.reminderTimeText);
-        if(values.get(position).getDateTimeString().equals(Reminder.STRING_INIT)) {
-            reminderDateTime.setText(R.string.reminder_time_beginning);
-        }
-        else {
-            reminderDateTime.setText(
-                    values.get(position).getDateTimeString()
-            );
-        }
+        // Set reminder date and time
+        reminderDateTime.setText(values.get(position).getDateTimeString(context));
 
 
         return rowView;

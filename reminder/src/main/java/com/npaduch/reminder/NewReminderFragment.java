@@ -246,14 +246,14 @@ public class NewReminderFragment extends Fragment
         // assign values
         descriptionTextView.setText(r.getDescription());
         if(r.getDateOffset() == DATE_OTHER){
-            handleNewDate(r.getYear(), r.getMonth(), r.getMonthDay());
+            handleNewDate(getActivity(), r.getYear(), r.getMonth(), r.getMonthDay());
             daySpinnerSetInCode = true;
             daySpinner.setSelection(r.getDateOffset());
         } else {
             daySpinner.setSelection(r.getDateOffset());
         }
         if(r.getTimeOffset() == TIME_OTHER){
-            handleNewTime(r.getHour(), r.getMinute());
+            handleNewTime(getActivity(), r.getHour(), r.getMinute());
             timeSpinnerSetInCode = true;
             timeSpinner.setSelection(r.getTimeOffset());
         } else {
@@ -411,9 +411,6 @@ public class NewReminderFragment extends Fragment
         int time = sTime.getSelectedItemPosition();
         r.setTimeOffset(time);
 
-        // build date-time string
-        buildDateTimeString(r);
-
         // find time for reminder
         r.calculateMsTime(spinner_year, spinner_month, spinner_day, spinner_hour, spinner_minute);
 
@@ -454,47 +451,6 @@ public class NewReminderFragment extends Fragment
 
     }
 
-    private void buildDateTimeString(Reminder r){
-        int time = r.getTimeOffset();
-        String returnString = "";
-
-        // Beginning of string
-        returnString += "";
-
-        // Add date
-        returnString += dayAdapter.getItem(r.getDateOffset());
-
-        returnString += " ";
-
-        /**
-         *  Syntactical Possibilites
-         *
-         *  Date at Time
-         *  Date in the Morning
-         *  Date at Noon
-         *  Date in the Afternoon
-         *  Date in the Evening
-         *  Date at Night
-         */
-        switch (r.getTimeOffset()){
-            case TIME_MORNING:
-            case TIME_AFTERNOON:
-            case TIME_EVENING:
-                returnString += "in the";
-                break;
-            case TIME_NOON:
-            case TIME_NIGHT:
-            default:
-                returnString += "at";
-        }
-
-        returnString += " ";
-
-        returnString += timeAdapter.getItem(time);
-
-        r.setDateTimeString(returnString);
-    }
-
 
     /**
      * Date and Time Dialog handlers
@@ -504,7 +460,7 @@ public class NewReminderFragment extends Fragment
         Log.d(TAG, "Custom Date Set");
         Log.d(TAG, "Year "+year+" Month "+month+" Day "+day);
 
-        handleNewDate(year, month, day);
+        handleNewDate(getActivity(), year, month, day);
     }
 
     @Override
@@ -512,10 +468,10 @@ public class NewReminderFragment extends Fragment
         Log.d(TAG, "Custom Time Set");
         Log.d(TAG, "Hour "+hour+" Minute "+hour);
 
-        handleNewTime(hour, minute);
+        handleNewTime(getActivity(), hour, minute);
     }
 
-    private void handleNewDate(int year, int month, int day){
+    private void handleNewDate(Context context, int year, int month, int day){
 
         // record values for spinner
         spinner_year = year;
@@ -525,11 +481,7 @@ public class NewReminderFragment extends Fragment
         // Create date string
         Calendar now = Calendar.getInstance();
         now.set(year, month, day);
-        String dateString = now.getDisplayName(Calendar.MONTH, Calendar.LONG, getResources().getConfiguration().locale);
-        dateString += " ";
-        dateString += day;
-        dateString += ", ";
-        dateString += year;
+        String dateString = Reminder.buildDateString(context, now);
         Log.d(TAG,"Date: "+dateString);
 
         // update spinner
@@ -543,7 +495,7 @@ public class NewReminderFragment extends Fragment
         return;
     }
 
-    private void handleNewTime(int hour, int minute){
+    private void handleNewTime(Context context, int hour, int minute){
 
         // record values for spinner
         spinner_hour = hour;
@@ -552,25 +504,7 @@ public class NewReminderFragment extends Fragment
         Calendar now = Calendar.getInstance();
         now.set(Calendar.HOUR_OF_DAY, hour);
         now.set(Calendar.MINUTE, minute);
-
-        String timeString = "";
-        int hourString = now.get(Calendar.HOUR);
-        if(hourString == 0 && !DateFormat.is24HourFormat(getActivity())) {
-            timeString += "12";
-        } else {
-            timeString += hourString;
-        }
-        timeString += ":";
-        timeString += String.format("%02d",now.get(Calendar.MINUTE));
-        // Add AM/PM if 12 hour
-        if(!DateFormat.is24HourFormat(getActivity())) {
-            timeString += " ";
-            if(now.get(Calendar.AM_PM) == Calendar.AM)
-                timeString += getResources().getString(R.string.time_suffix_AM);
-            else if(now.get(Calendar.AM_PM) == Calendar.PM)
-                timeString += getResources().getString(R.string.time_suffix_PM);
-        }
-
+        String timeString = Reminder.buildTimeString(context, now);
         Log.d(TAG,"Time: "+timeString);
 
         // update spinner
@@ -581,6 +515,7 @@ public class NewReminderFragment extends Fragment
         timeAdapter.addAll(times);
         timeAdapter.notifyDataSetChanged();
 
+        return;
     }
 
     public int getNextTimeWindow() {

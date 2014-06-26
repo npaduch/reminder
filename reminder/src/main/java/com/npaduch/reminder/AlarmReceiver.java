@@ -66,7 +66,7 @@ public class AlarmReceiver extends BroadcastReceiver{
             new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.ic_launcher)
                     .setContentTitle(r.getDescription())
-                    .setContentText(r.getDateTimeString())
+                    .setContentText(r.getDateTimeString(context))
                     .setDeleteIntent(createOnDismissedIntent(context, r.getReminderID()))
                     .setAutoCancel(true);
         // Creates an explicit intent for an Activity in your app

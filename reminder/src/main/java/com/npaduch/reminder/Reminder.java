@@ -4,10 +4,10 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.text.format.DateFormat;
 import android.util.JsonReader;
 import android.util.JsonWriter;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,10 +43,6 @@ public class Reminder {
     private int minute;
     private long msTime;
 
-    private String dateString;
-    private String timeString;
-    private String dateTimeString;
-
     private int dateOffset;
     private int timeOffset;
 
@@ -57,7 +53,6 @@ public class Reminder {
 
     // JSON tags
     private final static String JSON_DESCRIPTION = "description";
-    private final static String JSON_DATETIME = "datetime";
     private final static String JSON_COMPLETED = "completed";
     private final static String JSON_REMINDER_ID = "reminder_id";
     private final static String JSON_TIME_MS = "time_ms";
@@ -94,14 +89,12 @@ public class Reminder {
     // Called when reminder created for the first time
     public Reminder() {
         setDescription(STRING_INIT);
-        setDateString(STRING_INIT);
-        setTimeString(STRING_INIT);
-        setDateTimeString(STRING_INIT);
         setYear(INT_INIT);
         setMonth(INT_INIT);
         setMonthDay(INT_INIT);
         setHour(INT_INIT);
         setMinute(INT_INIT);
+        setMsTime(INT_INIT);
 
         setCompleted(false);
 
@@ -111,10 +104,9 @@ public class Reminder {
     }
 
     // Called when read from file
-    public Reminder(String description, String dateTimeString, boolean completed,
+    public Reminder(String description, boolean completed,
                     int reminderID, long msTime, int dateOffset, int timeOffset){
         this.description = description;
-        this.dateTimeString = dateTimeString;
         this.completed = completed;
         this.reminderID = reminderID;
         this.msTime = msTime;
@@ -146,36 +138,12 @@ public class Reminder {
         this.timeOffset = timeOffset;
     }
 
-    public String getDateString() {
-        return dateString;
-    }
-
-    public void setDateString(String dayString) {
-        this.dateString = dayString;
-    }
-
-    public String getTimeString() {
-        return timeString;
-    }
-
-    public void setTimeString(String timeString) {
-        this.timeString = timeString;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getDateTimeString() {
-        return dateTimeString;
-    }
-
-    public void setDateTimeString(String dateTimeString) {
-        this.dateTimeString = dateTimeString;
     }
 
     public boolean isCompleted() {
@@ -317,6 +285,173 @@ public class Reminder {
         Log.d(TAG, "Alarm scheduled");
     }
 
+    /**
+     * Use the MS time to calculate a user-friendly
+     * string for the time the reminder is due.
+     *
+     * Examples:
+     *  This Morning
+     *  Today at Noon
+     *  This Afternoon
+     *  This Evening
+     *  Tonight
+     *  Today at 5:27 PM
+     *  Tomorrow Morning
+     *  Tomorrow at Noon
+     *  Tomorrow Afternoon
+     *  Tomorrow Evening
+     *  Tomorrow Night
+     *  June 5, 2014 in the Morning
+     *  June 27, 2014 at 5:32 AM
+     *
+     * @return Time in string format
+     */
+    public String getDateTimeString(Context context){
+        String s = "";
+        boolean isToday = false;
+        boolean isTomorrow = false;
+
+        // Check if the time was never set
+        long msTime = getMsTime();
+        if(msTime == INT_INIT){
+            Log.e(TAG, "MS Time not set. Can't build string.");
+            return STRING_INIT;
+        }
+
+        // We need three calendar entries, reminder, today, tomorrow
+        // This will allow us to calculate if it's for today or tomorrow
+        // reminder
+        Calendar calReminder = Calendar.getInstance();
+        calReminder.setTimeInMillis(msTime);
+        // today
+        Calendar calToday = Calendar.getInstance();
+        // tomorrow
+        Calendar calTomorrow = Calendar.getInstance();
+        calTomorrow.add(Calendar.DAY_OF_MONTH, 1);
+
+        // find out if reminder is today or tomorrow
+        if((calReminder.get(Calendar.YEAR) == calToday.get(Calendar.YEAR)) &&
+                (calReminder.get(Calendar.DAY_OF_YEAR) == calToday.get(Calendar.DAY_OF_YEAR))){
+            isToday = true;
+        } else if((calReminder.get(Calendar.YEAR) == calTomorrow.get(Calendar.YEAR)) &&
+                (calReminder.get(Calendar.DAY_OF_YEAR) == calTomorrow.get(Calendar.DAY_OF_YEAR))){
+            isTomorrow = true;
+        }
+
+        if(isToday){
+            switch(getTimeOffset()){
+                case NewReminderFragment.TIME_MORNING:
+                case NewReminderFragment.TIME_AFTERNOON:
+                case NewReminderFragment.TIME_EVENING:
+                    s += context.getResources().getString(R.string.time_this);
+                    break;
+                case NewReminderFragment.TIME_NIGHT:
+                    s += context.getResources().getString(R.string.time_tonight);
+                    break;
+                case NewReminderFragment.TIME_NOON:
+                default:
+                    s += context.getResources().getString(R.string.time_today);
+                    s += ' ';
+                    s += context.getResources().getString(R.string.time_at);
+                    break;
+            }
+        } else if (isTomorrow){
+            switch(getTimeOffset()){
+                case NewReminderFragment.TIME_MORNING:
+                case NewReminderFragment.TIME_AFTERNOON:
+                case NewReminderFragment.TIME_EVENING:
+                case NewReminderFragment.TIME_NIGHT:
+                    s += context.getResources().getString(R.string.time_tomorrow);
+                    break;
+                case NewReminderFragment.TIME_NOON:
+                default:
+                    s += context.getResources().getString(R.string.time_tomorrow);
+                    s += ' ';
+                    s += context.getResources().getString(R.string.time_at);
+                    break;
+            }
+
+        } else {
+            // we have a specific day
+            switch (getTimeOffset()) {
+                case NewReminderFragment.TIME_MORNING:
+                case NewReminderFragment.TIME_AFTERNOON:
+                case NewReminderFragment.TIME_EVENING:
+                    s += buildDateString(context, calReminder);
+                    s += ' ';
+                    s += context.getResources().getString(R.string.time_in_the);
+                    break;
+                case NewReminderFragment.TIME_NOON:
+                case NewReminderFragment.TIME_NIGHT:
+                default:
+                    s += buildDateString(context, calReminder);
+                    s += ' ';
+                    s += context.getResources().getString(R.string.time_at);
+                    break;
+            }
+        }
+
+        // space between date and time
+        s += ' ';
+
+        switch(getTimeOffset()){
+            case NewReminderFragment.TIME_MORNING:
+                s += context.getResources().getString(R.string.time_morning);
+                break;
+            case NewReminderFragment.TIME_NOON:
+                s += context.getResources().getString(R.string.time_noon);
+                break;
+            case NewReminderFragment.TIME_AFTERNOON:
+                s += context.getResources().getString(R.string.time_afternoon);
+                break;
+            case NewReminderFragment.TIME_EVENING:
+                s += context.getResources().getString(R.string.time_evening);
+                break;
+            case NewReminderFragment.TIME_NIGHT:
+                // if it's also today, we use "tonight"
+                if(!isToday) {
+                    s += context.getResources().getString(R.string.time_night);
+                }
+                break;
+            default:
+                s += buildTimeString(context, calReminder);
+                break;
+        }
+
+        return s;
+    }
+
+    public static String buildDateString(Context context, Calendar cal){
+        String dateString = "";
+        // Format = Month Day, Year
+        dateString += cal.getDisplayName(Calendar.MONTH, Calendar.LONG, context.getResources().getConfiguration().locale);
+        dateString += ' ';
+        dateString += cal.get(Calendar.DAY_OF_MONTH);
+        dateString += ',';
+        dateString += ' ';
+        dateString += cal.get(Calendar.YEAR);
+        return dateString;
+    }
+    public static  String buildTimeString(Context context, Calendar cal){
+        String timeString = "";
+        // format = Hour:Minute (AM/PM)
+        // handle 12/24 hour
+        if(DateFormat.is24HourFormat(context))
+            timeString += cal.get(Calendar.HOUR_OF_DAY);
+        else
+            timeString += cal.get(Calendar.HOUR);
+        timeString += ':';
+        timeString += cal.get(Calendar.MINUTE);
+        // Add AM/PM if 12 hour
+        if(!DateFormat.is24HourFormat(context)) {
+            timeString += " ";
+            if(cal.get(Calendar.AM_PM) == Calendar.AM)
+                timeString += context.getResources().getString(R.string.time_suffix_AM);
+            else if(cal.get(Calendar.AM_PM) == Calendar.PM)
+                timeString += context.getResources().getString(R.string.time_suffix_PM);
+        }
+        return timeString;
+    }
     /************************************************************
      *
      *          FILE HANDLING
@@ -473,8 +608,6 @@ public class Reminder {
             String name = reader.nextName();
             if (name.equals(JSON_DESCRIPTION)) {
                 r.setDescription(reader.nextString());
-            } else if (name.equals(JSON_DATETIME)) {
-                r.setDateTimeString(reader.nextString());
             } else if (name.equals(JSON_COMPLETED)) {
                 r.setCompleted(reader.nextBoolean());
             } else if (name.equals(JSON_REMINDER_ID)) {
@@ -527,7 +660,6 @@ public class Reminder {
     public static void writeMessage(JsonWriter writer, Reminder reminder) throws IOException {
         writer.beginObject();
         writer.name(JSON_DESCRIPTION).value(reminder.getDescription());
-        writer.name(JSON_DATETIME).value(reminder.getDateTimeString());
         writer.name(JSON_COMPLETED).value(reminder.isCompleted());
         writer.name(JSON_REMINDER_ID).value(reminder.getReminderID());
         writer.name(JSON_TIME_MS).value(reminder.getMsTime());
@@ -544,7 +676,6 @@ public class Reminder {
     public void outputReminderToLog(){
         Log.d(TAG,"Reminder: START");
         Log.d(TAG,"Reminder: Description: "+getDescription());
-        Log.d(TAG,"Reminder: Date/Time: "+getDateTimeString());
         Log.d(TAG,"Reminder: Completed: "+isCompleted());
         Log.d(TAG,"Reminder: ID: "+getReminderID());
         Log.d(TAG, "Reminder: Time (ms): " + getMsTime());
