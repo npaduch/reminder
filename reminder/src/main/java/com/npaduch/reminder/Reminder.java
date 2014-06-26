@@ -438,8 +438,14 @@ public class Reminder {
         // handle 12/24 hour
         if(DateFormat.is24HourFormat(context))
             timeString += cal.get(Calendar.HOUR_OF_DAY);
-        else
-            timeString += cal.get(Calendar.HOUR);
+        else {
+            int hourString = cal.get(Calendar.HOUR);
+            if(hourString == 0) {
+                timeString += "12";
+            } else {
+                timeString += hourString;
+            }
+        }
         timeString += ':';
         timeString += cal.get(Calendar.MINUTE);
         // Add AM/PM if 12 hour
