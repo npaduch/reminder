@@ -384,7 +384,11 @@ public class MainActivity extends FragmentActivity
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         if(fragmentType == NEW_REMINDER)
             ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
-        else if(fragmentType == REMINDER_LIST)
+        else if((fragmentType == REMINDER_LIST) && (currentFragment == NEW_REMINDER))
+            ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+        else if((fragmentType == REMINDER_LIST) && (currentFragment == COMPLETED_REMINDER_FRAG))
+            ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+        else if(fragmentType == REMINDER_LIST) // activity start
             ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
         else if(fragmentType == COMPLETED_REMINDER_FRAG)
             ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
