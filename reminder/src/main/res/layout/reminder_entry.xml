@@ -51,8 +51,11 @@
        android:layout_height="wrap_content"
        android:layout_width="match_parent"
        android:layout_below="@id/reminderTimeText"
-       android:layout_margin="0dp"
-       android:orientation="horizontal">
+       android:paddingTop="10dp"
+       android:paddingBottom="10dp"
+       android:orientation="horizontal"
+       android:visibility="gone"
+       android:background="@color/app_color_theme">
 
        <TextView
            android:id="@+id/reminderEntryEdit"
@@ -62,9 +65,8 @@
            android:paddingBottom="8dp"
            android:layout_weight="1"
            android:gravity="center_horizontal"
-           android:textAppearance="?android:attr/textAppearanceMedium"
-           android:textColor="@color/textview_medium_text"
-           android:background="@android:color/background_light"/>
+           android:textSize="18sp"
+           android:textColor="@color/white"/>
 
        <TextView
            android:id="@+id/reminderEntryShare"
@@ -74,9 +76,8 @@
            android:paddingBottom="8dp"
            android:layout_weight="1"
            android:gravity="center_horizontal"
-           android:textAppearance="?android:attr/textAppearanceMedium"
-           android:textColor="@color/textview_medium_text"
-           android:background="@android:color/background_light"/>
+           android:textSize="18sp"
+           android:textColor="@color/white"/>
 
        <TextView
            android:id="@+id/reminderEntryDismiss"
@@ -86,9 +87,8 @@
            android:paddingBottom="8dp"
            android:layout_weight="1"
            android:gravity="center_horizontal"
-           android:textAppearance="?android:attr/textAppearanceMedium"
-           android:textColor="@color/textview_medium_text"
-           android:background="@android:color/background_light"/>
+           android:textSize="18sp"
+           android:textColor="@color/white"/>
 
    </LinearLayout>
 

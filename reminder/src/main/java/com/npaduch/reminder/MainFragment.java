@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
@@ -35,6 +36,9 @@ public class MainFragment extends Fragment {
     FragmentCommunicationListener messenger;
 
     public static ReminderList myReminderListViewArrayAdapter;
+
+    // Global to hold te last view clicked
+    public int listItemClickedOffset = 0;
 
     public MainFragment() {
     }
@@ -66,7 +70,7 @@ public class MainFragment extends Fragment {
 
         ListView list = (ListView) rootView.findViewById(R.id.mainFragmentListView);
         myReminderListViewArrayAdapter = new ReminderList(
-                getActivity(), R.id.mainFragmentListView, MainActivity.pendingReminders);
+                getActivity(), R.id.mainFragmentListView, MainActivity.pendingReminders, mainFragmentOnClickListener);
 
         // Appearance animation
         // Swing Right in and fade in
@@ -77,6 +81,8 @@ public class MainFragment extends Fragment {
         // Assign the ListView to the AnimationAdapter and vice versa
         swingRightInAnimationAdapter.setAbsListView(list);
         list.setAdapter(swingRightInAnimationAdapter);
+
+        list.setOnItemClickListener(listviewOnItemClickListener);
 
         setHasOptionsMenu(true);
 
@@ -157,16 +163,44 @@ public class MainFragment extends Fragment {
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
             Reminder clickedReminder = MainActivity.pendingReminders.get(position);
             // find location within main reminder list
-            int offset = MainActivity.reminders.indexOf(clickedReminder);
+            listItemClickedOffset = MainActivity.reminders.indexOf(clickedReminder);
             Log.d(TAG, "Reminder to be editted:");
             clickedReminder.outputReminderToLog();
 
-            Bundle b = new Bundle();
-            b.putInt(MainActivity.MESSAGE_TASK, MainActivity.TASK_EDIT_REMINDER);
-            b.putInt(MainActivity.TASK_INT, offset);
-            b.putInt(MainActivity.TASK_INITIATOR, MainActivity.PENDING_REMINDERS);
-            messenger.send(b);
+            toggleView(view);
+            return;
         }
     };
+
+    private View.OnClickListener mainFragmentOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.reminderEntryEdit:
+                    Log.d(TAG, "Edit reminder button clicked.");
+                    Bundle b = new Bundle();
+                    b.putInt(MainActivity.MESSAGE_TASK, MainActivity.TASK_EDIT_REMINDER);
+                    b.putInt(MainActivity.TASK_INT, listItemClickedOffset);
+                    b.putInt(MainActivity.TASK_INITIATOR, MainActivity.PENDING_REMINDERS);
+                    messenger.send(b);
+                    break;
+                case R.id.reminderEntryShare:
+                    Log.d(TAG, "Share reminder button clicked.");
+                    break;
+                case R.id.reminderEntryDismiss:
+                    Log.d(TAG, "Dismiss reminder button clicked.");
+                    break;
+            }
+        }
+    };
+
+    private void toggleView(View view){
+        LinearLayout ll = (LinearLayout)view.findViewById(R.id.reminderExpanded);
+        if(ll.getVisibility() == View.GONE){
+            ll.setVisibility(View.VISIBLE);
+        } else {
+            ll.setVisibility(View.GONE);
+        }
+    }
 
 }
