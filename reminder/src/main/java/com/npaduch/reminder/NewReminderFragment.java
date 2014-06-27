@@ -421,6 +421,9 @@ public class NewReminderFragment extends Fragment
         r.setHour(spinner_hour);
         r.setMinute(spinner_minute);
 
+        // set uncomplete
+        r.setCompleted(false);
+
         // Log and save reminder
         r.outputReminderToLog();
         r.writeToFile(getActivity());
