@@ -31,8 +31,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends FragmentActivity
         implements MainFragment.FragmentCommunicationListener,
-        NewReminderFragment.FragmentCommunicationListener,
-        CompletedFragment.FragmentCommunicationListener {
+        NewReminderFragment.FragmentCommunicationListener {
 
     // Debugging attributes
     String TAG = "MainActivity";
@@ -58,7 +57,7 @@ public class MainActivity extends FragmentActivity
     // Holders for fragments to preserve state
     MainFragment mainFragment;
     NewReminderFragment newReminderFragment;
-    CompletedFragment completedFragment;
+    MainFragment completedFragment;
     public int currentFragment; // keep track of what we currently are
 
     // Message Passing (keys = String, values = int)
@@ -97,7 +96,7 @@ public class MainActivity extends FragmentActivity
         /* Fragment Manager */
         // load initial fragment
         if (savedInstanceState == null) {
-            mainFragment = new MainFragment();
+            initMainFragment();
             changeFragment(mainFragment, REMINDER_LIST, false);
         }
 
@@ -240,7 +239,7 @@ public class MainActivity extends FragmentActivity
         }
         else if(position == PENDING_REMINDERS_TITLE) {
             if(mainFragment == null){
-                mainFragment = new MainFragment();
+                initMainFragment();
             }
             changeFragment(mainFragment, REMINDER_LIST, false);
             // Highlight the selected item, update the title, and close the drawer
@@ -250,7 +249,7 @@ public class MainActivity extends FragmentActivity
         }
         else if(position == COMPLETED_REMINDERS_TITLE) {
             if(completedFragment == null){
-                completedFragment = new CompletedFragment();
+                initCompletedFragment();
             }
             changeFragment(completedFragment, COMPLETED_REMINDER_FRAG, false);
             // Highlight the selected item, update the title, and close the drawer
@@ -310,7 +309,7 @@ public class MainActivity extends FragmentActivity
                 break;
             case REMINDER_LIST:
                 if (mainFragment == null) {
-                    mainFragment = new MainFragment();
+                    initMainFragment();
                 }
                 changeFragment(mainFragment, REMINDER_LIST, true);
                 Log.d(TAG, "Setting title to app name");
@@ -359,9 +358,6 @@ public class MainActivity extends FragmentActivity
         }
     }
 
-    public void updatePending(){
-    }
-
     /**
      * Change fragment
      * fragment - fragment to change to
@@ -405,7 +401,7 @@ public class MainActivity extends FragmentActivity
     public void onBackPressed() {
         if(currentFragment == NEW_REMINDER){
             if(mainFragment == null){
-                mainFragment = new MainFragment();
+                initMainFragment();
             }
             changeFragment(mainFragment, REMINDER_LIST, false);
             setTitle(getResources().getString(R.string.app_name));
@@ -413,6 +409,20 @@ public class MainActivity extends FragmentActivity
         else{
             super.onBackPressed();
         }
+    }
+
+    private void initMainFragment(){
+        mainFragment = new MainFragment();
+        Bundle args = new Bundle();
+        args.putInt(MainFragment.LIST_TYPE, MainFragment.LIST_PENDING);
+        mainFragment.setArguments(args);
+    }
+
+    private void initCompletedFragment(){
+        completedFragment = new MainFragment();
+        Bundle args = new Bundle();
+        args.putInt(MainFragment.LIST_TYPE, MainFragment.LIST_COMPLETED);
+        completedFragment.setArguments(args);
     }
 
 }

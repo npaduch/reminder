@@ -37,6 +37,15 @@ public class MainFragment extends Fragment {
 
     public static ReminderList myReminderListViewArrayAdapter;
 
+    // Arguments
+    public static final String LIST_TYPE = "list_type";
+    public static final int LIST_PENDING = 0;
+    public static final int LIST_COMPLETED = 1;
+
+    // list type
+    public int fragmentType = LIST_PENDING;
+
+
     // Global to hold te last view clicked
     public int listItemClickedOffset = 0;
 
@@ -66,11 +75,23 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+        // get fragment type
+        fragmentType = getArguments().getInt(LIST_TYPE, LIST_PENDING);
+
         populateReminders();
 
         ListView list = (ListView) rootView.findViewById(R.id.mainFragmentListView);
-        myReminderListViewArrayAdapter = new ReminderList(
-                getActivity(), R.id.mainFragmentListView, MainActivity.pendingReminders, mainFragmentOnClickListener);
+        if(fragmentType == LIST_PENDING) {
+            myReminderListViewArrayAdapter = new ReminderList(
+                    getActivity(), R.id.mainFragmentListView, MainActivity.pendingReminders, mainFragmentOnClickListener);
+        } else if(fragmentType == LIST_COMPLETED){
+            myReminderListViewArrayAdapter = new ReminderList(
+                    getActivity(), R.id.mainFragmentListView, MainActivity.completedReminders, mainFragmentOnClickListener);
+        } else {
+            Log.e(TAG, "Invalid fragment type. Will create pending list.");
+            myReminderListViewArrayAdapter = new ReminderList(
+                    getActivity(), R.id.mainFragmentListView, MainActivity.pendingReminders, mainFragmentOnClickListener);
+        }
 
         // Appearance animation
         // Swing Right in and fade in
