@@ -22,6 +22,9 @@
     <string name="reminder_time_beginning">Today in the Morning</string>
     <string name="reminder_time_once">once</string>
     <string name="reminder_time_recurring">every</string>
+    <string name="reminder_entry_edit">Edit</string>
+    <string name="reminder_entry_share">Share</string>
+    <string name="reminder_entry_dismiss">Dismiss</string>
 
     <!-- New Reminder Strings -->
     <string name="new_reminder_hint">          What will you forget about?</string>

@@ -46,22 +46,50 @@
         android:textColor="@color/textview_medium_text"
         android:background="@android:color/background_light"/>
 
-   <RelativeLayout
+   <LinearLayout
        android:id="@+id/reminderExpanded"
        android:layout_height="wrap_content"
        android:layout_width="match_parent"
        android:layout_below="@id/reminderTimeText"
        android:layout_margin="0dp"
-       android:visibility="gone">
+       android:orientation="horizontal">
 
-       <View
-           android:id="@+id/reminderExpandedTest"
-           android:layout_width="match_parent"
-           android:layout_height="48dp"
-           android:layout_margin="0dp"
-           android:background="@color/app_color_theme"
-           android:visibility="gone"/>
+       <TextView
+           android:id="@+id/reminderEntryEdit"
+           android:layout_height="wrap_content"
+           android:layout_width="wrap_content"
+           android:text="@string/reminder_entry_edit"
+           android:paddingBottom="8dp"
+           android:layout_weight="1"
+           android:gravity="center_horizontal"
+           android:textAppearance="?android:attr/textAppearanceMedium"
+           android:textColor="@color/textview_medium_text"
+           android:background="@android:color/background_light"/>
 
-   </RelativeLayout>
+       <TextView
+           android:id="@+id/reminderEntryShare"
+           android:layout_height="wrap_content"
+           android:layout_width="wrap_content"
+           android:text="@string/reminder_entry_share"
+           android:paddingBottom="8dp"
+           android:layout_weight="1"
+           android:gravity="center_horizontal"
+           android:textAppearance="?android:attr/textAppearanceMedium"
+           android:textColor="@color/textview_medium_text"
+           android:background="@android:color/background_light"/>
+
+       <TextView
+           android:id="@+id/reminderEntryDismiss"
+           android:layout_height="wrap_content"
+           android:layout_width="wrap_content"
+           android:text="@string/reminder_entry_dismiss"
+           android:paddingBottom="8dp"
+           android:layout_weight="1"
+           android:gravity="center_horizontal"
+           android:textAppearance="?android:attr/textAppearanceMedium"
+           android:textColor="@color/textview_medium_text"
+           android:background="@android:color/background_light"/>
+
+   </LinearLayout>
 
 </RelativeLayout>

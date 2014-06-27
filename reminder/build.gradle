@@ -23,4 +23,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:19.+'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3' 
     compile 'com.doomonafireball.betterpickers:library:1.5.2'
+    compile 'com.nhaarman.listviewanimations:library:2.6.0'
 }

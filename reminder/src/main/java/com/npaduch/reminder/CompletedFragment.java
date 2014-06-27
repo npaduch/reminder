@@ -13,6 +13,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.nhaarman.listviewanimations.swinginadapters.prepared.AlphaInAnimationAdapter;
+import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingRightInAnimationAdapter;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -64,9 +67,18 @@ public class CompletedFragment extends Fragment {
         ListView list = (ListView) rootView.findViewById(R.id.mainFragmentListView);
         myReminderListViewArrayAdapter = new ReminderList(
                 getActivity(), R.id.mainFragmentListView, MainActivity.completedReminders);
-        list.setAdapter(myReminderListViewArrayAdapter);
-        list.setOnItemClickListener(listviewOnItemClickListener);
 
+        // Appearance animation
+        // Swing Right in and fade in
+        AlphaInAnimationAdapter alphaInAnimationAdapter =
+                new AlphaInAnimationAdapter(myReminderListViewArrayAdapter);
+        SwingRightInAnimationAdapter swingRightInAnimationAdapter =
+                new SwingRightInAnimationAdapter(alphaInAnimationAdapter);
+        // Assign the ListView to the AnimationAdapter and vice versa
+        swingRightInAnimationAdapter.setAbsListView(list);
+        list.setAdapter(swingRightInAnimationAdapter);
+
+        list.setOnItemClickListener(listviewOnItemClickListener);
         setHasOptionsMenu(true);
 
         return rootView;
