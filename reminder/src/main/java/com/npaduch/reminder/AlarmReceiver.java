@@ -27,8 +27,6 @@ public class AlarmReceiver extends BroadcastReceiver{
 
     private static final String TAG = "AlarmReceiver";
 
-    // Random ID for notification
-    private static final int mId = 10492842;
 
     // length to flash LED  in ms
     private static final int LED_ON_TIME = 3000;
@@ -99,7 +97,7 @@ public class AlarmReceiver extends BroadcastReceiver{
         NotificationManager mNotificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.
-        mNotificationManager.notify(mId, note);
+        mNotificationManager.notify(r.getReminderID(), note);
 
     }
 
