@@ -258,21 +258,25 @@ public class MainFragment extends Fragment {
     ContextualUndoAdapter.DeleteItemCallback removeItem = new ContextualUndoAdapter.DeleteItemCallback(){
         @Override
         public void deleteItem(int position) {
-            Log.d(TAG, "Deleting item:"+position);
-            // set item completed
-            MainActivity.pendingReminders.get(position).setCompleted(true);
-            // cancel alarm
-            MainActivity.pendingReminders.get(position).cancelAlarm(getActivity());
-            // make change in file
-            MainActivity.pendingReminders.get(position).writeToFile(getActivity());
-            // remove it from the list view
-            myReminderListViewArrayAdapter.remove(MainActivity.pendingReminders.get(position));
-            myReminderListViewArrayAdapter.notifyDataSetChanged();
-            // sync after view is updated. We don't want to remove two items.
-            // This will keep the file in line with what's currently displayed
-            MainActivity.reminders = Reminder.getJSONFileContents(getActivity());
-            MainActivity.syncReminders();
+            dismissItem(position);
         }
     };
+
+    private void dismissItem(int position){
+        Log.d(TAG, "Deleting item:"+position);
+        // set item completed
+        MainActivity.pendingReminders.get(position).setCompleted(true);
+        // cancel alarm
+        MainActivity.pendingReminders.get(position).cancelAlarm(getActivity());
+        // make change in file
+        MainActivity.pendingReminders.get(position).writeToFile(getActivity());
+        // remove it from the list view
+        myReminderListViewArrayAdapter.remove(MainActivity.pendingReminders.get(position));
+        myReminderListViewArrayAdapter.notifyDataSetChanged();
+        // sync after view is updated. We don't want to remove two items.
+        // This will keep the file in line with what's currently displayed
+        MainActivity.reminders = Reminder.getJSONFileContents(getActivity());
+        MainActivity.syncReminders();
+    }
 
 }
