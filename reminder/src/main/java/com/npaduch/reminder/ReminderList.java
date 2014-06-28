@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -48,6 +49,9 @@ public class ReminderList extends ArrayAdapter<Reminder> {
         TextView reminderEdit = (TextView)convertView.findViewById(R.id.reminderEntryEdit);
         TextView reminderShare = (TextView)convertView.findViewById(R.id.reminderEntryShare);
         TextView reminderDismiss = (TextView)convertView.findViewById(R.id.reminderEntryDismiss);
+        // set expanded section to GONE
+        LinearLayout expandedView = (LinearLayout)convertView.findViewById(R.id.reminderExpanded);
+        expandedView.setVisibility(View.GONE);
 
         // Set text description
         reminderBody.setText(values.get(position).getDescription());

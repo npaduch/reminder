@@ -294,13 +294,11 @@ public class MainFragment extends Fragment {
     private void permanentlyDeleteItem(int position){
         Log.d(TAG, "Permanently deleting item:"+position);
         // set item completed
-        MainActivity.pendingReminders.get(position).removeFromFile(getActivity());
-        // cancel alarm
-        MainActivity.pendingReminders.get(position).cancelAlarm(getActivity());
+        MainActivity.completedReminders.get(position).removeFromFile(getActivity());
         // make change in file
-        MainActivity.pendingReminders.get(position).writeToFile(getActivity());
+        MainActivity.completedReminders.get(position).writeToFile(getActivity());
         // remove it from the list view
-        myReminderListViewArrayAdapter.remove(MainActivity.pendingReminders.get(position));
+        myReminderListViewArrayAdapter.remove(MainActivity.completedReminders.get(position));
         myReminderListViewArrayAdapter.notifyDataSetChanged();
         // sync after view is updated. We don't want to remove two items.
         // This will keep the file in line with what's currently displayed
