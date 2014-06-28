@@ -23,14 +23,20 @@ public class ReminderList extends ArrayAdapter<Reminder> {
 
     public ArrayList<Reminder> values;
 
+    /** On Click listener for expandable buttons **/
     public View.OnClickListener onClickListener;
 
-    public ReminderList(Context context, int textViewResourceId, ArrayList<Reminder> values, View.OnClickListener onClickListener){
+    /** fragment type using this array adapter **/
+    public int fragmentType = MainFragment.LIST_PENDING;
+
+    public ReminderList(Context context, int textViewResourceId, ArrayList<Reminder> values, View.OnClickListener onClickListener,
+                        int fragmentType){
         super(context, textViewResourceId, values);
 
         this.context = context;
         this.values = values;
         this.onClickListener = onClickListener;
+        this.fragmentType = fragmentType;
 
     }
 
@@ -63,6 +69,12 @@ public class ReminderList extends ArrayAdapter<Reminder> {
         reminderEdit.setOnClickListener(onClickListener);
         reminderShare.setOnClickListener(onClickListener);
         reminderDismiss.setOnClickListener(onClickListener);
+
+        if(fragmentType == MainFragment.LIST_PENDING){
+            reminderDismiss.setText(R.string.reminder_entry_dismiss);
+        } else { // delete if already completed
+            reminderDismiss.setText(R.string.reminder_entry_delete);
+        }
 
         return convertView;
     }

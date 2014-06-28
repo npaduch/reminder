@@ -10,11 +10,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.AlphaInAnimationAdapter;
@@ -89,14 +87,14 @@ public class MainFragment extends Fragment {
         ListView list = (ListView) rootView.findViewById(R.id.mainFragmentListView);
         if(fragmentType == LIST_PENDING) {
             myReminderListViewArrayAdapter = new ReminderList(
-                    getActivity(), R.id.mainFragmentListView, MainActivity.pendingReminders, mainFragmentOnClickListener);
+                    getActivity(), R.id.mainFragmentListView, MainActivity.pendingReminders, mainFragmentOnClickListener, LIST_PENDING);
         } else if(fragmentType == LIST_COMPLETED){
             myReminderListViewArrayAdapter = new ReminderList(
-                    getActivity(), R.id.mainFragmentListView, MainActivity.completedReminders, mainFragmentOnClickListener);
+                    getActivity(), R.id.mainFragmentListView, MainActivity.completedReminders, mainFragmentOnClickListener, LIST_COMPLETED);
         } else {
             Log.e(TAG, "Invalid fragment type. Will create pending list.");
             myReminderListViewArrayAdapter = new ReminderList(
-                    getActivity(), R.id.mainFragmentListView, MainActivity.pendingReminders, mainFragmentOnClickListener);
+                    getActivity(), R.id.mainFragmentListView, MainActivity.pendingReminders, mainFragmentOnClickListener, LIST_PENDING);
         }
 
         // Appearance animation
@@ -106,27 +104,27 @@ public class MainFragment extends Fragment {
                 new AlphaInAnimationAdapter(myReminderListViewArrayAdapter);
         SwingRightInAnimationAdapter swingRightInAnimationAdapter =
                 new SwingRightInAnimationAdapter(alphaInAnimationAdapter);
-        // setup swipe to undo for pending reminders
-        // TODO: if dismissed cancel alarm
+
+        // swipe to undo adapter
+        ContextualUndoAdapter undoAdapter;
         if(fragmentType == LIST_PENDING) {
-            // swipe to undo adapter
-            // check if already assigned?
-            ContextualUndoAdapter undoAdapter =
-                    new ContextualUndoAdapter(swingRightInAnimationAdapter,
+            undoAdapter = new ContextualUndoAdapter(swingRightInAnimationAdapter,
                             R.layout.undo_reminder_entry,
                             R.id.undo_reminder_entry_button,
                             TIME_UNTIL_DELETE,
                             removeItem);
-
-            // combine all adapters and set them to the listview
-            undoAdapter.setAbsListView(list);
-
-            list.setAdapter(undoAdapter);
         } else {
-            // set it up without the undo adapter
-            swingRightInAnimationAdapter.setAbsListView(list);
-            list.setAdapter(swingRightInAnimationAdapter);
+            undoAdapter = new ContextualUndoAdapter(swingRightInAnimationAdapter,
+                            R.layout.undo_completed_reminder_entry,
+                            R.id.undo_completed_reminder_entry_button,
+                            TIME_UNTIL_DELETE,
+                            removeItem);
         }
+
+        // combine all adapters and set them to the listview
+        undoAdapter.setAbsListView(list);
+
+        list.setAdapter(undoAdapter);
 
         list.setOnItemClickListener(listviewOnItemClickListener);
 
