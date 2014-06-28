@@ -25,6 +25,8 @@
     <string name="reminder_entry_edit">Edit</string>
     <string name="reminder_entry_share">Share</string>
     <string name="reminder_entry_dismiss">Dismiss</string>
+    <string name="reminder_undo_dismiss">Reminder dismissed.</string>
+    <string name="reminder_undo_label">Undo</string>
 
     <!-- New Reminder Strings -->
     <string name="new_reminder_hint">          What will you forget about?</string>

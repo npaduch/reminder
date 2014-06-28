@@ -3,6 +3,7 @@
 
     <!-- Theme colors -->
     <color name="app_color_theme">#33CCFF</color>
+    <color name="app_color_theme_no_trans">#FF33CCFF</color>
 
     <!-- TextView colors -->
     <color name="textview_background">#FFFFFF</color>

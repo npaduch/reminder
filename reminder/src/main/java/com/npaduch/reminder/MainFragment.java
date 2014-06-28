@@ -10,11 +10,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.AlphaInAnimationAdapter;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingRightInAnimationAdapter;
 
@@ -41,6 +43,10 @@ public class MainFragment extends Fragment {
     public static final String LIST_TYPE = "list_type";
     public static final int LIST_PENDING = 0;
     public static final int LIST_COMPLETED = 1;
+
+    // TODO: make this a setting
+    // time until delete (in ms)
+    public static final int TIME_UNTIL_DELETE = 3000;
 
     // list type
     public int fragmentType = LIST_PENDING;
@@ -95,13 +101,32 @@ public class MainFragment extends Fragment {
 
         // Appearance animation
         // Swing Right in and fade in
+        // Stack the adapters
         AlphaInAnimationAdapter alphaInAnimationAdapter =
                 new AlphaInAnimationAdapter(myReminderListViewArrayAdapter);
         SwingRightInAnimationAdapter swingRightInAnimationAdapter =
                 new SwingRightInAnimationAdapter(alphaInAnimationAdapter);
-        // Assign the ListView to the AnimationAdapter and vice versa
-        swingRightInAnimationAdapter.setAbsListView(list);
-        list.setAdapter(swingRightInAnimationAdapter);
+        // setup swipe to undo for pending reminders
+        // TODO: if dismissed cancel alarm
+        if(fragmentType == LIST_PENDING) {
+            // swipe to undo adapter
+            // check if already assigned?
+            ContextualUndoAdapter undoAdapter =
+                    new ContextualUndoAdapter(swingRightInAnimationAdapter,
+                            R.layout.undo_reminder_entry,
+                            R.id.undo_reminder_entry_button,
+                            TIME_UNTIL_DELETE,
+                            removeItem);
+
+            // combine all adapters and set them to the listview
+            undoAdapter.setAbsListView(list);
+
+            list.setAdapter(undoAdapter);
+        } else {
+            // set it up without the undo adapter
+            swingRightInAnimationAdapter.setAbsListView(list);
+            list.setAdapter(swingRightInAnimationAdapter);
+        }
 
         list.setOnItemClickListener(listviewOnItemClickListener);
 
@@ -182,7 +207,12 @@ public class MainFragment extends Fragment {
     AdapterView.OnItemClickListener listviewOnItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            Reminder clickedReminder = MainActivity.pendingReminders.get(position);
+            Reminder clickedReminder;
+            if(fragmentType == LIST_PENDING) {
+                clickedReminder = MainActivity.pendingReminders.get(position);
+            } else {
+                clickedReminder = MainActivity.pendingReminders.get(position);
+            }
             // find location within main reminder list
             listItemClickedOffset = MainActivity.reminders.indexOf(clickedReminder);
             Log.d(TAG, "Reminder to be editted:");
@@ -223,5 +253,23 @@ public class MainFragment extends Fragment {
             ll.setVisibility(View.GONE);
         }
     }
+
+    // DeleteItemCallback
+    ContextualUndoAdapter.DeleteItemCallback removeItem = new ContextualUndoAdapter.DeleteItemCallback(){
+        @Override
+        public void deleteItem(int position) {
+            Log.d(TAG, "Deleting item:"+position);
+            // set item completed
+            MainActivity.pendingReminders.get(position).setCompleted(true);
+            // make change in file
+            MainActivity.pendingReminders.get(position).writeToFile(getActivity());
+            // read file back in and sync lists
+            MainActivity.reminders = Reminder.getJSONFileContents(getActivity());
+            MainActivity.syncReminders();
+            // remove it from the list view
+            myReminderListViewArrayAdapter.remove(MainActivity.pendingReminders.get(position));
+            myReminderListViewArrayAdapter.notifyDataSetChanged();
+        }
+    };
 
 }

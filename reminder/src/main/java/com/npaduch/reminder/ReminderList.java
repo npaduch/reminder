@@ -1,20 +1,18 @@
 package com.npaduch.reminder;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by nolanpaduch on 5/12/14.
+ *
+ * Array adapter for the list view
  */
 public class ReminderList extends ArrayAdapter<Reminder> {
 
@@ -38,16 +36,18 @@ public class ReminderList extends ArrayAdapter<Reminder> {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent){
 
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View rowView = inflater.inflate(R.layout.reminder_entry, parent, false);
-        TextView reminderBody = (TextView)rowView.findViewById(R.id.reminderDetailText);
-        TextView reminderDateTime = (TextView)rowView.findViewById(R.id.reminderTimeText);
+        // Check if an existing view is being reused, otherwise inflate the view
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.reminder_entry, parent, false);
+        }
+
+        TextView reminderBody = (TextView)convertView.findViewById(R.id.reminderDetailText);
+        TextView reminderDateTime = (TextView)convertView.findViewById(R.id.reminderTimeText);
         // expanded view
-        TextView reminderEdit = (TextView)rowView.findViewById(R.id.reminderEntryEdit);
-        TextView reminderShare = (TextView)rowView.findViewById(R.id.reminderEntryShare);
-        TextView reminderDismiss = (TextView)rowView.findViewById(R.id.reminderEntryDismiss);
+        TextView reminderEdit = (TextView)convertView.findViewById(R.id.reminderEntryEdit);
+        TextView reminderShare = (TextView)convertView.findViewById(R.id.reminderEntryShare);
+        TextView reminderDismiss = (TextView)convertView.findViewById(R.id.reminderEntryDismiss);
 
         // Set text description
         reminderBody.setText(values.get(position).getDescription());
@@ -60,6 +60,6 @@ public class ReminderList extends ArrayAdapter<Reminder> {
         reminderShare.setOnClickListener(onClickListener);
         reminderDismiss.setOnClickListener(onClickListener);
 
-        return rowView;
+        return convertView;
     }
 }
