@@ -11,6 +11,11 @@
     android:id="@+id/mainFragment"
     tools:context=".MainActivity$PlaceholderFragment">
 
+    <View
+        android:layout_width="@dimen/date_picker_view_animator_height"
+        android:layout_height="4dp"
+        android:background="@null" />
+
     <ListView
         android:id="@+id/mainFragmentListView"
         android:layout_height="match_parent"
