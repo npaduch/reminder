@@ -293,10 +293,8 @@ public class MainFragment extends Fragment {
 
     private void permanentlyDeleteItem(int position){
         Log.d(TAG, "Permanently deleting item:"+position);
-        // set item completed
+        // remove from file
         MainActivity.completedReminders.get(position).removeFromFile(getActivity());
-        // make change in file
-        MainActivity.completedReminders.get(position).writeToFile(getActivity());
         // remove it from the list view
         myReminderListViewArrayAdapter.remove(MainActivity.completedReminders.get(position));
         myReminderListViewArrayAdapter.notifyDataSetChanged();
