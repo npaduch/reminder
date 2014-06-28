@@ -233,7 +233,7 @@ public class MainFragment extends Fragment {
                     if(fragmentType == LIST_PENDING){
                         mainReminderOffset = MainActivity.reminders.indexOf(MainActivity.pendingReminders.get(listItemClickedOffset));
                     } else { // completed
-                        mainReminderOffset = MainActivity.reminders.indexOf(MainActivity.pendingReminders.get(listItemClickedOffset));
+                        mainReminderOffset = MainActivity.reminders.indexOf(MainActivity.completedReminders.get(listItemClickedOffset));
                     }
                     Bundle b = new Bundle();
                     b.putInt(MainActivity.MESSAGE_TASK, MainActivity.TASK_EDIT_REMINDER);
