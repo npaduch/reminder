@@ -546,6 +546,54 @@ public class Reminder {
         }
     }
 
+    public void removeFromFile(Context context) {
+
+        Log.d(TAG, "Removing from file "+context.getFilesDir()+File.pathSeparator+filename);
+        File file = new File(context.getFilesDir(), filename);
+
+        ArrayList<Reminder> reminderList = null;
+
+        // 1. Read in JSON file content
+        try {
+            // Open file
+            FileInputStream fileInputStream = new FileInputStream(file);
+            reminderList = readJsonStream(fileInputStream);
+            Log.d(TAG, "File read successful.");
+        } catch (Exception e) {
+            Log.e(TAG, "Exception when writing to file."+e);
+        }
+
+        if(reminderList == null){
+            // if it's null, reminder doesn't exist in a file anyway
+            return;
+        }
+
+        // add new item to the beginning of the list
+        reminderList = removeReminder(reminderList);
+
+        try {
+            // Get file stream
+            FileOutputStream fOutputStream = new FileOutputStream(file, false);
+            writeJsonStream(fOutputStream, reminderList);
+            Log.d(TAG, "Output To file successful.");
+        } catch (Exception e) {
+            Log.e(TAG, "Exception when writing to file. "+e);
+        }
+
+    }
+
+    private ArrayList<Reminder> removeReminder(ArrayList<Reminder> rList){
+        for(int i = 0; i < rList.size(); i++){
+            if(rList.get(i).getReminderID() == getReminderID()){
+                // found it so remove it
+                rList.remove(i);
+                return rList;
+            }
+        }
+        // return if reminder wasn't found anyway
+        return rList;
+    }
+
     public void writeToFile(Context context) {
 
         Log.d(TAG, "Adding to file "+context.getFilesDir()+File.pathSeparator+filename);

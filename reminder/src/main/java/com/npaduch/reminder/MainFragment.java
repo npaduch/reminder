@@ -210,8 +210,8 @@ public class MainFragment extends Fragment {
             Reminder clickedReminder;
             if(fragmentType == LIST_PENDING) {
                 clickedReminder = MainActivity.pendingReminders.get(position);
-            } else {
-                clickedReminder = MainActivity.pendingReminders.get(position);
+            } else { // completed
+                clickedReminder = MainActivity.completedReminders.get(position);
             }
             // find location within main reminder list
             listItemClickedOffset = MainActivity.reminders.indexOf(clickedReminder);
@@ -229,9 +229,15 @@ public class MainFragment extends Fragment {
             switch (view.getId()) {
                 case R.id.reminderEntryEdit:
                     Log.d(TAG, "Edit reminder button clicked.");
+                    int mainReminderOffset = 0;
+                    if(fragmentType == LIST_PENDING){
+                        mainReminderOffset = MainActivity.reminders.indexOf(MainActivity.pendingReminders.get(listItemClickedOffset));
+                    } else { // completed
+                        mainReminderOffset = MainActivity.reminders.indexOf(MainActivity.pendingReminders.get(listItemClickedOffset));
+                    }
                     Bundle b = new Bundle();
                     b.putInt(MainActivity.MESSAGE_TASK, MainActivity.TASK_EDIT_REMINDER);
-                    b.putInt(MainActivity.TASK_INT, listItemClickedOffset);
+                    b.putInt(MainActivity.TASK_INT, mainReminderOffset);
                     b.putInt(MainActivity.TASK_INITIATOR, MainActivity.PENDING_REMINDERS);
                     messenger.send(b);
                     break;
@@ -240,6 +246,12 @@ public class MainFragment extends Fragment {
                     break;
                 case R.id.reminderEntryDismiss:
                     Log.d(TAG, "Dismiss reminder button clicked.");
+                    if(fragmentType == LIST_PENDING){
+                        dismissItem(listItemClickedOffset);
+                    } else { // permanently delete
+                        // TODO: Add a confirm dialog
+                        permanentlyDeleteItem(listItemClickedOffset);
+                    }
                     break;
             }
         }
@@ -266,6 +278,23 @@ public class MainFragment extends Fragment {
         Log.d(TAG, "Deleting item:"+position);
         // set item completed
         MainActivity.pendingReminders.get(position).setCompleted(true);
+        // cancel alarm
+        MainActivity.pendingReminders.get(position).cancelAlarm(getActivity());
+        // make change in file
+        MainActivity.pendingReminders.get(position).writeToFile(getActivity());
+        // remove it from the list view
+        myReminderListViewArrayAdapter.remove(MainActivity.pendingReminders.get(position));
+        myReminderListViewArrayAdapter.notifyDataSetChanged();
+        // sync after view is updated. We don't want to remove two items.
+        // This will keep the file in line with what's currently displayed
+        MainActivity.reminders = Reminder.getJSONFileContents(getActivity());
+        MainActivity.syncReminders();
+    }
+
+    private void permanentlyDeleteItem(int position){
+        Log.d(TAG, "Permanently deleting item:"+position);
+        // set item completed
+        MainActivity.pendingReminders.get(position).removeFromFile(getActivity());
         // cancel alarm
         MainActivity.pendingReminders.get(position).cancelAlarm(getActivity());
         // make change in file
