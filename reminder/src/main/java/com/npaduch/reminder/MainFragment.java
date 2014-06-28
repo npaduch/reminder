@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.AlphaInAnimationAdapter;
@@ -52,6 +53,9 @@ public class MainFragment extends Fragment {
 
     // Global to hold te last view clicked
     public int listItemClickedOffset = 0;
+
+    // Make global so we can call it from onClick
+    ContextualUndoAdapter undoAdapter;
 
     public MainFragment() {
     }
@@ -106,7 +110,6 @@ public class MainFragment extends Fragment {
                 new SwingRightInAnimationAdapter(alphaInAnimationAdapter);
 
         // swipe to undo adapter
-        ContextualUndoAdapter undoAdapter;
         if(fragmentType == LIST_PENDING) {
             undoAdapter = new ContextualUndoAdapter(swingRightInAnimationAdapter,
                             R.layout.undo_reminder_entry,
@@ -244,12 +247,8 @@ public class MainFragment extends Fragment {
                     break;
                 case R.id.reminderEntryDismiss:
                     Log.d(TAG, "Dismiss reminder button clicked.");
-                    if(fragmentType == LIST_PENDING){
-                        dismissItem(listItemClickedOffset);
-                    } else { // permanently delete
-                        // TODO: Add a confirm dialog
-                        permanentlyDeleteItem(listItemClickedOffset);
-                    }
+                    // Call same method as if user swiped it
+                    undoAdapter.swipeViewAtPosition(listItemClickedOffset);
                     break;
             }
         }
@@ -268,7 +267,11 @@ public class MainFragment extends Fragment {
     ContextualUndoAdapter.DeleteItemCallback removeItem = new ContextualUndoAdapter.DeleteItemCallback(){
         @Override
         public void deleteItem(int position) {
-            dismissItem(position);
+            if(fragmentType == LIST_PENDING) {
+                dismissItem(position);
+            } else { // completed
+                permanentlyDeleteItem(position);
+            }
         }
     };
 
