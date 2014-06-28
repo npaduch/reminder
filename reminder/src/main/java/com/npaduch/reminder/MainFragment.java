@@ -224,6 +224,13 @@ public class MainFragment extends Fragment {
         }
     };
 
+    // TODO: Fix this bug.
+    /**
+     * 1. Click on one reminder
+     * 2. Click on second
+     * 3. Click on first reminder's button
+     * 4. Action is executed on second reminder
+     */
     private View.OnClickListener mainFragmentOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -283,6 +290,7 @@ public class MainFragment extends Fragment {
         MainActivity.pendingReminders.get(position).cancelAlarm(getActivity());
         // make change in file
         MainActivity.pendingReminders.get(position).writeToFile(getActivity());
+        // set expanded view to hidden
         // remove it from the list view
         myReminderListViewArrayAdapter.remove(MainActivity.pendingReminders.get(position));
         myReminderListViewArrayAdapter.notifyDataSetChanged();
