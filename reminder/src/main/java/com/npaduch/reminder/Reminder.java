@@ -285,6 +285,26 @@ public class Reminder {
         Log.d(TAG, "Alarm scheduled");
     }
 
+    public void cancelAlarm(Context context){
+        Log.d(TAG, "Cencelling alarm for reminder.");
+
+        // set time for a minute from now
+        Long time = getMsTime();
+
+
+        // create an Intent and set the class which will execute when Alarm triggers
+        Intent intentAlarm = new Intent(context, AlarmReceiver.class);
+        intentAlarm.putExtra(INTENT_REMINDER_ID, getReminderID());
+
+
+        // create the object
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        //set the alarm for particular time
+        alarmManager.cancel(PendingIntent.getBroadcast(context, getReminderID(), intentAlarm, 0));
+        Log.d(TAG, "Alarm cancelled");
+    }
+
     /**
      * Use the MS time to calculate a user-friendly
      * string for the time the reminder is due.
