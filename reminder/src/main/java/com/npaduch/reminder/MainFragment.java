@@ -219,7 +219,9 @@ public class MainFragment extends Fragment {
             Log.d(TAG, "Reminder to be editted:");
             clickedReminder.outputReminderToLog();
 
-            toggleView(view);
+            myReminderListViewArrayAdapter.toggleExpanded(position);
+            myReminderListViewArrayAdapter.notifyDataSetChanged();
+            //toggleView(view);
             return;
         }
     };
@@ -234,6 +236,11 @@ public class MainFragment extends Fragment {
     private View.OnClickListener mainFragmentOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            toggleView((LinearLayout)view.getParent());
+            int position = (Integer)((LinearLayout)view.getParent()).getTag();
+            myReminderListViewArrayAdapter.toggleExpanded(position);
+            Log.d(TAG, "Parent position of click: "+position);
+
             switch (view.getId()) {
                 case R.id.reminderEntryEdit:
                     Log.d(TAG, "Edit reminder button clicked.");
@@ -255,7 +262,7 @@ public class MainFragment extends Fragment {
                 case R.id.reminderEntryDismiss:
                     Log.d(TAG, "Dismiss reminder button clicked.");
                     // Call same method as if user swiped it
-                    undoAdapter.swipeViewAtPosition(listItemClickedOffset);
+                    undoAdapter.swipeViewAtPosition(position);
                     break;
             }
         }

@@ -23,6 +23,8 @@ public class ReminderList extends ArrayAdapter<Reminder> {
 
     public ArrayList<Reminder> values;
 
+    public ArrayList<Boolean> expandedItems;
+
     /** On Click listener for expandable buttons **/
     public View.OnClickListener onClickListener;
 
@@ -38,6 +40,9 @@ public class ReminderList extends ArrayAdapter<Reminder> {
         this.onClickListener = onClickListener;
         this.fragmentType = fragmentType;
 
+        expandedItems = new ArrayList<Boolean>();
+        for(int i=0; i<values.size(); i++)
+            expandedItems.add(false);
     }
 
     @Override
@@ -57,7 +62,12 @@ public class ReminderList extends ArrayAdapter<Reminder> {
         TextView reminderDismiss = (TextView)convertView.findViewById(R.id.reminderEntryDismiss);
         // set expanded section to GONE
         LinearLayout expandedView = (LinearLayout)convertView.findViewById(R.id.reminderExpanded);
-        expandedView.setVisibility(View.GONE);
+        if(expandedItems.get(position) == false)
+            expandedView.setVisibility(View.GONE);
+        else{
+            expandedView.setVisibility(View.VISIBLE);
+        }
+
 
         // Set text description
         reminderBody.setText(values.get(position).getDescription());
@@ -76,6 +86,23 @@ public class ReminderList extends ArrayAdapter<Reminder> {
             reminderDismiss.setText(R.string.reminder_entry_delete);
         }
 
+        // set tag to position
+        expandedView.setTag(position);
+
         return convertView;
+    }
+
+    public void toggleExpanded(int position){
+        if(expandedItems.get(position))
+            expandedItems.set(position, false);
+        else
+            expandedItems.set(position, true);
+    }
+
+    @Override
+    public void remove(Reminder reminder){
+        int offset = values.indexOf(reminder);
+        expandedItems.set(offset, false);
+        super.remove(reminder);
     }
 }
