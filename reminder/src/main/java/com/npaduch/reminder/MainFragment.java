@@ -53,7 +53,7 @@ public class MainFragment extends Fragment {
 
     // TODO: make this a setting
     // time until delete (in ms)
-    public static final int TIME_UNTIL_DELETE = 3000;
+    public static final int TIME_UNTIL_DELETE = 1500;
 
     // list type
     public int fragmentType = LIST_PENDING;
