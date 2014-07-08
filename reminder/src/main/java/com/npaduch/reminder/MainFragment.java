@@ -1,6 +1,7 @@
 package com.npaduch.reminder;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -42,6 +43,13 @@ public class MainFragment extends Fragment {
     public static final String LIST_TYPE = "list_type";
     public static final int LIST_PENDING = 0;
     public static final int LIST_COMPLETED = 1;
+
+    // Tasks for ASYNC task
+    private static final int ASYNC_TASK_READ_REMINDERS = 0;
+    private static final int ASYNC_TASK_WRITE_REMINDERS = 1;
+    private static final int ASYNC_TASK_UPDATE_REMINDER = 2;
+    private static final int ASYNC_TASK_DELETE_REMINDER = 3;
+
 
     // TODO: make this a setting
     // time until delete (in ms)
@@ -86,6 +94,7 @@ public class MainFragment extends Fragment {
         // get fragment type
         fragmentType = getArguments().getInt(LIST_TYPE, LIST_PENDING);
 
+        // TODO: Move this to the background
         populateReminders();
 
         ListView list = (ListView) rootView.findViewById(R.id.mainFragmentListView);
@@ -296,28 +305,99 @@ public class MainFragment extends Fragment {
         // cancel alarm
         MainActivity.pendingReminders.get(position).cancelAlarm(getActivity());
         // make change in file
-        MainActivity.pendingReminders.get(position).writeToFile(getActivity());
+        // get index of reminder
+        int index = MainActivity.pendingReminders.indexOf(myReminderListViewArrayAdapter.get(position));
+        UpdateFile uf = new UpdateFile(
+                ASYNC_TASK_UPDATE_REMINDER,     // save updated reminder
+                MainActivity.pendingReminders.get(index), // reminder to be saved
+                true // read file back into lists when done
+        );
+        uf.execute();
+        //MainActivity.pendingReminders.get(position).writeToFile(getActivity());
         // set expanded view to hidden
         // remove it from the list view
-        myReminderListViewArrayAdapter.remove(MainActivity.pendingReminders.get(position));
+        //myReminderListViewArrayAdapter.remove(MainActivity.pendingReminders.get(position));
+        myReminderListViewArrayAdapter.remove(position);
         myReminderListViewArrayAdapter.notifyDataSetChanged();
         // sync after view is updated. We don't want to remove two items.
         // This will keep the file in line with what's currently displayed
-        MainActivity.reminders = Reminder.getJSONFileContents(getActivity());
-        MainActivity.syncReminders();
+        //MainActivity.reminders = Reminder.getJSONFileContents(getActivity());
+        //MainActivity.syncReminders();
     }
 
     private void permanentlyDeleteItem(int position){
         Log.d(TAG, "Permanently deleting item:"+position);
         // remove from file
-        MainActivity.completedReminders.get(position).removeFromFile(getActivity());
+        // get index of reminder
+        int index = MainActivity.completedReminders.indexOf(myReminderListViewArrayAdapter.get(position));
+        UpdateFile uf = new UpdateFile(
+                ASYNC_TASK_DELETE_REMINDER,     // delete reminder
+                MainActivity.completedReminders.get(index), // reminder to be saved
+                true // read file back into lists when done
+        );
+        uf.execute();
         // remove it from the list view
-        myReminderListViewArrayAdapter.remove(MainActivity.completedReminders.get(position));
+        myReminderListViewArrayAdapter.remove(position);
         myReminderListViewArrayAdapter.notifyDataSetChanged();
         // sync after view is updated. We don't want to remove two items.
         // This will keep the file in line with what's currently displayed
-        MainActivity.reminders = Reminder.getJSONFileContents(getActivity());
-        MainActivity.syncReminders();
+        //MainActivity.reminders = Reminder.getJSONFileContents(getActivity());
+        //MainActivity.syncReminders();
     }
 
+    /** Asynchronous task for reading/writing to file **/
+    private class UpdateFile extends AsyncTask {
+
+        // Task to complete in the background
+        int task;
+        // Reminder to manipulate (if we need to)
+        Reminder reminder;
+        // sync files with current status
+        boolean sync;
+
+        public UpdateFile(int task, Reminder r, boolean sync) {
+            super();
+            this.task = task;
+            this.reminder = r;
+            this.sync = sync;
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            switch ( task ) {
+                case ASYNC_TASK_READ_REMINDERS:
+                    break;
+                case ASYNC_TASK_WRITE_REMINDERS:
+                    break;
+                case ASYNC_TASK_UPDATE_REMINDER:
+                    reminder.writeToFile(getActivity());
+                    break;
+                case ASYNC_TASK_DELETE_REMINDER:
+                    reminder.removeFromFile(getActivity());
+                    break;
+            }
+            if(sync){
+                MainActivity.reminders = Reminder.getJSONFileContents(getActivity());
+                MainActivity.syncReminders();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Log.d(TAG, "AsyncTask onPreExecute");
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            Log.d(TAG, "AsyncTask onPostExecute");
+        }
+
+        @Override
+        protected void onProgressUpdate(Object[] values) {
+            super.onProgressUpdate(values);
+        }
+    }
 }

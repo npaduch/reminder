@@ -286,7 +286,7 @@ public class Reminder {
     }
 
     public void cancelAlarm(Context context){
-        Log.d(TAG, "Cencelling alarm for reminder.");
+        Log.d(TAG, "Cancelling alarm for reminder.");
 
         // set time for a minute from now
         Long time = getMsTime();

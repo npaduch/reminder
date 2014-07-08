@@ -1,12 +1,14 @@
 package com.npaduch.reminder;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.nhaarman.listviewanimations.ArrayAdapter;
 
 import java.util.ArrayList;
 
@@ -33,8 +35,7 @@ public class ReminderList extends ArrayAdapter<Reminder> {
 
     public ReminderList(Context context, int textViewResourceId, ArrayList<Reminder> values, View.OnClickListener onClickListener,
                         int fragmentType){
-        super(context, textViewResourceId, values);
-
+        super(values);
         this.context = context;
         this.values = values;
         this.onClickListener = onClickListener;
@@ -51,7 +52,7 @@ public class ReminderList extends ArrayAdapter<Reminder> {
 
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.reminder_entry, parent, false);
+            convertView = LayoutInflater.from(context).inflate(R.layout.reminder_entry, parent, false);
         }
 
         TextView reminderBody = (TextView)convertView.findViewById(R.id.reminderDetailText);
@@ -100,9 +101,18 @@ public class ReminderList extends ArrayAdapter<Reminder> {
     }
 
     @Override
-    public void remove(Reminder reminder){
-        int offset = values.indexOf(reminder);
-        expandedItems.set(offset, false);
-        super.remove(reminder);
+    public Reminder remove(int position){
+        expandedItems.set(position, false);
+        return super.remove(position);
+    }
+
+    @Override
+    public long getItemId(final int position) {
+        return getItem(position).getReminderID();
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return true;
     }
 }
