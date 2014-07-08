@@ -313,16 +313,9 @@ public class MainFragment extends Fragment {
                 true // read file back into lists when done
         );
         uf.execute();
-        //MainActivity.pendingReminders.get(position).writeToFile(getActivity());
-        // set expanded view to hidden
         // remove it from the list view
-        //myReminderListViewArrayAdapter.remove(MainActivity.pendingReminders.get(position));
         myReminderListViewArrayAdapter.remove(position);
         myReminderListViewArrayAdapter.notifyDataSetChanged();
-        // sync after view is updated. We don't want to remove two items.
-        // This will keep the file in line with what's currently displayed
-        //MainActivity.reminders = Reminder.getJSONFileContents(getActivity());
-        //MainActivity.syncReminders();
     }
 
     private void permanentlyDeleteItem(int position){
@@ -339,10 +332,6 @@ public class MainFragment extends Fragment {
         // remove it from the list view
         myReminderListViewArrayAdapter.remove(position);
         myReminderListViewArrayAdapter.notifyDataSetChanged();
-        // sync after view is updated. We don't want to remove two items.
-        // This will keep the file in line with what's currently displayed
-        //MainActivity.reminders = Reminder.getJSONFileContents(getActivity());
-        //MainActivity.syncReminders();
     }
 
     /** Asynchronous task for reading/writing to file **/
