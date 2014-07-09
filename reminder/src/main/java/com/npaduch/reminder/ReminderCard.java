@@ -80,8 +80,6 @@ public class ReminderCard extends Card {
     @Override
     public void setupInnerViewElements(ViewGroup parent, View view) {
 
-        Log.d(TAG, "Setting up inner view elements");
-
         dateTimeTextView = (TextView) parent.findViewById(R.id.reminderCardDateTimeText);
 
         dateTimeTextView.setText(reminder.getDateTimeString(context));
