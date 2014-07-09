@@ -29,8 +29,7 @@ import java.util.ArrayList;
  */
 
 
-public class MainActivity extends FragmentActivity
-        implements MainFragment.FragmentCommunicationListener,
+public class MainActivity extends FragmentActivity implements
         NewReminderFragment.FragmentCommunicationListener,
         CardListFragment.FragmentCommunicationListener {
 
@@ -415,14 +414,14 @@ public class MainActivity extends FragmentActivity
     private void initPendingFragment(){
         pendingFragment = new CardListFragment();
         Bundle args = new Bundle();
-        args.putInt(MainFragment.LIST_TYPE, MainFragment.LIST_PENDING);
+        args.putInt(CardListFragment.LIST_TYPE, CardListFragment.LIST_PENDING);
         pendingFragment.setArguments(args);
     }
 
     private void initCompletedFragment(){
         completedFragment = new CardListFragment();
         Bundle args = new Bundle();
-        args.putInt(MainFragment.LIST_TYPE, MainFragment.LIST_COMPLETED);
+        args.putInt(CardListFragment.LIST_TYPE, CardListFragment.LIST_COMPLETED);
         completedFragment.setArguments(args);
     }
 

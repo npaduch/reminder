@@ -83,7 +83,7 @@ public class CardListFragment extends Fragment {
             messenger = (FragmentCommunicationListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement MainFragment.FragmentCommunicationListener");
+                    + " must implement CardListFragment.FragmentCommunicationListener");
         }
     }
 
