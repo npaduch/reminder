@@ -1,6 +1,7 @@
 package com.npaduch.reminder;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -44,6 +45,7 @@ public class CardListFragment extends Fragment {
 
     static FragmentCommunicationListener messenger;
 
+    // Card adapter and listview
     public CardArrayAdapter mCardArrayAdapter;
     public CardListView mCardListView;
 
@@ -58,20 +60,10 @@ public class CardListFragment extends Fragment {
     private static final int ASYNC_TASK_UPDATE_REMINDER = 2;
     private static final int ASYNC_TASK_DELETE_REMINDER = 3;
 
-
-    // TODO: make this a setting
-    // time until delete (in ms)
-    public static final int TIME_UNTIL_DELETE = 1500;
-
     // list type
     public int fragmentType = LIST_PENDING;
 
-
-    // Global to hold te last view clicked
-    public int listItemClickedOffset = 0;
-
-    // Make global so we can call it from onClick
-    ContextualUndoAdapter undoAdapter;
+    public static Context context;
 
     public CardListFragment() {
     }
@@ -101,6 +93,9 @@ public class CardListFragment extends Fragment {
 
         // get fragment type
         fragmentType = getArguments().getInt(LIST_TYPE, LIST_PENDING);
+
+        // save off context
+        context = getActivity();
 
         // TODO: Move this to the background
         populateReminders();
@@ -262,6 +257,10 @@ public class CardListFragment extends Fragment {
         @Override
         public void onSwipe(Card card) {
             Log.d(TAG, "Card swiped");
+            ReminderCard rc = (ReminderCard) card;
+            Reminder r = rc.getReminder();
+            dismissItem(r);
+
         }
     };
 
@@ -270,104 +269,66 @@ public class CardListFragment extends Fragment {
         @Override
         public void onUndoSwipe(Card card) {
             Log.d(TAG, "Card swipe undone");
-        }
-    };
-    /*
-    private View.OnClickListener mainFragmentOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            toggleView((LinearLayout)view.getParent());
-            int position = (Integer)((LinearLayout)view.getParent()).getTag();
-            myReminderListViewArrayAdapter.toggleExpanded(position);
-            Log.d(TAG, "Parent position of click: "+position);
-
-            switch (view.getId()) {
-                case R.id.reminderEntryEdit:
-                    Log.d(TAG, "Edit reminder button clicked.");
-                    int mainReminderOffset = 0;
-                    if(fragmentType == LIST_PENDING){
-                        mainReminderOffset = MainActivity.reminders.indexOf(MainActivity.pendingReminders.get(listItemClickedOffset));
-                    } else { // completed
-                        mainReminderOffset = MainActivity.reminders.indexOf(MainActivity.completedReminders.get(listItemClickedOffset));
-                    }
-                    Bundle b = new Bundle();
-                    b.putInt(MainActivity.MESSAGE_TASK, MainActivity.TASK_EDIT_REMINDER);
-                    b.putInt(MainActivity.TASK_INT, mainReminderOffset);
-                    b.putInt(MainActivity.TASK_INITIATOR, MainActivity.PENDING_REMINDERS);
-                    messenger.send(b);
-                    break;
-                case R.id.reminderEntryShare:
-                    Log.d(TAG, "Share reminder button clicked.");
-                    break;
-                case R.id.reminderEntryDismiss:
-                    Log.d(TAG, "Dismiss reminder button clicked.");
-                    // Call same method as if user swiped it
-                    undoAdapter.swipeViewAtPosition(position);
-                    break;
-            }
+            ReminderCard rc = (ReminderCard) card;
+            Reminder r = rc.getReminder();
+            undismissItem(r);
         }
     };
 
-    private void toggleView(View view){
-        LinearLayout ll = (LinearLayout)view.findViewById(R.id.reminderExpanded);
-        if(ll.getVisibility() == View.GONE){
-            ll.setVisibility(View.VISIBLE);
-        } else {
-            ll.setVisibility(View.GONE);
-        }
-    }
-
-    // DeleteItemCallback
-    ContextualUndoAdapter.DeleteItemCallback removeItem = new ContextualUndoAdapter.DeleteItemCallback(){
-        @Override
-        public void deleteItem(int position) {
-            if(fragmentType == LIST_PENDING) {
-                dismissItem(position);
-            } else { // completed
-                permanentlyDeleteItem(position);
-            }
-        }
-    };
-
-    private void dismissItem(int position){
-        Log.d(TAG, "Deleting item:"+position);
+    private static void dismissItem(Reminder r){
+        Log.d(TAG, "Dismissing item:"+r.getDescription());
         // set item completed
-        MainActivity.pendingReminders.get(position).setCompleted(true);
+        r.setCompleted(true);
         // cancel alarm
-        MainActivity.pendingReminders.get(position).cancelAlarm(getActivity());
+        r.cancelAlarm(context);
         // make change in file
-        // get index of reminder
-        int index = MainActivity.pendingReminders.indexOf(myReminderListViewArrayAdapter.get(position));
         UpdateFile uf = new UpdateFile(
                 ASYNC_TASK_UPDATE_REMINDER,     // save updated reminder
-                MainActivity.pendingReminders.get(index), // reminder to be saved
-                true // read file back into lists when done
+                r,                              // reminder to be saved
+                true                            // read file back into lists when done
         );
         uf.execute();
-        // remove it from the list view
-        myReminderListViewArrayAdapter.remove(position);
-        myReminderListViewArrayAdapter.notifyDataSetChanged();
     }
 
-    private void permanentlyDeleteItem(int position){
-        Log.d(TAG, "Permanently deleting item:"+position);
+    private static void undismissItem(Reminder r){
+        Log.d(TAG, "Undismissing item:"+r.getDescription());
+        // set item not completed
+        r.setCompleted(false);
+        // reschedule alarm
+        r.setAlarm(context);
+        // make change in file
+        UpdateFile uf = new UpdateFile(
+                ASYNC_TASK_UPDATE_REMINDER,     // save updated reminder
+                r,                              // reminder to be saved
+                true                            // read file back into lists when done
+        );
+        uf.execute();
+    }
+
+    private void permanentlyDeleteItem(Reminder r){
+        Log.d(TAG, "Permanently deleting item:"+r.getDescription());
         // remove from file
-        // get index of reminder
-        int index = MainActivity.completedReminders.indexOf(myReminderListViewArrayAdapter.get(position));
         UpdateFile uf = new UpdateFile(
                 ASYNC_TASK_DELETE_REMINDER,     // delete reminder
-                MainActivity.completedReminders.get(index), // reminder to be saved
-                true // read file back into lists when done
+                r,                              // reminder to be saved
+                true                            // read file back into lists when done
         );
         uf.execute();
-        // remove it from the list view
-        myReminderListViewArrayAdapter.remove(position);
-        myReminderListViewArrayAdapter.notifyDataSetChanged();
     }
-    */
+
+    private void recreateDeletedItem(Reminder r){
+        Log.d(TAG, "Undeleting item:"+r.getDescription());
+        // remove from file
+        UpdateFile uf = new UpdateFile(
+                ASYNC_TASK_UPDATE_REMINDER,     // delete reminder
+                r,                              // reminder to be saved
+                true                            // read file back into lists when done
+        );
+        uf.execute();
+    }
 
     /** Asynchronous task for reading/writing to file **/
-    private class UpdateFile extends AsyncTask {
+    private static class UpdateFile extends AsyncTask {
 
         // Task to complete in the background
         int task;
@@ -391,14 +352,14 @@ public class CardListFragment extends Fragment {
                 case ASYNC_TASK_WRITE_REMINDERS:
                     break;
                 case ASYNC_TASK_UPDATE_REMINDER:
-                    reminder.writeToFile(getActivity());
+                    reminder.writeToFile(context);
                     break;
                 case ASYNC_TASK_DELETE_REMINDER:
-                    reminder.removeFromFile(getActivity());
+                    reminder.removeFromFile(context);
                     break;
             }
             if(sync){
-                MainActivity.reminders = Reminder.getJSONFileContents(getActivity());
+                MainActivity.reminders = Reminder.getJSONFileContents(context);
                 MainActivity.syncReminders();
             }
             return null;
