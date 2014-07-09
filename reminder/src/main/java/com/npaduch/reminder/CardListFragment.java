@@ -216,10 +216,6 @@ public class CardListFragment extends Fragment {
         return null;
     }
 
-    public int test(){
-        return 0;
-    }
-
     public static Card.OnCardClickListener cardClickListener = new Card.OnCardClickListener(){
         @Override
         public void onClick(Card card, View view) {
