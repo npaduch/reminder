@@ -56,10 +56,9 @@ public class MainActivity extends FragmentActivity
     public static final String FRAGMENT_TAG = "FRAGMENT_TAG"; // handle back button
 
     // Holders for fragments to preserve state
-    MainFragment mainFragment;
     NewReminderFragment newReminderFragment;
-    MainFragment completedFragment;
     CardListFragment pendingFragment;
+    CardListFragment completedFragment;
     public int currentFragment; // keep track of what we currently are
 
     // Message Passing (keys = String, values = int)
@@ -98,8 +97,6 @@ public class MainActivity extends FragmentActivity
         /* Fragment Manager */
         // load initial fragment
         if (savedInstanceState == null) {
-            //initMainFragment();
-            //changeFragment(mainFragment, REMINDER_LIST, false);
             initPendingFragment();
             changeFragment(pendingFragment, REMINDER_LIST, false);
         }
@@ -242,10 +239,10 @@ public class MainActivity extends FragmentActivity
             mDrawerLayout.closeDrawer(mDrawerList);
         }
         else if(position == PENDING_REMINDERS_TITLE) {
-            if(mainFragment == null){
-                initMainFragment();
+            if(pendingFragment == null){
+                initPendingFragment();
             }
-            changeFragment(mainFragment, REMINDER_LIST, false);
+            changeFragment(pendingFragment, REMINDER_LIST, false);
             // Highlight the selected item, update the title, and close the drawer
             mDrawerList.setItemChecked(position, true);
             setTitle(getString(R.string.app_name));
@@ -312,10 +309,10 @@ public class MainActivity extends FragmentActivity
                 setTitle(getResources().getStringArray(R.array.drawer_titles)[NEW_REMINDER_TITLE]);
                 break;
             case REMINDER_LIST:
-                if (mainFragment == null) {
-                    initMainFragment();
+                if (pendingFragment == null) {
+                    initPendingFragment();
                 }
-                changeFragment(mainFragment, REMINDER_LIST, true);
+                changeFragment(pendingFragment, REMINDER_LIST, true);
                 Log.d(TAG, "Setting title to app name");
                 setTitle(R.string.app_name);
                 break;
@@ -404,22 +401,15 @@ public class MainActivity extends FragmentActivity
     @Override
     public void onBackPressed() {
         if(currentFragment == NEW_REMINDER){
-            if(mainFragment == null){
-                initMainFragment();
+            if(pendingFragment == null){
+                initPendingFragment();
             }
-            changeFragment(mainFragment, REMINDER_LIST, false);
+            changeFragment(pendingFragment, REMINDER_LIST, false);
             setTitle(getResources().getString(R.string.app_name));
         }
         else{
             super.onBackPressed();
         }
-    }
-
-    private void initMainFragment(){
-        mainFragment = new MainFragment();
-        Bundle args = new Bundle();
-        args.putInt(MainFragment.LIST_TYPE, MainFragment.LIST_PENDING);
-        mainFragment.setArguments(args);
     }
 
     private void initPendingFragment(){
@@ -430,7 +420,7 @@ public class MainActivity extends FragmentActivity
     }
 
     private void initCompletedFragment(){
-        completedFragment = new MainFragment();
+        completedFragment = new CardListFragment();
         Bundle args = new Bundle();
         args.putInt(MainFragment.LIST_TYPE, MainFragment.LIST_COMPLETED);
         completedFragment.setArguments(args);
