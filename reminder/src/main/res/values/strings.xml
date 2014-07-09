@@ -29,6 +29,10 @@
     <string name="reminder_undo_dismiss">Reminder dismissed.</string>
     <string name="reminder_undo_delete">Reminder permanently deleted.</string>
     <string name="reminder_undo_label">Undo</string>
+    <!-- Reminder Card Menu Strings -->
+    <string name="action_share_reminder">@string/reminder_entry_share</string>
+    <string name="action_edit_reminder">@string/reminder_entry_edit</string>
+    <string name="action_delete_reminder">@string/reminder_entry_delete</string>
 
     <!-- New Reminder Strings -->
     <string name="new_reminder_hint">          What will you forget about?</string>

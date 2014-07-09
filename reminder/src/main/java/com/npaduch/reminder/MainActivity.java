@@ -31,7 +31,8 @@ import java.util.ArrayList;
 
 public class MainActivity extends FragmentActivity
         implements MainFragment.FragmentCommunicationListener,
-        NewReminderFragment.FragmentCommunicationListener {
+        NewReminderFragment.FragmentCommunicationListener,
+        CardListFragment.FragmentCommunicationListener {
 
     // Debugging attributes
     String TAG = "MainActivity";
@@ -58,6 +59,7 @@ public class MainActivity extends FragmentActivity
     MainFragment mainFragment;
     NewReminderFragment newReminderFragment;
     MainFragment completedFragment;
+    CardListFragment pendingFragment;
     public int currentFragment; // keep track of what we currently are
 
     // Message Passing (keys = String, values = int)
@@ -96,8 +98,10 @@ public class MainActivity extends FragmentActivity
         /* Fragment Manager */
         // load initial fragment
         if (savedInstanceState == null) {
-            initMainFragment();
-            changeFragment(mainFragment, REMINDER_LIST, false);
+            //initMainFragment();
+            //changeFragment(mainFragment, REMINDER_LIST, false);
+            initPendingFragment();
+            changeFragment(pendingFragment, REMINDER_LIST, false);
         }
 
         /** Handle open and close drawer events */
@@ -416,6 +420,13 @@ public class MainActivity extends FragmentActivity
         Bundle args = new Bundle();
         args.putInt(MainFragment.LIST_TYPE, MainFragment.LIST_PENDING);
         mainFragment.setArguments(args);
+    }
+
+    private void initPendingFragment(){
+        pendingFragment = new CardListFragment();
+        Bundle args = new Bundle();
+        args.putInt(MainFragment.LIST_TYPE, MainFragment.LIST_PENDING);
+        pendingFragment.setArguments(args);
     }
 
     private void initCompletedFragment(){
