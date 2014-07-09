@@ -44,7 +44,7 @@ public class CardListFragment extends Fragment {
 
     static FragmentCommunicationListener messenger;
 
-    public ReminderCardArrayAdapter mCardArrayAdapter;
+    public CardArrayAdapter mCardArrayAdapter;
     public CardListView mCardListView;
 
     // Arguments
@@ -109,8 +109,9 @@ public class CardListFragment extends Fragment {
         Log.d(TAG, "Found "+cardList.size()+" cards.");
 
         // Set the adapter
-        mCardArrayAdapter = new ReminderCardArrayAdapter(getActivity(), cardList);
-        mCardArrayAdapter.setInnerViewTypeCount(1);
+        mCardArrayAdapter = new CardArrayAdapter(getActivity(), cardList);
+        // Make swipes undo-able!
+        mCardArrayAdapter.setEnableUndo(true);
 
         mCardListView = (CardListView) getActivity().findViewById(R.id.reminderCardListView);
         if (mCardListView != null) {
@@ -255,6 +256,22 @@ public class CardListFragment extends Fragment {
         b.putInt(MainActivity.TASK_INITIATOR, MainActivity.PENDING_REMINDERS);
         messenger.send(b);
     }
+
+    public static Card.OnSwipeListener cardOnSwipeListener
+            = new Card.OnSwipeListener() {
+        @Override
+        public void onSwipe(Card card) {
+            Log.d(TAG, "Card swiped");
+        }
+    };
+
+    public static Card.OnUndoSwipeListListener cardOnUndoSwipeListener
+            = new Card.OnUndoSwipeListListener(){
+        @Override
+        public void onUndoSwipe(Card card) {
+            Log.d(TAG, "Card swipe undone");
+        }
+    };
     /*
     private View.OnClickListener mainFragmentOnClickListener = new View.OnClickListener() {
         @Override

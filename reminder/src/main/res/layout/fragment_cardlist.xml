@@ -1,26 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:card="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/mainFragment"
-    tools:context=".MainActivity$PlaceholderFragment">
+    android:layout_height="match_parent">
 
-    <!-- buffer between action bar and list -->
-    <View
-        android:layout_width="@dimen/date_picker_view_animator_height"
-        android:layout_height="4dp"
-        android:background="@null" />
-
-    <!-- listview of cards -->
-    <it.gmariotti.cardslib.library.view.CardListView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/reminderCardListView"
-        />
+        android:id="@+id/mainFragment"
+        tools:context=".MainActivity$PlaceholderFragment">
 
+        <!-- buffer between action bar and list -->
+        <View
+            android:layout_width="@dimen/date_picker_view_animator_height"
+            android:layout_height="4dp"
+            android:background="@null" />
 
-</LinearLayout>
+        <!-- listview of cards -->
+        <it.gmariotti.cardslib.library.view.CardListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/reminderCardListView"
+            />
+
+    </LinearLayout>
+
+    <!-- Include undo message layout -->
+    <include layout="@layout/list_card_undo_message"/>
+
+</FrameLayout>

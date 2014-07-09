@@ -33,6 +33,12 @@
     <string name="action_share_reminder">@string/reminder_entry_share</string>
     <string name="action_edit_reminder">@string/reminder_entry_edit</string>
     <string name="action_delete_reminder">@string/reminder_entry_delete</string>
+    <!-- Reminder Card Undo Strings -->
+    <string name="list_card_undo_title">Undo</string>
+    <plurals name="list_card_undo_items">
+        <item quantity="one">@string/reminder_undo_dismiss</item>
+        <item quantity="other">%d reminders dismissed.</item>
+    </plurals>
 
     <!-- New Reminder Strings -->
     <string name="new_reminder_hint">          What will you forget about?</string>

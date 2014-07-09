@@ -59,12 +59,21 @@ public class ReminderCard extends Card {
         //Set a OnClickListener listener
         setOnClickListener(CardListFragment.cardClickListener);
 
+        /** Card Header **/
         //Create a CardHeader
         ReminderCardHeader header = new ReminderCardHeader(context);
 
         //Add a popup menu. This method set OverFlow button to visible
         header.setPopupMenu(R.menu.card_menu, CardListFragment.cardOverflowClickListener);
         addCardHeader(header);
+
+        /** Swipe to undo **/
+        // set ID
+        setId(Integer.toString(reminder.getReminderID()));
+        setSwipeable(true);
+        setOnSwipeListener(CardListFragment.cardOnSwipeListener);
+        setOnUndoSwipeListListener(CardListFragment.cardOnUndoSwipeListener);
+
 
     }
 
