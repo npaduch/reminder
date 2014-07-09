@@ -137,8 +137,6 @@ public class MainActivity extends FragmentActivity implements
         SystemBarTintManager tintManager = new SystemBarTintManager(this);
         // enable status bar tint
         tintManager.setStatusBarTintEnabled(true);
-        // enable navigation bar tint
-        //tintManager.setNavigationBarTintEnabled(true);// set a custom tint color for all system bars
         // Set color
         tintManager.setTintColor(getResources().getColor(R.color.app_color_theme));
 
