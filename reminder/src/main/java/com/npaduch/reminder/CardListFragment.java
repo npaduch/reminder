@@ -180,8 +180,27 @@ public class CardListFragment extends Fragment {
     }
 
     public void addReminderCard(Reminder r){
+
+        // Check if reminder already exists
+        boolean found = false;
+        for(int i = 0; i < mCardArrayAdapter.getCount(); i++){
+            // find the view with Id that matches reminder
+            ReminderCard rc = (ReminderCard) mCardArrayAdapter.getItem(i);
+            Reminder cardReminder = rc.getReminder();
+            if(cardReminder.getReminderID() == r.getReminderID()){
+                // found a match, update it with new card
+                found = true;
+                rc.setReminder(r);
+                break;
+            }
+        }
+
+        // if we didn't find it, it must be new! Add it.
         // TODO: sort, adding to beginning for now
-        mCardArrayAdapter.insert(new ReminderCard(getActivity(), r), 0);
+        if(!found)
+            mCardArrayAdapter.insert(new ReminderCard(getActivity(), r), 0);
+
+        // update view
         mCardArrayAdapter.notifyDataSetChanged();
     }
 
