@@ -110,6 +110,11 @@ public class CardListFragment extends Fragment {
         if (mCardListView != null) {
             mCardListView.setAdapter(mCardArrayAdapter);
         }
+
+        // Initialize floating action button
+        Fab mFab = (Fab)getActivity().findViewById(R.id.FloatingAddButton);
+        mFab.setFabColor(getActivity().getResources().getColor(R.color.app_color_theme));
+        mFab.setFabDrawable(getActivity().getResources().getDrawable(R.drawable.ic_action_new));
     }
 
     @Override

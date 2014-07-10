@@ -42,4 +42,12 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/reminder_list_empty"/>
 
+    <com.npaduch.reminder.Fab
+        android:id="@+id/FloatingAddButton"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp" />
+
 </FrameLayout>
