@@ -32,4 +32,14 @@
     <!-- Include undo message layout -->
     <include layout="@layout/list_card_undo_message"/>
 
+    <TextView
+        android:id="@+id/cardListEmptyView"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="48dp"
+        android:layout_gravity="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/reminder_list_empty"/>
+
 </FrameLayout>

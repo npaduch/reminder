@@ -617,7 +617,7 @@ public class NewReminderFragment extends Fragment
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
             Log.d(TAG, "AsyncTask onPostExecute");
-            Toast.makeText(context, R.string.toast_new_reminder_created, Toast.LENGTH_SHORT);
+            Toast.makeText(context, R.string.toast_new_reminder_created, Toast.LENGTH_SHORT).show();
             if(MainActivity.pendingFragment != null
                     && MainActivity.pendingFragment.mCardArrayAdapter != null)
                 MainActivity.pendingFragment.addReminderCard(reminder);

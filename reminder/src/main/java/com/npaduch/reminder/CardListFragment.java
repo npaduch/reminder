@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -100,7 +101,12 @@ public class CardListFragment extends Fragment {
         // Make swipes undo-able!
         mCardArrayAdapter.setEnableUndo(true);
 
+        // Set ListView
         mCardListView = (CardListView) getActivity().findViewById(R.id.reminderCardListView);
+        // Set EmptyView
+        TextView tv = (TextView) getActivity().findViewById(R.id.cardListEmptyView);
+        mCardListView.setEmptyView(tv);
+
         if (mCardListView != null) {
             mCardListView.setAdapter(mCardArrayAdapter);
         }

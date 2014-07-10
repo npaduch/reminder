@@ -39,6 +39,8 @@
         <item quantity="one">@string/reminder_undo_dismiss</item>
         <item quantity="other">%d reminders dismissed.</item>
     </plurals>
+    <!-- Reminder List Strings -->
+    <string name="reminder_list_empty">No more reminders! Click the "+" button to add more.</string>
 
     <!-- New Reminder Strings -->
     <string name="new_reminder_hint">          What will you forget about?</string>
