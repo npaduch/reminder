@@ -111,10 +111,19 @@ public class CardListFragment extends Fragment {
             mCardListView.setAdapter(mCardArrayAdapter);
         }
 
-        // Initialize floating action button
+        /** Initialize floating action button **/
         Fab mFab = (Fab)getActivity().findViewById(R.id.FloatingAddButton);
         mFab.setFabColor(getActivity().getResources().getColor(R.color.app_color_theme));
         mFab.setFabDrawable(getActivity().getResources().getDrawable(R.drawable.ic_action_new));
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle b = new Bundle();
+                b.putInt(MainActivity.MESSAGE_TASK, MainActivity.TASK_CHANGE_FRAG);
+                b.putInt(MainActivity.TASK_INT, MainActivity.NEW_REMINDER);
+                messenger.send(b);
+            }
+        });
     }
 
     @Override
