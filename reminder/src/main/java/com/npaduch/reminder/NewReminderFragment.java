@@ -32,6 +32,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 
+import it.gmariotti.cardslib.library.internal.Card;
+import it.gmariotti.cardslib.library.view.CardView;
+
 
 /**
  * Created by nolanpaduch on 5/8/14.
@@ -125,7 +128,16 @@ public class NewReminderFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "New Reminder OnCreateView");
+
+        // inflate view first
         rootView = inflater.inflate(R.layout.new_reminder, container, false);
+
+        // Create a Card
+        Card card = new Card(getActivity(), R.layout.new_reminder_card);
+
+        // Set card in the cardView
+        CardView cardView = (CardView) rootView.findViewById(R.id.cardview_new_reminder);
+        cardView.setCard(card);
 
         // initialize Spinners with string data
         initializeSpinners(rootView);
