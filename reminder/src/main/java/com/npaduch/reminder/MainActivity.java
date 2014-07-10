@@ -28,6 +28,8 @@ import java.util.ArrayList;
  * Main Activity to spawn necessary fragments
  */
 
+// TODO: set fragment tags
+// TODO: Replace frag communication with a BUS
 
 public class MainActivity extends FragmentActivity implements
         NewReminderFragment.FragmentCommunicationListener,
@@ -56,8 +58,8 @@ public class MainActivity extends FragmentActivity implements
 
     // Holders for fragments to preserve state
     NewReminderFragment newReminderFragment;
-    CardListFragment pendingFragment;
-    CardListFragment completedFragment;
+    public static CardListFragment pendingFragment;
+    public static CardListFragment completedFragment;
     public int currentFragment; // keep track of what we currently are
 
     // Message Passing (keys = String, values = int)

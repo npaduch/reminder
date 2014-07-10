@@ -2,6 +2,7 @@ package com.npaduch.reminder;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -102,6 +103,9 @@ public class NewReminderFragment extends Fragment
     private boolean daySpinnerSetInCode = false;
     private boolean timeSpinnerSetInCode = false;
 
+    // Application Context
+    private Context context;
+
     private Reminder reminderHolder;
 
     public NewReminderFragment() {
@@ -187,6 +191,8 @@ public class NewReminderFragment extends Fragment
             }
         }
 
+        // save off context
+        this.context = getActivity();
 
         return rootView;
     }
@@ -440,13 +446,11 @@ public class NewReminderFragment extends Fragment
 
         // Log and save reminder
         r.outputReminderToLog();
-        r.writeToFile(getActivity());
+        SaveReminder saveReminder = new SaveReminder(r);
+        saveReminder.execute();
 
         // kick off reminder
         r.setAlarm(getActivity());
-
-        Log.d(TAG,"Reminder saved.");
-        Toast.makeText(getActivity(), getString(R.string.toast_new_reminder_created), Toast.LENGTH_SHORT).show();
 
         // return to main View
         Bundle b = new Bundle();
@@ -576,6 +580,52 @@ public class NewReminderFragment extends Fragment
                 .findFragmentByTag(FRAG_TAG_DATE_PICKER);
         if (calendarDatePickerDialog != null) {
             calendarDatePickerDialog.setOnDateSetListener(this);
+        }
+    }
+
+
+
+    /** Asynchronous task for reading/writing to file **/
+    private class SaveReminder extends AsyncTask {
+
+        // Reminder to save
+        Reminder reminder;
+
+        public SaveReminder(Reminder r) {
+            super();
+            this.reminder = r;
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+
+            reminder.writeToFile(context);
+
+            MainActivity.reminders = Reminder.getJSONFileContents(context);
+            MainActivity.syncReminders();
+
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Log.d(TAG, "AsyncTask onPreExecute");
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            Log.d(TAG, "AsyncTask onPostExecute");
+            Toast.makeText(context, R.string.toast_new_reminder_created, Toast.LENGTH_SHORT);
+            if(MainActivity.pendingFragment != null
+                    && MainActivity.pendingFragment.mCardArrayAdapter != null)
+                MainActivity.pendingFragment.addReminderCard(reminder);
+        }
+
+        @Override
+        protected void onProgressUpdate(Object[] values) {
+            super.onProgressUpdate(values);
         }
     }
 }

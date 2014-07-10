@@ -38,6 +38,7 @@ import it.gmariotti.cardslib.library.view.CardListView;
  */
 
 // TODO: Add samples if first time launching
+// TODO: BUG: hitting back on listview clears view
 
 public class CardListFragment extends Fragment {
 
@@ -175,10 +176,13 @@ public class CardListFragment extends Fragment {
             cards.add(new ReminderCard(getActivity(), r));
         }
 
-        for( Card card : cards)
-            Log.d(TAG, card.toString());
-
         return cards;
+    }
+
+    public void addReminderCard(Reminder r){
+        // TODO: sort, adding to beginning for now
+        mCardArrayAdapter.insert(new ReminderCard(getActivity(), r), 0);
+        mCardArrayAdapter.notifyDataSetChanged();
     }
 
 
