@@ -42,6 +42,8 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/reminder_list_empty"/>
 
+    <!-- height of middle = 16+72/2 = 16+36 = 48dp -->
+    <!-- Left edge = 16+72 = 88dp -->
     <com.npaduch.reminder.Fab
         android:id="@+id/FloatingAddButton"
         android:layout_width="72dp"

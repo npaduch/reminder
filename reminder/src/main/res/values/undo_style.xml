@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <!-- Used by UndoController in CardListView -->
+
+    <!-- to align with FAB, need height at 48dp -->
+    <!-- height of middle = 24+48/2 = 24+24 = 48dp -->
+    <!-- right edge can't hit FAB. -->
+    <!-- FAB = 16 + 72 = 88dp + 8dp padding = 96dp -->
+    <style name="list_card_UndoBar">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_gravity">bottom|left</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginRight">96dp</item>
+        <item name="android:layout_marginBottom">24dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">@drawable/undobar</item>
+        <item name="android:clickable">true</item>
+        <item name="android:showDividers">middle</item>
+        <item name="android:divider">@drawable/undobar_divider</item>
+        <item name="android:dividerPadding">10dp</item>
+    </style>
+
+    <style name="list_card_UndoBarMessage">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:textAppearance">?android:textAppearanceMedium</item>
+        <item name="android:textColor">#fff</item>
+
+    </style>
+
+    <style name="list_card_UndoBarButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:background">@drawable/card_undo</item>
+        <item name="android:drawableLeft">@drawable/ic_undobar_undo</item>
+        <item name="android:drawablePadding">12dp</item>
+        <item name="android:textAppearance">?android:textAppearanceMedium</item>
+        <item name="android:textColor">#fff</item>
+        <item name="android:text">@string/list_card_undo_title</item>
+    </style>
+
+</resources>

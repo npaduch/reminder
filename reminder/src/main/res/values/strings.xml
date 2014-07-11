@@ -26,7 +26,7 @@
     <string name="reminder_entry_share">Share</string>
     <string name="reminder_entry_dismiss">Dismiss</string>
     <string name="reminder_entry_delete">Delete</string>
-    <string name="reminder_undo_dismiss">Reminder dismissed.</string>
+    <string name="reminder_undo_dismiss">Dismissed</string>
     <string name="reminder_undo_delete">Reminder permanently deleted.</string>
     <string name="reminder_undo_label">Undo</string>
     <!-- Reminder Card Menu Strings -->
