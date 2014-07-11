@@ -13,6 +13,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.squareup.otto.Subscribe;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -122,6 +125,7 @@ public class CardListFragment extends Fragment {
                 b.putInt(MainActivity.MESSAGE_TASK, MainActivity.TASK_CHANGE_FRAG);
                 b.putInt(MainActivity.TASK_INT, MainActivity.NEW_REMINDER);
                 messenger.send(b);
+                //BusProvider.getInstance().post(new BusEvent("FAB clicked"));
             }
         });
     }
@@ -130,6 +134,18 @@ public class CardListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_cardlist, container, false);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
     }
 
     @Override
@@ -416,4 +432,13 @@ public class CardListFragment extends Fragment {
             super.onProgressUpdate(values);
         }
     }
+
+    // Event bus listener
+    @Subscribe
+    public void BusEvent(BusEvent event){
+        Log.d(TAG, "Message received: "+ event.toString());
+    }
+
 }
+
+

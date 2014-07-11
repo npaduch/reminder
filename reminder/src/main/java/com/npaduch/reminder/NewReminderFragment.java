@@ -581,8 +581,17 @@ public class NewReminderFragment extends Fragment
         if (calendarDatePickerDialog != null) {
             calendarDatePickerDialog.setOnDateSetListener(this);
         }
+
+        // get event bus
+        BusProvider.getInstance().register(this);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        // release event bus
+        BusProvider.getInstance().unregister(this);
+    }
 
 
     /** Asynchronous task for reading/writing to file **/
