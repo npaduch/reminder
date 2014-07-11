@@ -627,9 +627,7 @@ public class NewReminderFragment extends Fragment
             super.onPostExecute(o);
             Log.d(TAG, "AsyncTask onPostExecute");
             Toast.makeText(context, R.string.toast_new_reminder_created, Toast.LENGTH_SHORT).show();
-            if(MainActivity.pendingFragment != null
-                    && MainActivity.pendingFragment.mCardArrayAdapter != null)
-                MainActivity.pendingFragment.addReminderCard(reminder);
+            BusProvider.getInstance().post(new BusEvent(BusEvent.TYPE_ADD, BusEvent.TARGET_PENDING, reminder));
         }
 
         @Override

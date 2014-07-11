@@ -436,7 +436,14 @@ public class CardListFragment extends Fragment {
     // Event bus listener
     @Subscribe
     public void BusEvent(BusEvent event){
-        Log.d(TAG, "Message received: "+ event.toString());
+        // check if it's for us
+        if(!event.getTargets().contains(BusEvent.TARGET_PENDING))
+            return;
+        Log.d(TAG, "Message received: "+ event.getType());
+        switch(event.getType()){
+            case BusEvent.TYPE_ADD:
+                addReminderCard(event.getReminder());
+        }
     }
 
 }

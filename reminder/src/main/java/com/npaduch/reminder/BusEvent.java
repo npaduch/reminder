@@ -11,8 +11,10 @@ public class BusEvent {
 
     // targeted receiver
     private ArrayList<Integer> targets;
+
     // hold type of event
     private int type;
+
     // possible reminder to add/remove
     private Reminder reminder;
 
@@ -44,6 +46,22 @@ public class BusEvent {
 
     public void addTarget(int target){
         targets.add(target);
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public Reminder getReminder() {
+        return reminder;
+    }
+
+    public void setReminder(Reminder reminder) {
+        this.reminder = reminder;
     }
 
 
