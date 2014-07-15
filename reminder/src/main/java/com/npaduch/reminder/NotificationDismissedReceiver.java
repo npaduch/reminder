@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 
 /**
@@ -41,8 +39,13 @@ public class NotificationDismissedReceiver extends BroadcastReceiver {
 
         Log.d(TAG,"Setting reminder to completed");
         r.setCompleted(true);
-        // TODO: find a way to reload views
         r.writeToFile(context);
+
+        // send event in case activity already running
+        BusProvider.getInstance().register(this);
+        BusProvider.getInstance().post(
+                new BusEvent( BusEvent.TYPE_REMOVE, BusEvent.TARGET_PENDING, r));
+
     }
 
 }

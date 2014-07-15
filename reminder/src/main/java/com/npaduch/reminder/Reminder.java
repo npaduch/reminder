@@ -496,14 +496,7 @@ public class Reminder {
         }
         Log.d(TAG,"JSON file found. Loading in reminders.");
 
-        try {
-            FileInputStream fileInputStream = new FileInputStream(file);
-            return Reminder.readJsonStream(fileInputStream);
-        } catch (Exception e){
-            Log.e(TAG, "Error reading existing JSON file: "+e);
-        }
-        Log.e(TAG, "Could not read input stream to get existing reminders.");
-        return null;
+        return handleFileOperation(context, false, null);
     }
 
     public static Reminder findReminder(int reminderId, ArrayList<Reminder> reminders){
@@ -536,14 +529,7 @@ public class Reminder {
 
         ArrayList<Reminder> reminders = new ArrayList<Reminder>();
 
-        try {
-            // Append to file if it exists
-            FileOutputStream fOutputStream = new FileOutputStream(file, false);
-            writeJsonStream(fOutputStream, reminders);
-            Log.d(TAG, "Output To file successful.");
-        } catch (Exception e) {
-            Log.e(TAG, "Exception when writing to file. "+e);
-        }
+        handleFileOperation(context, true, reminders);
     }
 
     public void removeFromFile(Context context) {
@@ -553,32 +539,17 @@ public class Reminder {
 
         ArrayList<Reminder> reminderList = null;
 
-        // 1. Read in JSON file content
-        try {
-            // Open file
-            FileInputStream fileInputStream = new FileInputStream(file);
-            reminderList = readJsonStream(fileInputStream);
-            Log.d(TAG, "File read successful.");
-        } catch (Exception e) {
-            Log.e(TAG, "Exception when writing to file."+e);
-        }
+        reminderList = handleFileOperation(context, false, null);
 
         if(reminderList == null){
             // if it's null, reminder doesn't exist in a file anyway
             return;
         }
 
-        // add new item to the beginning of the list
+        // remove from list
         reminderList = removeReminder(reminderList);
 
-        try {
-            // Get file stream
-            FileOutputStream fOutputStream = new FileOutputStream(file, false);
-            writeJsonStream(fOutputStream, reminderList);
-            Log.d(TAG, "Output To file successful.");
-        } catch (Exception e) {
-            Log.e(TAG, "Exception when writing to file. "+e);
-        }
+        handleFileOperation(context, true, reminderList);
 
     }
 
@@ -602,14 +573,7 @@ public class Reminder {
         ArrayList<Reminder> reminderList = null;
 
         // 1. Read in JSON file content
-        try {
-            // Open file
-            FileInputStream fileInputStream = new FileInputStream(file);
-            reminderList = readJsonStream(fileInputStream);
-            Log.d(TAG, "File read successful.");
-        } catch (Exception e) {
-            Log.e(TAG, "Exception when writing to file."+e);
-        }
+        reminderList = handleFileOperation(context, false, null);
 
         if(reminderList == null){
             Log.d(TAG, "Reminder list null. Creating a new list.");
@@ -619,14 +583,7 @@ public class Reminder {
         // add new item to the beginning of the list
         reminderList = insertReminder(reminderList);
 
-        try {
-            // Append to file if it exists
-            FileOutputStream fOutputStream = new FileOutputStream(file, false);
-            writeJsonStream(fOutputStream, reminderList);
-            Log.d(TAG, "Output To file successful.");
-        } catch (Exception e) {
-            Log.e(TAG, "Exception when writing to file. "+e);
-        }
+        handleFileOperation(context, true, reminderList);
     }
 
     public ArrayList<Reminder> insertReminder(ArrayList<Reminder> rList){
@@ -649,6 +606,7 @@ public class Reminder {
     /** All required for JSON Parsing **/
     public static ArrayList<Reminder> readJsonStream(InputStream in) throws IOException {
         if(JSON_DEBUG) Log.d(TAG, "Begin readJsonStream");
+        // TODO: WHY AM I NOT READING>>>>>
         JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
         try {
             return readRemindersArray(reader);
@@ -754,6 +712,34 @@ public class Reminder {
         Log.d(TAG,"Reminder: ID: "+getReminderID());
         Log.d(TAG, "Reminder: Time (ms): " + getMsTime());
         Log.d(TAG,"Reminder: END");
+    }
+
+    public static synchronized ArrayList<Reminder> handleFileOperation(Context context, boolean write, ArrayList<Reminder> reminderList){
+
+        File file = new File(context.getFilesDir(), filename);
+        if(write){
+            Log.d(TAG, "Writing reminder list contents to file.");
+            try {
+                FileOutputStream fOutputStream = new FileOutputStream(file, false);
+                writeJsonStream(fOutputStream, reminderList);
+                fOutputStream.close();
+            } catch (Exception e){
+                Log.e(TAG, "Exception when writing to reminder file: "+e);
+            }
+            // return null since we don't need to return anything when writing
+            return null;
+        } else {    // read file
+            Log.d(TAG, "Reading reminder list contents from file.");
+            ArrayList<Reminder> reminders = new ArrayList<Reminder>();
+            try {
+                FileInputStream fileInputStream = new FileInputStream(file);
+                reminders = Reminder.readJsonStream(fileInputStream);
+                fileInputStream.close();
+            } catch (Exception e){
+                Log.e(TAG, "Exception when writing to reminder file: "+e);
+            }
+            return reminders;
+        }
     }
 
 }

@@ -13,12 +13,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 
 import it.gmariotti.cardslib.library.internal.Card;
@@ -86,6 +84,8 @@ public class CardListFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        Log.d(TAG, "onActivityCreated");
 
         // get fragment type
         fragmentType = getArguments().getInt(LIST_TYPE, LIST_PENDING);
@@ -176,7 +176,7 @@ public class CardListFragment extends Fragment {
     private void populateReminders(){
 
         // Check for reminders in file
-        MainActivity.reminders = getJSONFileContents();
+        MainActivity.reminders = initReminderList();
 
         if(MainActivity.reminders == null)
             MainActivity.reminders = new ArrayList<Reminder>();
@@ -231,11 +231,30 @@ public class CardListFragment extends Fragment {
         mCardArrayAdapter.notifyDataSetChanged();
     }
 
+    public void removeReminderCard(Reminder r){
 
-    /** This is different from the reminder class's instance!
-     *  It will create a new file if one is not found.
+        // search for reminder and remove it
+        for(int i = 0; i < mCardArrayAdapter.getCount(); i++){
+            // find the view with Id that matches reminder
+            ReminderCard rc = (ReminderCard) mCardArrayAdapter.getItem(i);
+            Reminder cardReminder = rc.getReminder();
+            if(cardReminder.getReminderID() == r.getReminderID()){
+                // found a match, remove it
+                mCardArrayAdapter.remove(rc);
+                break;
+            }
+        }
+
+        // update view
+        mCardArrayAdapter.notifyDataSetChanged();
+    }
+
+
+    /**
+     * This checks and creates the file if neccessary.
+     * Then it gets the reminders from the JSON file.
      */
-    private ArrayList<Reminder> getJSONFileContents(){
+    private ArrayList<Reminder> initReminderList(){
         Log.d(TAG, "Looking for file " + getActivity().getFilesDir() + File.pathSeparator + Reminder.filename);
 
         // Check for file
@@ -252,14 +271,7 @@ public class CardListFragment extends Fragment {
         }
         Log.d(TAG,"JSON file found. Loading in reminders.");
 
-        try {
-            FileInputStream fileInputStream = new FileInputStream(file);
-            return Reminder.readJsonStream(fileInputStream);
-        } catch (Exception e){
-            Log.e(TAG, "Error reading existing JSON file: "+e);
-        }
-        Log.e(TAG, "Could not read input stream to get existing reminders.");
-        return null;
+        return Reminder.getJSONFileContents(context);
     }
 
     public static Card.OnCardClickListener cardClickListener = new Card.OnCardClickListener(){
@@ -293,7 +305,9 @@ public class CardListFragment extends Fragment {
         }
     };
 
+    // to do, replace this with bus
     public static void switchToEditFragment(Reminder r){
+        //TODO: MainActivity.reminders is out of date here. Pass reminder ID instead
         int mainReminderOffset = MainActivity.reminders.indexOf(r);
         Bundle b = new Bundle();
         b.putInt(MainActivity.MESSAGE_TASK, MainActivity.TASK_EDIT_REMINDER);
@@ -437,12 +451,16 @@ public class CardListFragment extends Fragment {
     @Subscribe
     public void BusEvent(BusEvent event){
         // check if it's for us
+        // TODO: compare for pending or completed
         if(!event.getTargets().contains(BusEvent.TARGET_PENDING))
             return;
         Log.d(TAG, "Message received: "+ event.getType());
         switch(event.getType()){
             case BusEvent.TYPE_ADD:
                 addReminderCard(event.getReminder());
+                break;
+            case BusEvent.TYPE_REMOVE:
+                removeReminderCard(event.getReminder());
         }
     }
 

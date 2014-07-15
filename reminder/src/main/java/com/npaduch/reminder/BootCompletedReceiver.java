@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 
 /**

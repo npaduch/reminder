@@ -26,7 +26,8 @@ public class BusEvent {
 
     // event types
     public static final int TYPE_ADD                = 0;
-    public static final int TYPE_REFRESH            = 1;
+    public static final int TYPE_REMOVE             = 1;
+    public static final int TYPE_REFRESH            = 2;
 
 
     public BusEvent(int type, int target){
