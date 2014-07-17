@@ -72,7 +72,7 @@ public class Reminder {
     public static final int BAD_REMINDER_ID = -1;
 
     // logging
-    private final static String TAG = "RaminderClass";
+    private final static String TAG = "ReminderClass";
 
     // time definitions
     public static final int TIME_MORNING_HOUR = 9;

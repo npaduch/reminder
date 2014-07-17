@@ -18,16 +18,30 @@ public class BusEvent {
     // possible reminder to add/remove
     private Reminder reminder;
 
+    // fragemnts for fragment transition
+    private int toFragment = FRAGMENT_PENDING;
+    private int fromFragment = FRAGMENT_PENDING;
+
     // event receivers
     public static final int TARGET_MAIN             = 0;
     public static final int TARGET_PENDING          = 1;
     public static final int TARGET_COMPLETED        = 2;
     public static final int TARGET_NEW_REMINDER     = 3;
 
-    // event types
+    /** event types **/
+    // For completed and pending fragments
     public static final int TYPE_ADD                = 0;
     public static final int TYPE_REMOVE             = 1;
     public static final int TYPE_REFRESH            = 2;
+    // For main activity
+    public static final int TYPE_CHANGE_FRAG        = 10;
+    public static final int TYPE_EDIT_REMINDER      = 11;
+
+    /** Fragment types **/
+    public static final int FRAGMENT_PENDING        = 0;
+    public static final int FRAGMENT_COMPLETED      = 1;
+    public static final int FRAGMENT_NEW_REMINDER   = 2;
+
 
 
     public BusEvent(int type, int target){
@@ -63,6 +77,22 @@ public class BusEvent {
 
     public void setReminder(Reminder reminder) {
         this.reminder = reminder;
+    }
+
+    public int getToFragment() {
+        return toFragment;
+    }
+
+    public void setToFragment(int toFragment) {
+        this.toFragment = toFragment;
+    }
+
+    public int getFromFragment() {
+        return fromFragment;
+    }
+
+    public void setFromFragment(int fromFragment) {
+        this.fromFragment = fromFragment;
     }
 
 

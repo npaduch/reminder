@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 
@@ -30,9 +31,7 @@ import java.util.ArrayList;
 // TODO: set fragment tags
 // TODO: Replace frag communication with a BUS
 
-public class MainActivity extends FragmentActivity implements
-        NewReminderFragment.FragmentCommunicationListener,
-        CardListFragment.FragmentCommunicationListener {
+public class MainActivity extends FragmentActivity {
 
     // Debugging attributes
     String TAG = "MainActivity";
@@ -97,8 +96,8 @@ public class MainActivity extends FragmentActivity implements
         /* Fragment Manager */
         // load initial fragment
         if (savedInstanceState == null) {
-            initPendingFragment();
-            changeFragment(pendingFragment, REMINDER_LIST, false);
+            currentFragment = BusEvent.FRAGMENT_PENDING;
+            changeFragment(BusEvent.FRAGMENT_PENDING, currentFragment, false);
         }
 
         /** Handle open and close drawer events */
@@ -151,6 +150,7 @@ public class MainActivity extends FragmentActivity implements
 
     }
 
+    // TODO: Move this to background
     private void checkIfNotification(){
         int reminderId = getIntent().getIntExtra(
                 Reminder.INTENT_REMINDER_ID,
@@ -170,9 +170,7 @@ public class MainActivity extends FragmentActivity implements
         }
 
         // find reminder
-        Reminder r = Reminder.findReminder(
-                reminderId,
-                reminders);
+        Reminder r = Reminder.findReminder( reminderId, reminders);
         if(r == null){
             Log.e(TAG, "Couldn't find reminder. Can't set reminder to complete.");
             return;
@@ -214,6 +212,18 @@ public class MainActivity extends FragmentActivity implements
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+    }
+
     /** Navigation Drawer Item Click Listener */
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
@@ -226,36 +236,17 @@ public class MainActivity extends FragmentActivity implements
     private void selectItem(int position) {
         // change to correct fragment
         if(position == NEW_REMINDER_TITLE) {
-            // re-initialize in case it was cancelled last time
-            if(newReminderFragment == null){
-                newReminderFragment = new NewReminderFragment();
-            }
-            changeFragment(newReminderFragment, NEW_REMINDER, false);
-            // Highlight the selected item, update the title, and close the drawer
-            mDrawerList.setItemChecked(position, true);
-            setTitle(getResources().getStringArray(R.array.drawer_titles)[position]);
-            mDrawerLayout.closeDrawer(mDrawerList);
+            changeFragment(BusEvent.FRAGMENT_NEW_REMINDER, currentFragment, false);
         }
         else if(position == PENDING_REMINDERS_TITLE) {
-            if(pendingFragment == null){
-                initPendingFragment();
-            }
-            changeFragment(pendingFragment, REMINDER_LIST, false);
-            // Highlight the selected item, update the title, and close the drawer
-            mDrawerList.setItemChecked(position, true);
-            setTitle(getString(R.string.app_name));
-            mDrawerLayout.closeDrawer(mDrawerList);
+            changeFragment(BusEvent.FRAGMENT_PENDING, currentFragment, false);
         }
         else if(position == COMPLETED_REMINDERS_TITLE) {
-            if(completedFragment == null){
-                initCompletedFragment();
-            }
-            changeFragment(completedFragment, COMPLETED_REMINDER_FRAG, false);
-            // Highlight the selected item, update the title, and close the drawer
-            mDrawerList.setItemChecked(position, true);
-            setTitle(getString(R.string.completed_title));
-            mDrawerLayout.closeDrawer(mDrawerList);
+            changeFragment(BusEvent.FRAGMENT_COMPLETED, currentFragment, false);
         }
+
+        mDrawerList.setItemChecked(position, true);
+        mDrawerLayout.closeDrawer(mDrawerList);
 
     }
 
@@ -277,60 +268,6 @@ public class MainActivity extends FragmentActivity implements
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
-    }
-
-   /** Handle Communication between fragments */
-   // Handle communication from other fragments
-   public void send(Bundle bundle) {
-       int task = bundle.getInt(MESSAGE_TASK);
-       Log.d(TAG, "Task Received: " + task);
-       switch(task) {
-           case TASK_CHANGE_FRAG:
-               handleChangeFragment(bundle);
-               break;
-           case TASK_EDIT_REMINDER:
-               handleEditReminder(bundle);
-               break;
-       }
-   }
-
-    // prepare to change fragment
-    public void handleChangeFragment(Bundle bundle){
-        int value = bundle.getInt(TASK_INT);
-        switch (value) {
-            case NEW_REMINDER:
-                if (newReminderFragment == null) {
-                    newReminderFragment = new NewReminderFragment();
-                }
-                changeFragment(newReminderFragment, NEW_REMINDER, false);
-                Log.d(TAG, "Setting title to new reminder title");
-                setTitle(getResources().getStringArray(R.array.drawer_titles)[NEW_REMINDER_TITLE]);
-                break;
-            case REMINDER_LIST:
-                if (pendingFragment == null) {
-                    initPendingFragment();
-                }
-                changeFragment(pendingFragment, REMINDER_LIST, true);
-                Log.d(TAG, "Setting title to app name");
-                setTitle(R.string.app_name);
-                break;
-        }
-
-    }
-
-    // prepare to change fragment to new fragemnt
-    // pre-populate fields first
-    public void handleEditReminder(Bundle bundle){
-        // bundle contains reminder offset to edit
-        int reminderOffset = bundle.getInt(TASK_INT);
-        // reinitialize so we can fill with edit data
-        newReminderFragment = new NewReminderFragment();
-        Bundle args = new Bundle();
-        args.putInt(NewReminderFragment.REMINDER_OFFSET, reminderOffset);
-        newReminderFragment.setArguments(args);
-        changeFragment(newReminderFragment, NEW_REMINDER, false);
-        Log.d(TAG, "Setting title to edit title");
-        setTitle(getResources().getString(R.string.edit_title));
     }
 
     /**
@@ -357,13 +294,43 @@ public class MainActivity extends FragmentActivity implements
         }
     }
 
-    /**
-     * Change fragment
-     * fragment - fragment to change to
-     * fragmentType - type of new fragment
-     */
-    public void changeFragment(Fragment fragment, int fragmentType, boolean nullifyNewReminderFragment){
-        if(currentFragment == NEW_REMINDER){
+    public void changeFragment(int fragmentTo, int fragmentFrom, boolean resetNewFragment){
+
+        Fragment fragment;  // holder for fragment
+
+        // 1. Init frag if neccessary, set title, set fragment
+        switch (fragmentTo) {
+            case BusEvent.FRAGMENT_NEW_REMINDER:
+                if (newReminderFragment == null) {
+                    newReminderFragment = new NewReminderFragment();
+                }
+                // Check whether to set to New or Edit
+                if(newReminderFragment.getReminderToEdit() != null) {
+                    setTitle(getResources().getString(R.string.edit_title));
+                } else{
+                    setTitle(getResources().getStringArray(R.array.drawer_titles)[NEW_REMINDER_TITLE]);
+                }
+                fragment = newReminderFragment;
+                break;
+            case BusEvent.FRAGMENT_COMPLETED:
+                if (completedFragment == null) {
+                    initCompletedFragment();
+                }
+                setTitle(getResources().getStringArray(R.array.drawer_titles)[COMPLETED_REMINDERS_TITLE]);
+                fragment = completedFragment;
+                break;
+            case BusEvent.FRAGMENT_PENDING:
+            default:  // default to pending
+                if (pendingFragment == null) {
+                    initPendingFragment();
+                }
+                setTitle(R.string.app_name);
+                fragment = pendingFragment;
+                break;
+        }
+
+        // 2. Check if we need to hide the keyboard
+        if(fragmentFrom == BusEvent.FRAGMENT_NEW_REMINDER){
             if(newReminderFragment == null){
                 Log.e(TAG, "NewReminderFragment is null. This should never happen.");
             }
@@ -371,39 +338,41 @@ public class MainActivity extends FragmentActivity implements
                 newReminderFragment.hideKeyboard();
             }
         }
-        // Start next new reminder from scratch if requested
-        if(nullifyNewReminderFragment){
-            newReminderFragment = null;
-        }
+
+        // 3. Create fragment and set transition
         // Insert the fragment by replacing any existing fragment
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        if(fragmentType == NEW_REMINDER)
+        if(fragmentTo == BusEvent.FRAGMENT_NEW_REMINDER)
             ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
-        else if((fragmentType == REMINDER_LIST) && (currentFragment == NEW_REMINDER))
+        else if((fragmentTo == BusEvent.FRAGMENT_PENDING) && (fragmentFrom == BusEvent.TARGET_COMPLETED))
             ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
-        else if((fragmentType == REMINDER_LIST) && (currentFragment == COMPLETED_REMINDER_FRAG))
+        else if((fragmentTo == BusEvent.FRAGMENT_PENDING) && (fragmentFrom == BusEvent.FRAGMENT_COMPLETED))
             ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
-        else if(fragmentType == REMINDER_LIST) // activity start
+        else if(fragmentTo == BusEvent.FRAGMENT_PENDING) // activity start
             ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
-        else if(fragmentType == COMPLETED_REMINDER_FRAG)
+        else if(fragmentTo == BusEvent.FRAGMENT_COMPLETED)
             ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
         else
             Log.e(TAG, "Invalid fragment tyoe. This should never happen...");
 
+        // 4. Commit fragment to transition
+
         ft.replace(R.id.content_frame, fragment, FRAGMENT_TAG);
         ft.addToBackStack(null); // handle back button
         ft.commit();
-        currentFragment = fragmentType;
+
+        // 5. keep track of current fragment
+        currentFragment = fragmentTo;
+
+        // 6. Reset New Fragment if requested and we're not switching to it
+        if(resetNewFragment && fragmentTo != BusEvent.FRAGMENT_NEW_REMINDER)
+            newReminderFragment = null;
     }
 
     @Override
     public void onBackPressed() {
-        if(currentFragment == NEW_REMINDER){
-            if(pendingFragment == null){
-                initPendingFragment();
-            }
-            changeFragment(pendingFragment, REMINDER_LIST, false);
-            setTitle(getResources().getString(R.string.app_name));
+        if(currentFragment == BusEvent.FRAGMENT_NEW_REMINDER){
+            changeFragment(BusEvent.FRAGMENT_PENDING, BusEvent.FRAGMENT_NEW_REMINDER, false);
         }
         else{
             super.onBackPressed();
@@ -422,6 +391,36 @@ public class MainActivity extends FragmentActivity implements
         Bundle args = new Bundle();
         args.putInt(CardListFragment.LIST_TYPE, CardListFragment.LIST_COMPLETED);
         completedFragment.setArguments(args);
+    }
+
+    // prepare to change fragment to new fragemnt
+    // pre-populate fields first
+    public void handleEditReminder(Reminder r){
+        // reinitialize so we can fill with edit data
+        newReminderFragment = new NewReminderFragment();
+        newReminderFragment.setReminderToEdit(r);
+        changeFragment(BusEvent.FRAGMENT_NEW_REMINDER, currentFragment, false);
+    }
+
+    /** Event bus listener **/
+    @Subscribe
+    public void BusEvent(BusEvent event){
+        // check if it's for us
+        // TODO: compare for pending or completed
+        if(!event.getTargets().contains(BusEvent.TARGET_MAIN))
+            return;
+        Log.d(TAG, "Message received: " + event.getType());
+        switch(event.getType()){
+            case BusEvent.TYPE_CHANGE_FRAG:
+                if(event.getToFragment() == BusEvent.FRAGMENT_NEW_REMINDER)
+                    changeFragment(event.getToFragment(), event.getFromFragment(), false);
+                else
+                    changeFragment(event.getToFragment(), event.getFromFragment(), true);
+                break;
+            case BusEvent.TYPE_EDIT_REMINDER:
+                handleEditReminder(event.getReminder());
+                break;
+        }
     }
 
 }

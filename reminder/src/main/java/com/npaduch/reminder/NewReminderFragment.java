@@ -72,8 +72,6 @@ public class NewReminderFragment extends Fragment
     public static final int DATE_TOMORROW = 1;
     public static final int DATE_OTHER    = 2;
 
-    // Communication with main activity
-    FragmentCommunicationListener messenger;
     private static final String FRAG_TAG_TIME_PICKER = "timePickerDialogFragment";
     private static final String FRAG_TAG_DATE_PICKER = "datePickerDialogFragment";
 
@@ -108,26 +106,9 @@ public class NewReminderFragment extends Fragment
 
     private Reminder reminderHolder;
 
+    private Reminder reminderToEdit;
+
     public NewReminderFragment() {
-    }
-
-    // Container Activity must implement this interface
-    public interface FragmentCommunicationListener {
-        public void send(Bundle message);
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
-        try {
-            messenger = (FragmentCommunicationListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement NewNoteFragment.FragmentCommunicationListener");
-        }
     }
 
     @Override
@@ -179,16 +160,9 @@ public class NewReminderFragment extends Fragment
         reminderHolder = new Reminder();
 
         // Check if we're actually editing a note
-        if(getArguments() != null) {
-            int reminderOffset = getArguments().getInt(REMINDER_OFFSET, REMINDER_NOT_FOUND);
-            Log.d(TAG, "Reminder offset: " + reminderOffset);
-            if (reminderOffset == REMINDER_NOT_FOUND) {
-                Log.e(TAG,"Reminder offset passed does not exist. Can't edit.");
-            } else {
-                // we must be editing an old reminder
-                initializeEdit(MainActivity.reminders.get(reminderOffset));
-                reminderHolder = MainActivity.reminders.get(reminderOffset);
-            }
+        if(getReminderToEdit() != null) {
+            initializeEdit(getReminderToEdit());
+            reminderHolder = getReminderToEdit();
         }
 
         // save off context
@@ -212,10 +186,10 @@ public class NewReminderFragment extends Fragment
             case R.id.action_settings:
                 return true;
             case R.id.action_cancel_new_reminder:
-                Bundle b = new Bundle();
-                b.putInt(MainActivity.MESSAGE_TASK, MainActivity.TASK_CHANGE_FRAG);
-                b.putInt(MainActivity.TASK_INT, MainActivity.REMINDER_LIST);
-                messenger.send(b);
+                BusEvent event = new BusEvent(BusEvent.TYPE_CHANGE_FRAG, BusEvent.TARGET_MAIN);
+                event.setToFragment(BusEvent.FRAGMENT_PENDING);
+                event.setFromFragment(BusEvent.FRAGMENT_NEW_REMINDER);
+                BusProvider.getInstance().post(event);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -453,11 +427,10 @@ public class NewReminderFragment extends Fragment
         r.setAlarm(getActivity());
 
         // return to main View
-        Bundle b = new Bundle();
-        b.putInt(MainActivity.MESSAGE_TASK, MainActivity.TASK_CHANGE_FRAG);
-        b.putInt(MainActivity.TASK_INT, MainActivity.REMINDER_LIST);
-        messenger.send(b);
-
+        BusEvent event = new BusEvent(BusEvent.TYPE_CHANGE_FRAG, BusEvent.TARGET_MAIN);
+        event.setToFragment(BusEvent.FRAGMENT_PENDING);
+        event.setFromFragment(BusEvent.FRAGMENT_NEW_REMINDER);
+        BusProvider.getInstance().post(event);
     }
 
     public void hideKeyboard(){
@@ -634,5 +607,13 @@ public class NewReminderFragment extends Fragment
         protected void onProgressUpdate(Object[] values) {
             super.onProgressUpdate(values);
         }
+    }
+
+    public Reminder getReminderToEdit() {
+        return reminderToEdit;
+    }
+
+    public void setReminderToEdit(Reminder reminderToEdit) {
+        this.reminderToEdit = reminderToEdit;
     }
 }

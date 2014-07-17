@@ -37,8 +37,6 @@ public class CardListFragment extends Fragment {
 
     private final static String TAG = "CardListFragment";
 
-    static FragmentCommunicationListener messenger;
-
     // Card adapter and listview
     public CardArrayAdapter mCardArrayAdapter;
     public CardListView mCardListView;
@@ -60,25 +58,6 @@ public class CardListFragment extends Fragment {
     public static Context context;
 
     public CardListFragment() {
-    }
-
-    // Container Activity must implement this interface
-    public interface FragmentCommunicationListener {
-        public void send(Bundle message);
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
-        try {
-            messenger = (FragmentCommunicationListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement CardListFragment.FragmentCommunicationListener");
-        }
     }
 
     @Override
@@ -121,11 +100,10 @@ public class CardListFragment extends Fragment {
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bundle b = new Bundle();
-                b.putInt(MainActivity.MESSAGE_TASK, MainActivity.TASK_CHANGE_FRAG);
-                b.putInt(MainActivity.TASK_INT, MainActivity.NEW_REMINDER);
-                messenger.send(b);
-                //BusProvider.getInstance().post(new BusEvent("FAB clicked"));
+                BusEvent event = new BusEvent(BusEvent.TYPE_CHANGE_FRAG, BusEvent.TARGET_MAIN);
+                event.setToFragment(BusEvent.FRAGMENT_NEW_REMINDER);
+                event.setFromFragment(BusEvent.FRAGMENT_PENDING);   // this doesn't matter
+                BusProvider.getInstance().post(event);
             }
         });
     }
@@ -161,12 +139,6 @@ public class CardListFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.action_settings:
-                return true;
-            case R.id.action_add_reminder:
-                Bundle b = new Bundle();
-                b.putInt(MainActivity.MESSAGE_TASK, MainActivity.TASK_CHANGE_FRAG);
-                b.putInt(MainActivity.TASK_INT, MainActivity.NEW_REMINDER);
-                messenger.send(b);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -307,13 +279,9 @@ public class CardListFragment extends Fragment {
 
     // to do, replace this with bus
     public static void switchToEditFragment(Reminder r){
-        //TODO: MainActivity.reminders is out of date here. Pass reminder ID instead
-        int mainReminderOffset = MainActivity.reminders.indexOf(r);
-        Bundle b = new Bundle();
-        b.putInt(MainActivity.MESSAGE_TASK, MainActivity.TASK_EDIT_REMINDER);
-        b.putInt(MainActivity.TASK_INT, mainReminderOffset);
-        b.putInt(MainActivity.TASK_INITIATOR, MainActivity.PENDING_REMINDERS);
-        messenger.send(b);
+        BusEvent event = new BusEvent(BusEvent.TYPE_EDIT_REMINDER, BusEvent.TARGET_MAIN);
+        event.setReminder(r);
+        BusProvider.getInstance().post(event);
     }
 
     public static Card.OnSwipeListener cardOnSwipeListener
@@ -447,20 +415,28 @@ public class CardListFragment extends Fragment {
         }
     }
 
-    // Event bus listener
+    /** Event bus listener **/
     @Subscribe
     public void BusEvent(BusEvent event){
         // check if it's for us
-        // TODO: compare for pending or completed
-        if(!event.getTargets().contains(BusEvent.TARGET_PENDING))
-            return;
-        Log.d(TAG, "Message received: "+ event.getType());
-        switch(event.getType()){
-            case BusEvent.TYPE_ADD:
-                addReminderCard(event.getReminder());
-                break;
-            case BusEvent.TYPE_REMOVE:
-                removeReminderCard(event.getReminder());
+        if(event.getTargets().contains(BusEvent.TARGET_PENDING)) {
+            Log.d(TAG, "Message received: " + event.getType());
+            switch (event.getType()) {
+                case BusEvent.TYPE_ADD:
+                    addReminderCard(event.getReminder());
+                    break;
+                case BusEvent.TYPE_REMOVE:
+                    removeReminderCard(event.getReminder());
+            }
+        } else if (event.getTargets().contains(BusEvent.TARGET_COMPLETED)) {
+            Log.d(TAG, "Message received: " + event.getType());
+            switch (event.getType()) {
+                case BusEvent.TYPE_ADD:
+                    addReminderCard(event.getReminder());
+                    break;
+                case BusEvent.TYPE_REMOVE:
+                    removeReminderCard(event.getReminder());
+            }
         }
     }
 
