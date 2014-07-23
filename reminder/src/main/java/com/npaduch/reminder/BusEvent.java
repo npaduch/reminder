@@ -2,6 +2,8 @@ package com.npaduch.reminder;
 
 import java.util.ArrayList;
 
+import it.gmariotti.cardslib.library.internal.Card;
+
 /**
  * Created by nolanpaduch on 7/10/14.
  *
@@ -18,6 +20,9 @@ public class BusEvent {
     // possible reminder to add/remove
     private Reminder reminder;
 
+    // list of cards to pass for LoadReminders
+    private ArrayList<Card> cardList;
+
     // fragemnts for fragment transition
     private int toFragment = FRAGMENT_PENDING;
     private int fromFragment = FRAGMENT_PENDING;
@@ -33,6 +38,8 @@ public class BusEvent {
     public static final int TYPE_ADD                = 0;
     public static final int TYPE_REMOVE             = 1;
     public static final int TYPE_REFRESH            = 2;
+    public static final int TYPE_LOAD_REMINDERS     = 4;
+    public static final int TYPE_ADD_CARD           = 5;
     // For main activity
     public static final int TYPE_CHANGE_FRAG        = 10;
     public static final int TYPE_EDIT_REMINDER      = 11;
@@ -95,5 +102,12 @@ public class BusEvent {
         this.fromFragment = fromFragment;
     }
 
+    public ArrayList<Card> getCardList() {
+        return cardList;
+    }
+
+    public void setCardList(ArrayList<Card> cardList) {
+        this.cardList = cardList;
+    }
 
 }

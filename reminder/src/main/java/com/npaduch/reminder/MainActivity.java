@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -80,6 +81,10 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // setup spinner use (MUST DO THIS FIRST!!!!)
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
         setContentView(R.layout.activity_main);
 
         /** Navigation Drawer */
@@ -354,6 +359,9 @@ public class MainActivity extends FragmentActivity {
             ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
         else
             Log.e(TAG, "Invalid fragment tyoe. This should never happen...");
+
+        // if the current fragment is loading, stop the progress indicator
+        setProgressBarIndeterminateVisibility(false);
 
         // 4. Commit fragment to transition
 

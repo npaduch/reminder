@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
@@ -72,11 +73,7 @@ public class CardListFragment extends Fragment {
         // save off context
         context = getActivity();
 
-        // TODO: Move this to the background
-        populateReminders();
-        ArrayList<Card> cardList = getCards();
-
-        Log.d(TAG, "Found "+cardList.size()+" cards.");
+        ArrayList<Card> cardList = new ArrayList<Card>();
 
         // Set the adapter
         mCardArrayAdapter = new CardArrayAdapter(getActivity(), cardList);
@@ -85,13 +82,13 @@ public class CardListFragment extends Fragment {
 
         // Set ListView
         mCardListView = (CardListView) getActivity().findViewById(R.id.reminderCardListView);
-        // Set EmptyView
-        TextView tv = (TextView) getActivity().findViewById(R.id.cardListEmptyView);
-        mCardListView.setEmptyView(tv);
 
         if (mCardListView != null) {
             mCardListView.setAdapter(mCardArrayAdapter);
         }
+
+        // load in reminders in the background
+        startLoad();
 
         /** Initialize floating action button **/
         Fab mFab = (Fab)getActivity().findViewById(R.id.FloatingAddButton);
@@ -106,6 +103,7 @@ public class CardListFragment extends Fragment {
                 BusProvider.getInstance().post(event);
             }
         });
+
     }
 
     @Override
@@ -144,39 +142,30 @@ public class CardListFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-
-    private void populateReminders(){
-
-        // Check for reminders in file
-        MainActivity.reminders = initReminderList();
-
-        if(MainActivity.reminders == null)
-            MainActivity.reminders = new ArrayList<Reminder>();
-
-        // Get all the pending reminders
-        MainActivity.syncReminders();
-
+    private void startLoad(){
+        getActivity().setProgressBarIndeterminateVisibility(true);
+        new LoadReminders(getActivity(), fragmentType).execute();
     }
 
-    private ArrayList<Card> getCards(){
-        // array list of reminders
-        ArrayList<Reminder> reminders;
-        // array list of reminder Cards
-        ArrayList<Card> cards = new ArrayList<Card>();
+    private void endLoad(ArrayList<Card> cards){
 
-        // get reminders
-        if(fragmentType == LIST_PENDING)
-            reminders = MainActivity.pendingReminders;
-        else
-            reminders = MainActivity.completedReminders;
-
-        // create cards
-        for ( Reminder r : reminders ){
-            cards.add(new ReminderCard(getActivity(), r));
+        // TODO: modify to sort
+        mCardArrayAdapter.clear();
+        for(Card c : cards){
+            mCardArrayAdapter.add(c);
         }
 
-        return cards;
+        // update listview
+        mCardArrayAdapter.notifyDataSetChanged();
+
+        // set empty view if no reminders
+        TextView tv = (TextView) getActivity().findViewById(R.id.cardListEmptyView);
+        mCardListView.setEmptyView(tv);
+
+        // stop progress circle
+        getActivity().setProgressBarIndeterminateVisibility(false);
     }
+
 
     public void addReminderCard(Reminder r){
 
@@ -222,29 +211,6 @@ public class CardListFragment extends Fragment {
     }
 
 
-    /**
-     * This checks and creates the file if neccessary.
-     * Then it gets the reminders from the JSON file.
-     */
-    private ArrayList<Reminder> initReminderList(){
-        Log.d(TAG, "Looking for file " + getActivity().getFilesDir() + File.pathSeparator + Reminder.filename);
-
-        // Check for file
-        File file = new File(getActivity().getFilesDir(), Reminder.filename);
-        if(!file.exists()){
-            // it doesn't exist. Write an empty JSON array to it
-            Log.d(TAG, "Initializing JSON file.");
-            try {
-                Reminder.initFile(getActivity());
-            } catch (Exception e){
-                Log.e(TAG, "Error creating JSON file: "+e);
-            }
-            return null;
-        }
-        Log.d(TAG,"JSON file found. Loading in reminders.");
-
-        return Reminder.getJSONFileContents(context);
-    }
 
     public static Card.OnCardClickListener cardClickListener = new Card.OnCardClickListener(){
         @Override
@@ -284,6 +250,7 @@ public class CardListFragment extends Fragment {
         BusProvider.getInstance().post(event);
     }
 
+    // todo: check fragment type
     public static Card.OnSwipeListener cardOnSwipeListener
             = new Card.OnSwipeListener() {
         @Override
@@ -359,6 +326,7 @@ public class CardListFragment extends Fragment {
         uf.execute();
     }
 
+
     /** Asynchronous task for reading/writing to file **/
     private static class UpdateFile extends AsyncTask {
 
@@ -427,6 +395,9 @@ public class CardListFragment extends Fragment {
                     break;
                 case BusEvent.TYPE_REMOVE:
                     removeReminderCard(event.getReminder());
+                    break;
+                case BusEvent.TYPE_LOAD_REMINDERS:
+                    endLoad(event.getCardList());
             }
         } else if (event.getTargets().contains(BusEvent.TARGET_COMPLETED)) {
             Log.d(TAG, "Message received: " + event.getType());
@@ -436,6 +407,9 @@ public class CardListFragment extends Fragment {
                     break;
                 case BusEvent.TYPE_REMOVE:
                     removeReminderCard(event.getReminder());
+                    break;
+                case BusEvent.TYPE_LOAD_REMINDERS:
+                    endLoad(event.getCardList());
             }
         }
     }
