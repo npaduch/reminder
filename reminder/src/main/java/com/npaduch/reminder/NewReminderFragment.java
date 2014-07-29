@@ -20,6 +20,8 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -48,7 +50,6 @@ import it.gmariotti.cardslib.library.view.CardView;
 // TODO: Make sure time is in the future
 // TODO: Recurring reminders
 // TODO: Verify date + time actually selected (i.e. back button clicked on specific date)
-// TODO: Move new reminder save to background
 
 public class NewReminderFragment extends Fragment
         implements RadialTimePickerDialog.OnTimeSetListener,
@@ -132,6 +133,8 @@ public class NewReminderFragment extends Fragment
         // Set on click listeners
         TextView createButton = (TextView) rootView.findViewById(R.id.newReminderCreateButton);
         createButton.setOnClickListener(newReminderOnClickListener);
+        CheckBox repeatCheckbox = (CheckBox) rootView.findViewById(R.id.newReminderRecurrenceCheckbox);
+        repeatCheckbox.setOnCheckedChangeListener(mOnCheckedChangeListener);
 
         // for time picker
         if (savedInstanceState == null) {
@@ -374,6 +377,19 @@ public class NewReminderFragment extends Fragment
         @Override
         public void onNothingSelected(AdapterView<?> parentView) {
             // your code here
+        }
+    };
+
+    CheckBox.OnCheckedChangeListener mOnCheckedChangeListener = new CheckBox.OnCheckedChangeListener(){
+
+        @Override
+        public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+            TextView recurrenceString = (TextView) rootView.findViewById(R.id.newReminderRecurrenceString);
+            if(checked){
+                recurrenceString.setVisibility(View.VISIBLE);
+            } else {
+                recurrenceString.setVisibility(View.GONE);
+            }
         }
     };
 
