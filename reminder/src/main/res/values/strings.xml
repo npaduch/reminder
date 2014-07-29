@@ -50,6 +50,18 @@
     <!-- Recurring reminders -->
     <string name="new_reminder_recurrence_base">Repeats every</string>
     <string name="new_reminder_repeat">Repeat</string>
+    <string name="new_reminder_repeat_daily">day</string>
+    <string name="new_reminder_repeat_weekly">week</string>
+    <string name="new_reminder_repeat_monthly">month</string>
+    <string name="new_reminder_repeat_yearly">year</string>
+    <string name="repeat_day">day</string>
+    <string name="repeat_week">week</string>
+    <string name="repeat_month">month</string>
+    <string name="repeat_year">year</string>
+    <string name="repeat_days">days</string>
+    <string name="repeat_weeks">weeks</string>
+    <string name="repeat_months">months</string>
+    <string name="repeat_years">years</string>
     <!-- Edit reminder strings -->
     <string name="edit_reminder_save">Save</string>
 
@@ -90,6 +102,13 @@
     <!-- time conjuctions -->
     <string name="time_at">at</string>
     <string name="time_in_the">in the</string>
+    <string name="time_on">on</string>
+    <string name="time_for">for</string>
+    <string name="time_until">until</string>
+    <string name="time_and">and</string>
+    <string name="time_the">the</string>
+    <string name="time_last">last</string>
+    <string name="time_of_the_month">of the month</string>
 
     <!-- Debug strings -->
     <string name="reminder_example">This is a sample reminder. These will vary in length.</string>

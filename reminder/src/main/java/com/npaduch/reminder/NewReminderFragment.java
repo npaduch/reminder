@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.format.DateFormat;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,6 +31,8 @@ import android.widget.Toast;
 import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
 import com.doomonafireball.betterpickers.radialtimepicker.RadialPickerLayout;
 import com.doomonafireball.betterpickers.radialtimepicker.RadialTimePickerDialog;
+import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
+import com.doomonafireball.betterpickers.recurrencepicker.RecurrencePickerDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +56,8 @@ import it.gmariotti.cardslib.library.view.CardView;
 
 public class NewReminderFragment extends Fragment
         implements RadialTimePickerDialog.OnTimeSetListener,
-        CalendarDatePickerDialog.OnDateSetListener {
+        CalendarDatePickerDialog.OnDateSetListener,
+        RecurrencePickerDialog.OnRecurrenceSetListener {
 
     // Logging
     public final static String TAG = "NewReminderFragment";
@@ -75,6 +79,7 @@ public class NewReminderFragment extends Fragment
 
     private static final String FRAG_TAG_TIME_PICKER = "timePickerDialogFragment";
     private static final String FRAG_TAG_DATE_PICKER = "datePickerDialogFragment";
+    private static final String FRAG_TAG_RECUR_PICKER = "recurrencePickerDialogFragment";
 
     // Keep track of time picker state
     private boolean mHasDialogFrame;
@@ -92,6 +97,9 @@ public class NewReminderFragment extends Fragment
     public static final String REMINDER_OFFSET = "reminder_bundle";
     public static final int REMINDER_NOT_FOUND = -1;
 
+    // Recurrence
+    public String recurrenceRule;
+    private RecurringReminder mEventRecurrence;
 
     // Main view
     View rootView;
@@ -170,6 +178,7 @@ public class NewReminderFragment extends Fragment
 
         // save off context
         this.context = getActivity();
+        mEventRecurrence = new RecurringReminder(context);
 
         return rootView;
     }
@@ -386,7 +395,27 @@ public class NewReminderFragment extends Fragment
         public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
             TextView recurrenceString = (TextView) rootView.findViewById(R.id.newReminderRecurrenceString);
             if(checked){
-                recurrenceString.setVisibility(View.VISIBLE);
+                // we need to spawn the recurrence picker now
+
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                Bundle b = new Bundle();
+                Time time = new Time();
+                time.setToNow();
+                b.putLong(RecurrencePickerDialog.BUNDLE_START_TIME_MILLIS, time.toMillis(false));
+                b.putString(RecurrencePickerDialog.BUNDLE_TIME_ZONE, time.timezone);
+
+                // may be more efficient to serialize and pass in EventRecurrence
+                b.putString(RecurrencePickerDialog.BUNDLE_RRULE, recurrenceRule);
+
+                RecurrencePickerDialog rpd = (RecurrencePickerDialog) fm.findFragmentByTag(
+                        FRAG_TAG_RECUR_PICKER);
+                if (rpd != null) {
+                    rpd.dismiss();
+                }
+                rpd = new RecurrencePickerDialog();
+                rpd.setArguments(b);
+                rpd.setOnRecurrenceSetListener(NewReminderFragment.this);
+                rpd.show(fm, FRAG_TAG_RECUR_PICKER);
             } else {
                 recurrenceString.setVisibility(View.GONE);
             }
@@ -486,6 +515,21 @@ public class NewReminderFragment extends Fragment
         handleNewTime(getActivity(), hour, minute);
     }
 
+    @Override
+    public void onRecurrenceSet(String rrule) {
+        recurrenceRule = rrule;
+        if (recurrenceRule != null) {
+            mEventRecurrence.parse(recurrenceRule);
+        }
+        Log.d(TAG, mEventRecurrence.toString());
+        String s = mEventRecurrence.makeString();
+        Log.d(TAG, s);
+
+        TextView recurrenceString = (TextView) rootView.findViewById(R.id.newReminderRecurrenceString);
+        recurrenceString.setText(s);
+        recurrenceString.setVisibility(View.VISIBLE);
+    }
+
     private void handleNewDate(Context context, int year, int month, int day){
 
         // record values for spinner
@@ -574,6 +618,12 @@ public class NewReminderFragment extends Fragment
                 .findFragmentByTag(FRAG_TAG_DATE_PICKER);
         if (calendarDatePickerDialog != null) {
             calendarDatePickerDialog.setOnDateSetListener(this);
+        }
+        // Reattach recurrence picket
+        RecurrencePickerDialog rpd = (RecurrencePickerDialog) getActivity().getSupportFragmentManager().findFragmentByTag(
+                FRAG_TAG_RECUR_PICKER);
+        if (rpd != null) {
+            rpd.setOnRecurrenceSetListener(this);
         }
 
         // get event bus
