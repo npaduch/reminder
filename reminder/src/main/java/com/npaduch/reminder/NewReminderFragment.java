@@ -435,6 +435,11 @@ public class NewReminderFragment extends Fragment
 
     public void hideKeyboard(){
 
+        // only do this if we have actually added the fragment!
+        if(!this.isAdded()){
+            return;
+        }
+
         InputMethodManager myInputMethodManager = (InputMethodManager)getActivity().getSystemService(
                 Context.INPUT_METHOD_SERVICE);
 

@@ -12,12 +12,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import it.gmariotti.cardslib.library.internal.Card;
@@ -33,6 +31,7 @@ import it.gmariotti.cardslib.library.view.CardListView;
 
 // TODO: Add samples if first time launching
 // TODO: BUG: hitting back on listview clears view
+// TODO: change transaction to hide to preserve fragment state
 
 public class CardListFragment extends Fragment {
 
@@ -76,12 +75,12 @@ public class CardListFragment extends Fragment {
         ArrayList<Card> cardList = new ArrayList<Card>();
 
         // Set the adapter
-        mCardArrayAdapter = new CardArrayAdapter(getActivity(), cardList);
+        mCardArrayAdapter = new CardArrayAdapter(context, cardList);
         // Make swipes undo-able!
         mCardArrayAdapter.setEnableUndo(true);
 
         // Set ListView
-        mCardListView = (CardListView) getActivity().findViewById(R.id.reminderCardListView);
+        mCardListView = (CardListView) getView().findViewById(R.id.reminderCardListView);
 
         if (mCardListView != null) {
             mCardListView.setAdapter(mCardArrayAdapter);
@@ -91,7 +90,7 @@ public class CardListFragment extends Fragment {
         startLoad();
 
         /** Initialize floating action button **/
-        Fab mFab = (Fab)getActivity().findViewById(R.id.FloatingAddButton);
+        Fab mFab = (Fab)getView().findViewById(R.id.FloatingAddButton);
         mFab.setFabColor(getActivity().getResources().getColor(R.color.app_color_theme));
         mFab.setFabDrawable(getActivity().getResources().getDrawable(R.drawable.ic_action_new));
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -114,6 +113,7 @@ public class CardListFragment extends Fragment {
 
     @Override
     public void onResume() {
+        Log.d(TAG, "OnResume");
         super.onResume();
         BusProvider.getInstance().register(this);
     }
@@ -159,7 +159,7 @@ public class CardListFragment extends Fragment {
         mCardArrayAdapter.notifyDataSetChanged();
 
         // set empty view if no reminders
-        TextView tv = (TextView) getActivity().findViewById(R.id.cardListEmptyView);
+        TextView tv = (TextView) getView().findViewById(R.id.cardListEmptyView);
         mCardListView.setEmptyView(tv);
 
         // stop progress circle

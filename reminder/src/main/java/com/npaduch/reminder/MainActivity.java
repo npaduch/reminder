@@ -50,16 +50,16 @@ public class MainActivity extends FragmentActivity {
     private ActionBarDrawerToggle mDrawerToggle;
 
     /* Fragment Transitions */
-    public static final int REMINDER_LIST = 0;
-    public static final int NEW_REMINDER = 1;
-    public static final int COMPLETED_REMINDER_FRAG = 2;
-    public static final String FRAGMENT_TAG = "FRAGMENT_TAG"; // handle back button
+    public static final String PENDING_TAG = "PENDING_TAG";
+    public static final String NEW_REMINDER_TAG = "NEW_REMINDER_TAG";
+    public static final String COMPLETED_TAG = "COMPLETED_TAG";
 
     // Holders for fragments to preserve state
     NewReminderFragment newReminderFragment;
     public static CardListFragment pendingFragment;
     public static CardListFragment completedFragment;
     public int currentFragment; // keep track of what we currently are
+    public String currentTag; // keep track of what we currently are
 
     // Message Passing (keys = String, values = int)
     public static final String  MESSAGE_TASK = "Task";
@@ -101,8 +101,13 @@ public class MainActivity extends FragmentActivity {
         /* Fragment Manager */
         // load initial fragment
         if (savedInstanceState == null) {
+            initPendingFragment();
+            // Insert the fragment by replacing any existing fragment
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(R.id.content_frame, pendingFragment, PENDING_TAG);
+            ft.commit();
             currentFragment = BusEvent.FRAGMENT_PENDING;
-            changeFragment(BusEvent.FRAGMENT_PENDING, currentFragment, false);
+            currentTag = PENDING_TAG;
         }
 
         /** Handle open and close drawer events */
@@ -302,6 +307,11 @@ public class MainActivity extends FragmentActivity {
     public void changeFragment(int fragmentTo, int fragmentFrom, boolean resetNewFragment){
 
         Fragment fragment;  // holder for fragment
+        String fragmentTag; // holder for fragment tag
+
+        // Check for trying to change to the fragment we're already one
+        if(fragmentTo == currentFragment)
+            return;
 
         // 1. Init frag if neccessary, set title, set fragment
         switch (fragmentTo) {
@@ -316,6 +326,7 @@ public class MainActivity extends FragmentActivity {
                     setTitle(getResources().getStringArray(R.array.drawer_titles)[NEW_REMINDER_TITLE]);
                 }
                 fragment = newReminderFragment;
+                fragmentTag = NEW_REMINDER_TAG;
                 break;
             case BusEvent.FRAGMENT_COMPLETED:
                 if (completedFragment == null) {
@@ -323,6 +334,7 @@ public class MainActivity extends FragmentActivity {
                 }
                 setTitle(getResources().getStringArray(R.array.drawer_titles)[COMPLETED_REMINDERS_TITLE]);
                 fragment = completedFragment;
+                fragmentTag = COMPLETED_TAG;
                 break;
             case BusEvent.FRAGMENT_PENDING:
             default:  // default to pending
@@ -331,6 +343,7 @@ public class MainActivity extends FragmentActivity {
                 }
                 setTitle(R.string.app_name);
                 fragment = pendingFragment;
+                fragmentTag = PENDING_TAG;
                 break;
         }
 
@@ -365,12 +378,13 @@ public class MainActivity extends FragmentActivity {
 
         // 4. Commit fragment to transition
 
-        ft.replace(R.id.content_frame, fragment, FRAGMENT_TAG);
+        ft.replace(R.id.content_frame, fragment, fragmentTag);
         ft.addToBackStack(null); // handle back button
         ft.commit();
 
         // 5. keep track of current fragment
         currentFragment = fragmentTo;
+        currentTag = fragmentTag;
 
         // 6. Reset New Fragment if requested and we're not switching to it
         if(resetNewFragment && fragmentTo != BusEvent.FRAGMENT_NEW_REMINDER)
