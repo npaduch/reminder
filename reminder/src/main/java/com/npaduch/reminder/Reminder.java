@@ -48,6 +48,8 @@ public class Reminder {
 
     private boolean completed;
 
+    private RecurringReminder recurrence;
+
     // output file
     public final static String filename = "reminders.json";
 
@@ -63,6 +65,7 @@ public class Reminder {
     private final static String JSON_DATE_YEAR = "date_year";
     private final static String JSON_DATE_MONTH = "date_month";
     private final static String JSON_DATE_MONTHDAY = "date_monthday";
+    private final static String JSON_RECURRENCE = "recurrence";
     private final static boolean JSON_DEBUG = false;    // toggle debug prints
 
     // ID
@@ -95,6 +98,7 @@ public class Reminder {
         setHour(INT_INIT);
         setMinute(INT_INIT);
         setMsTime(INT_INIT);
+        setRecurrence(new RecurringReminder());
 
         setCompleted(false);
 
@@ -208,6 +212,14 @@ public class Reminder {
 
     public void setMsTime(long msTime) {
         this.msTime = msTime;
+    }
+
+    public RecurringReminder getRecurrence() {
+        return recurrence;
+    }
+
+    public void setRecurrence(RecurringReminder recurrence) {
+        this.recurrence = recurrence;
     }
 
     public void calculateMsTime(int year, int month, int day, int hour, int minute){
@@ -660,6 +672,10 @@ public class Reminder {
                 r.setHour(reader.nextInt());
             } else if (name.equals(JSON_TIME_MINUTE)) {
                 r.setMinute(reader.nextInt());
+            } else if (name.equals(JSON_RECURRENCE)) {
+                RecurringReminder rr = new RecurringReminder();
+                rr.decode(reader.nextString());
+                r.setRecurrence(rr);
             } else {
                 reader.skipValue();
             }
@@ -702,6 +718,7 @@ public class Reminder {
         writer.name(JSON_DATE_MONTHDAY).value(reminder.getMonthDay());
         writer.name(JSON_TIME_HOUR).value(reminder.getHour());
         writer.name(JSON_TIME_MINUTE).value(reminder.getMinute());
+        writer.name(JSON_RECURRENCE).value(reminder.getRecurrence().encode());
         writer.endObject();
     }
 
@@ -710,7 +727,8 @@ public class Reminder {
         Log.d(TAG,"Reminder: Description: "+getDescription());
         Log.d(TAG,"Reminder: Completed: "+isCompleted());
         Log.d(TAG,"Reminder: ID: "+getReminderID());
-        Log.d(TAG, "Reminder: Time (ms): " + getMsTime());
+        Log.d(TAG,"Reminder: Time (ms): " + getMsTime());
+        Log.d(TAG,"Reminder: Recurrence: "+getRecurrence().encode());
         Log.d(TAG,"Reminder: END");
     }
 
@@ -736,7 +754,7 @@ public class Reminder {
                 reminders = Reminder.readJsonStream(fileInputStream);
                 fileInputStream.close();
             } catch (Exception e){
-                Log.e(TAG, "Exception when writing to reminder file: "+e);
+                Log.e(TAG, "Exception when reading from reminder file: "+e);
             }
             return reminders;
         }

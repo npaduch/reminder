@@ -178,7 +178,7 @@ public class NewReminderFragment extends Fragment
 
         // save off context
         this.context = getActivity();
-        mEventRecurrence = new RecurringReminder(context);
+        mEventRecurrence = new RecurringReminder();
 
         return rootView;
     }
@@ -404,7 +404,7 @@ public class NewReminderFragment extends Fragment
                 b.putLong(RecurrencePickerDialog.BUNDLE_START_TIME_MILLIS, time.toMillis(false));
                 b.putString(RecurrencePickerDialog.BUNDLE_TIME_ZONE, time.timezone);
 
-                // may be more efficient to serialize and pass in EventRecurrence
+                // may be more efficient to serialize and pass in EventRecurrence?
                 b.putString(RecurrencePickerDialog.BUNDLE_RRULE, recurrenceRule);
 
                 RecurrencePickerDialog rpd = (RecurrencePickerDialog) fm.findFragmentByTag(
@@ -462,6 +462,9 @@ public class NewReminderFragment extends Fragment
 
         // set uncomplete
         r.setCompleted(false);
+
+        // set recurrence (populated via handler)
+        r.setRecurrence(mEventRecurrence);
 
         // Log and save reminder
         r.outputReminderToLog();
@@ -522,10 +525,13 @@ public class NewReminderFragment extends Fragment
             mEventRecurrence.parse(recurrenceRule);
         }
         Log.d(TAG, mEventRecurrence.toString());
-        String s = mEventRecurrence.makeString();
+        String s = mEventRecurrence.makeString(getActivity());
         Log.d(TAG, s);
 
+        mEventRecurrence.setEnabled(true);
+
         TextView recurrenceString = (TextView) rootView.findViewById(R.id.newReminderRecurrenceString);
+
         recurrenceString.setText(s);
         recurrenceString.setVisibility(View.VISIBLE);
     }

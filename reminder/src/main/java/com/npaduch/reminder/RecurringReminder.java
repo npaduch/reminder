@@ -18,14 +18,14 @@ public class RecurringReminder extends EventRecurrence {
 
     private final static String TAG = "RecurringReminder";
 
-    public Context context;
+    private boolean enabled;
 
-    public RecurringReminder (Context context){
+    public RecurringReminder (){
         super();
-        this.context = context;
+        enabled = false;
     }
 
-    public String makeString(){
+    public String makeString(Context context){
 
         // Repeat every
         String s = context.getResources().getString(R.string.new_reminder_recurrence_base);
@@ -161,8 +161,67 @@ public class RecurringReminder extends EventRecurrence {
             }
         }
 
+        dumpRecurrence();
+        String test = encode();
+        Log.d(TAG, "Encoded string: "+test);
+        decode(test);
+        dumpRecurrence();
+
         return s;
     }
+
+    public String encode(){
+        // enabled, interval, until, count, freq, byDayCount, byDayNum[]
+        String s = "";
+        String separator = "-";
+        s += this.enabled + separator;
+        s += this.interval + separator;
+        s += this.until + separator;
+        s += this.count + separator;
+        s += this.freq + separator;
+        s += this.bydayCount + separator;
+        for(int i = 0; i < this.bydayCount; i++)
+            s += this.bydayNum[i] + separator;
+        for(int i = 0; i < this.bydayCount; i++)
+            s += this.byday[i] + separator;
+
+        return s;
+    }
+
+    public void decode(String s){
+        // interval, until, count, freq, byDayCount, byDayNum[], byDay
+        int offset = 0;
+        String sub[] = s.split("-");
+        this.enabled = Boolean.parseBoolean(sub[offset++]);
+        this.interval = Integer.parseInt(sub[offset++]);
+        this.until = sub[offset++];
+        this.count = Integer.parseInt(sub[offset++]);
+        this.freq = Integer.parseInt(sub[offset++]);
+        this.bydayCount = Integer.parseInt(sub[offset++]);
+        int temp[] = new int[this.bydayCount];
+        for(int i = 0; i < this.bydayCount; i++)
+            temp[i] = Integer.parseInt(sub[offset++]);
+        this.bydayNum = temp;
+        for(int i = 0; i < this.bydayCount; i++)
+            temp[i] = Integer.parseInt(sub[offset++]);
+        this.byday = temp;
+    }
+
+    public void dumpRecurrence(){
+        Log.d(TAG, "RECURRENCE START");
+        Log.d(TAG, "Enabled: "+this.enabled);
+        Log.d(TAG, "Interval: "+this.interval);
+        Log.d(TAG, "Until: "+this.until);
+        Log.d(TAG, "Count: "+this.count);
+        Log.d(TAG, "Freq: "+this.freq);
+        Log.d(TAG, "BydayCount: "+this.bydayCount);
+        for(int i = 0; i < this.bydayCount; i++)
+            Log.d(TAG, "BydayNum["+i+"]: "+this.bydayNum[i]);
+        for(int i = 0; i < this.bydayCount; i++)
+            Log.d(TAG, "Byday["+i+"]: "+this.byday[i]);
+        Log.d(TAG, "RECURRENCE END");
+    }
+
 
 
     static String[] suffixes =
@@ -173,5 +232,15 @@ public class RecurringReminder extends EventRecurrence {
             //    20    21    22    23    24    25    26    27    28    29
             "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th",
             //    30    31
-            "th", "st" };
+            "th", "st"
+            };
+
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 }
