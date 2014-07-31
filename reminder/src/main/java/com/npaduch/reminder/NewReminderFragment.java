@@ -195,8 +195,6 @@ public class NewReminderFragment extends Fragment
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
             case R.id.action_cancel_new_reminder:
                 BusEvent event = new BusEvent(BusEvent.TYPE_CHANGE_FRAG, BusEvent.TARGET_MAIN);
                 event.setToFragment(BusEvent.FRAGMENT_PENDING);
