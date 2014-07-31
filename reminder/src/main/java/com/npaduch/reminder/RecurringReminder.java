@@ -66,7 +66,7 @@ public class RecurringReminder extends EventRecurrence {
 
         // until or count
         // Repeat every day/week/month/year until January 1, 2001
-        if (!TextUtils.isEmpty(this.until)) {
+        if (!TextUtils.isEmpty(this.until) && !this.until.equals("null")) {
             s += context.getResources().getString(R.string.time_until);
             s += " ";
             Calendar cal = Calendar.getInstance();
@@ -111,14 +111,14 @@ public class RecurringReminder extends EventRecurrence {
         // Add in days
         // Repeat every day/week/month/year for X day(s)/week(s)/month(s)/year(s) on Monday
         // day
-        int count = this.bydayCount;
-        if (count > 0) {
+        if (this.bydayCount > 0) {
             s += context.getResources().getString(R.string.time_on);
 
             // Check if this is a "4th monday of the month" situation
             boolean specialCase = false;
-            for(int i = 0; i < count; i++){
+            for(int i = 0; i < this.bydayCount; i++){
                 if(this.bydayNum[i] != 0){
+                    Log.d(TAG, "bydaynum "+i+" "+this.bydayNum[i]);
                     specialCase = true;
                 }
             }
@@ -127,18 +127,18 @@ public class RecurringReminder extends EventRecurrence {
 
             if(!specialCase) {
                 // day1, day2, and day3 || day1 and day2 || day1
-                for (int i = 0; i < count; i++) {
+                for (int i = 0; i < this.bydayCount; i++) {
                     Calendar cal = Calendar.getInstance();
                     cal.set(Calendar.DAY_OF_WEEK, day2CalendarDay(this.byday[i]));
                     s += cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, context.getResources().getConfiguration().locale);
                     // add comma
-                    if (i <= count - 2 && this.bydayCount > 2) {
+                    if (i <= this.bydayCount - 2 && this.bydayCount > 2) {
                         s += ",";
                         s += " ";
-                    } else if (i == count - 2 && this.bydayCount == 2){
+                    } else if (i == this.bydayCount - 2 && this.bydayCount == 2){
                         s += " ";
                     }
-                        if (i == count - 2) {
+                    if (i == this.bydayCount - 2) {
                         s += context.getResources().getString(R.string.time_and);
                         s += " ";
                     }
@@ -173,7 +173,7 @@ public class RecurringReminder extends EventRecurrence {
     public String encode(){
         // enabled, interval, until, count, freq, byDayCount, byDayNum[]
         String s = "";
-        String separator = "-";
+        String separator = "<>";
         s += this.enabled + separator;
         s += this.interval + separator;
         s += this.until + separator;
@@ -191,34 +191,33 @@ public class RecurringReminder extends EventRecurrence {
     public void decode(String s){
         // interval, until, count, freq, byDayCount, byDayNum[], byDay
         int offset = 0;
-        String sub[] = s.split("-");
+        String sub[] = s.split("<>");
         this.enabled = Boolean.parseBoolean(sub[offset++]);
         this.interval = Integer.parseInt(sub[offset++]);
         this.until = sub[offset++];
         this.count = Integer.parseInt(sub[offset++]);
         this.freq = Integer.parseInt(sub[offset++]);
         this.bydayCount = Integer.parseInt(sub[offset++]);
-        int temp[] = new int[this.bydayCount];
+        this.bydayNum  = new int[this.bydayCount];
         for(int i = 0; i < this.bydayCount; i++)
-            temp[i] = Integer.parseInt(sub[offset++]);
-        this.bydayNum = temp;
+            this.bydayNum[i] = Integer.parseInt(sub[offset++]);
+        this.byday = new int[this.bydayCount];
         for(int i = 0; i < this.bydayCount; i++)
-            temp[i] = Integer.parseInt(sub[offset++]);
-        this.byday = temp;
+            this.byday[i] = Integer.parseInt(sub[offset++]);
     }
 
     public void dumpRecurrence(){
         Log.d(TAG, "RECURRENCE START");
-        Log.d(TAG, "Enabled: "+this.enabled);
-        Log.d(TAG, "Interval: "+this.interval);
-        Log.d(TAG, "Until: "+this.until);
-        Log.d(TAG, "Count: "+this.count);
-        Log.d(TAG, "Freq: "+this.freq);
-        Log.d(TAG, "BydayCount: "+this.bydayCount);
+        Log.d(TAG, "Enabled: "+this.enabled);                   // recurrence enabled
+        Log.d(TAG, "Interval: "+this.interval);                 // interval (i.e. every 3 days)
+        Log.d(TAG, "Until: "+this.until);                       // Date to be reminded until
+        Log.d(TAG, "Count: "+this.count);                       // Number of times to recur
+        Log.d(TAG, "Freq: "+this.freq);                         // How frequent (Day/Week/Month/Year)
+        Log.d(TAG, "BydayCount: "+this.bydayCount);             // total days to be reminded on during the week
         for(int i = 0; i < this.bydayCount; i++)
-            Log.d(TAG, "BydayNum["+i+"]: "+this.bydayNum[i]);
+            Log.d(TAG, "BydayNum["+i+"]: "+this.bydayNum[i]);   // Week offset for day to be reminded on (i.e. 3rd Wednesday)
         for(int i = 0; i < this.bydayCount; i++)
-            Log.d(TAG, "Byday["+i+"]: "+this.byday[i]);
+            Log.d(TAG, "Byday["+i+"]: "+this.byday[i]);         // Day, i.e. Monday
         Log.d(TAG, "RECURRENCE END");
     }
 

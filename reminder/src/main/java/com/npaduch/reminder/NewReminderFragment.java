@@ -109,6 +109,7 @@ public class NewReminderFragment extends Fragment
     // handle the case if set by code
     private boolean daySpinnerSetInCode = false;
     private boolean timeSpinnerSetInCode = false;
+    private boolean checkboxSetInCode = false;
 
     // Application Context
     private Context context;
@@ -142,7 +143,8 @@ public class NewReminderFragment extends Fragment
         TextView createButton = (TextView) rootView.findViewById(R.id.newReminderCreateButton);
         createButton.setOnClickListener(newReminderOnClickListener);
         CheckBox repeatCheckbox = (CheckBox) rootView.findViewById(R.id.newReminderRecurrenceCheckbox);
-        repeatCheckbox.setOnCheckedChangeListener(mOnCheckedChangeListener);
+        //repeatCheckbox.setOnCheckedChangeListener(mOnCheckedChangeListener);
+        repeatCheckbox.setOnClickListener(new mOnCheckClickListener());
 
         // for time picker
         if (savedInstanceState == null) {
@@ -262,6 +264,21 @@ public class NewReminderFragment extends Fragment
             timeSpinner.setSelection(r.getTimeOffset());
         } else {
             timeSpinner.setSelection(r.getTimeOffset());
+        }
+
+        // check recurrence
+        RecurringReminder rr = r.getRecurrence();
+        if(rr.isEnabled()){
+            CheckBox cb = (CheckBox)rootView.findViewById(R.id.newReminderRecurrenceCheckbox);
+            checkboxSetInCode = true;
+            cb.setChecked(true);
+            TextView recurringTextView = (TextView)rootView.findViewById(R.id.newReminderRecurrenceString);
+            recurringTextView.setText(rr.makeString(getActivity()));
+
+            TextView recurrenceString = (TextView) rootView.findViewById(R.id.newReminderRecurrenceString);
+
+            recurrenceString.setText(rr.makeString(getActivity()));
+            recurrenceString.setVisibility(View.VISIBLE);
         }
 
         button.setText(R.string.edit_reminder_save);
@@ -387,11 +404,19 @@ public class NewReminderFragment extends Fragment
         }
     };
 
-    CheckBox.OnCheckedChangeListener mOnCheckedChangeListener = new CheckBox.OnCheckedChangeListener(){
+    public class mOnCheckClickListener implements View.OnClickListener{
 
         @Override
-        public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+        public void onClick(View view) {
+
+            CheckBox cb = (CheckBox)view;
+            boolean checked = cb.isChecked();
+            // reset checkbox, we want to decide this!
+            cb.setChecked(!checked);
+            Log.d(TAG, "checked: "+checked);
+
             TextView recurrenceString = (TextView) rootView.findViewById(R.id.newReminderRecurrenceString);
+            // Check if it wasn't checked BEFORE being clicked
             if(checked){
                 // we need to spawn the recurrence picker now
 
@@ -415,10 +440,13 @@ public class NewReminderFragment extends Fragment
                 rpd.setOnRecurrenceSetListener(NewReminderFragment.this);
                 rpd.show(fm, FRAG_TAG_RECUR_PICKER);
             } else {
+                // it was checked, clear it
+                cb.setChecked(false); // clear checkbox
                 recurrenceString.setVisibility(View.GONE);
+                mEventRecurrence.setEnabled(false);
             }
         }
-    };
+    }
 
 
 
@@ -519,8 +547,13 @@ public class NewReminderFragment extends Fragment
     @Override
     public void onRecurrenceSet(String rrule) {
         recurrenceRule = rrule;
+        CheckBox cb = (CheckBox)rootView.findViewById(R.id.newReminderRecurrenceCheckbox);
         if (recurrenceRule != null) {
             mEventRecurrence.parse(recurrenceRule);
+            cb.setChecked(true);
+        } else {
+            cb.setChecked(false);
+            return;
         }
         Log.d(TAG, mEventRecurrence.toString());
         String s = mEventRecurrence.makeString(getActivity());
