@@ -17,6 +17,7 @@
     <!-- Titles for other reasons -->
     <string name="edit_title">Edit Reminder</string>
     <string name="completed_title">Completed</string>
+    <string name="pending_title">Pending</string>
 
     <!-- Reminder Card Strings -->
     <string name="reminder_time_beginning">Today in the Morning</string>

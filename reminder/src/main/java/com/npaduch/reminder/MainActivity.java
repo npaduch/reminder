@@ -106,6 +106,7 @@ public class MainActivity extends FragmentActivity {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.content_frame, pendingFragment, PENDING_TAG);
             ft.commit();
+            setTitle(getResources().getString(R.string.pending_title));
             currentFragment = BusEvent.FRAGMENT_PENDING;
             currentTag = PENDING_TAG;
         }
@@ -332,7 +333,7 @@ public class MainActivity extends FragmentActivity {
                 if (completedFragment == null) {
                     initCompletedFragment();
                 }
-                setTitle(getResources().getStringArray(R.array.drawer_titles)[COMPLETED_REMINDERS_TITLE]);
+                setTitle(getResources().getString(R.string.completed_title));
                 fragment = completedFragment;
                 fragmentTag = COMPLETED_TAG;
                 break;
@@ -341,7 +342,7 @@ public class MainActivity extends FragmentActivity {
                 if (pendingFragment == null) {
                     initPendingFragment();
                 }
-                setTitle(R.string.app_name);
+                setTitle(getResources().getString(R.string.pending_title));
                 fragment = pendingFragment;
                 fragmentTag = PENDING_TAG;
                 break;
