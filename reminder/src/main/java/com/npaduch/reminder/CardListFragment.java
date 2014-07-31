@@ -46,12 +46,6 @@ public class CardListFragment extends Fragment {
     public static final int LIST_PENDING = 0;
     public static final int LIST_COMPLETED = 1;
 
-    // Tasks for ASYNC task
-    private static final int ASYNC_TASK_READ_REMINDERS = 0;
-    private static final int ASYNC_TASK_WRITE_REMINDERS = 1;
-    private static final int ASYNC_TASK_UPDATE_REMINDER = 2;
-    private static final int ASYNC_TASK_DELETE_REMINDER = 3;
-
     // list type
     public int fragmentType = LIST_PENDING;
 
@@ -162,6 +156,9 @@ public class CardListFragment extends Fragment {
         TextView tv = (TextView) getView().findViewById(R.id.cardListEmptyView);
         mCardListView.setEmptyView(tv);
 
+        // set undoable
+        mCardArrayAdapter.setEnableUndo(true);
+
         // stop progress circle
         getActivity().setProgressBarIndeterminateVisibility(false);
     }
@@ -248,139 +245,6 @@ public class CardListFragment extends Fragment {
         BusEvent event = new BusEvent(BusEvent.TYPE_EDIT_REMINDER, BusEvent.TARGET_MAIN);
         event.setReminder(r);
         BusProvider.getInstance().post(event);
-    }
-
-    // todo: check fragment type
-    public static Card.OnSwipeListener cardOnSwipeListener
-            = new Card.OnSwipeListener() {
-        @Override
-        public void onSwipe(Card card) {
-            Log.d(TAG, "Card swiped");
-            ReminderCard rc = (ReminderCard) card;
-            Reminder r = rc.getReminder();
-            dismissItem(r);
-
-        }
-    };
-
-    public static Card.OnUndoSwipeListListener cardOnUndoSwipeListener
-            = new Card.OnUndoSwipeListListener(){
-        @Override
-        public void onUndoSwipe(Card card) {
-            Log.d(TAG, "Card swipe undone");
-            ReminderCard rc = (ReminderCard) card;
-            Reminder r = rc.getReminder();
-            undismissItem(r);
-        }
-    };
-
-    private static void dismissItem(Reminder r){
-        Log.d(TAG, "Dismissing item:"+r.getDescription());
-        // set item completed
-        r.setCompleted(true);
-        // cancel alarm
-        r.cancelAlarm(context);
-        // make change in file
-        UpdateFile uf = new UpdateFile(
-                ASYNC_TASK_UPDATE_REMINDER,     // save updated reminder
-                r,                              // reminder to be saved
-                true                            // read file back into lists when done
-        );
-        uf.execute();
-    }
-
-    private static void undismissItem(Reminder r){
-        Log.d(TAG, "Undismissing item:"+r.getDescription());
-        // set item not completed
-        r.setCompleted(false);
-        // reschedule alarm
-        r.setAlarm(context);
-        // make change in file
-        UpdateFile uf = new UpdateFile(
-                ASYNC_TASK_UPDATE_REMINDER,     // save updated reminder
-                r,                              // reminder to be saved
-                true                            // read file back into lists when done
-        );
-        uf.execute();
-    }
-
-    private void permanentlyDeleteItem(Reminder r){
-        Log.d(TAG, "Permanently deleting item:"+r.getDescription());
-        // remove from file
-        UpdateFile uf = new UpdateFile(
-                ASYNC_TASK_DELETE_REMINDER,     // delete reminder
-                r,                              // reminder to be saved
-                true                            // read file back into lists when done
-        );
-        uf.execute();
-    }
-
-    private void recreateDeletedItem(Reminder r){
-        Log.d(TAG, "Undeleting item:"+r.getDescription());
-        // remove from file
-        UpdateFile uf = new UpdateFile(
-                ASYNC_TASK_UPDATE_REMINDER,     // delete reminder
-                r,                              // reminder to be saved
-                true                            // read file back into lists when done
-        );
-        uf.execute();
-    }
-
-
-    /** Asynchronous task for reading/writing to file **/
-    private static class UpdateFile extends AsyncTask {
-
-        // Task to complete in the background
-        int task;
-        // Reminder to manipulate (if we need to)
-        Reminder reminder;
-        // sync files with current status
-        boolean sync;
-
-        public UpdateFile(int task, Reminder r, boolean sync) {
-            super();
-            this.task = task;
-            this.reminder = r;
-            this.sync = sync;
-        }
-
-        @Override
-        protected Object doInBackground(Object[] objects) {
-            switch ( task ) {
-                case ASYNC_TASK_READ_REMINDERS:
-                    break;
-                case ASYNC_TASK_WRITE_REMINDERS:
-                    break;
-                case ASYNC_TASK_UPDATE_REMINDER:
-                    reminder.writeToFile(context);
-                    break;
-                case ASYNC_TASK_DELETE_REMINDER:
-                    reminder.removeFromFile(context);
-                    break;
-            }
-            if(sync){
-                MainActivity.reminders = Reminder.getJSONFileContents(context);
-                MainActivity.syncReminders();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            Log.d(TAG, "AsyncTask onPreExecute");
-        }
-
-        @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
-            Log.d(TAG, "AsyncTask onPostExecute");
-        }
-
-        @Override
-        protected void onProgressUpdate(Object[] values) {
-            super.onProgressUpdate(values);
-        }
     }
 
     /** Event bus listener **/

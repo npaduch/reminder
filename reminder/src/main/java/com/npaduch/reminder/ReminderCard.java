@@ -1,6 +1,7 @@
 package com.npaduch.reminder;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +22,10 @@ import it.gmariotti.cardslib.library.internal.base.BaseCard;
 public class ReminderCard extends Card {
 
     private final static String TAG = "ReminderCard";
+
+    // Tasks for ASYNC task
+    private static final int ASYNC_TASK_UPDATE_REMINDER = 0;
+    private static final int ASYNC_TASK_DELETE_REMINDER = 1;
 
     // views that will be presented
     private TextView dateTimeTextView;
@@ -71,8 +76,11 @@ public class ReminderCard extends Card {
         // set ID
         setId(Integer.toString(reminder.getReminderID()));
         setSwipeable(true);
-        setOnSwipeListener(CardListFragment.cardOnSwipeListener);
-        setOnUndoSwipeListListener(CardListFragment.cardOnUndoSwipeListener);
+        //setOnSwipeListener(CardListFragment.cardOnSwipeListener);
+        setOnSwipeListener(new MyCardOnSwipeListener());
+        //setOnUndoSwipeListListener(new MyCardUndoSwipeListener());
+
+        setOnUndoSwipeListListener(new MyCardUndoSwipeListener());
 
 
     }
@@ -107,5 +115,97 @@ public class ReminderCard extends Card {
 
     public void setReminder(Reminder reminder) {
         this.reminder = reminder;
+    }
+
+
+
+    public class MyCardOnSwipeListener implements Card.OnSwipeListener {
+
+        @Override
+        public void onSwipe(Card card) {
+            Log.d(TAG, "Card swiped");
+            ReminderCard rc = (ReminderCard) card;
+            Reminder r = rc.getReminder();
+            // set item completed
+            r.setCompleted(true);
+            // cancel alarm
+            r.cancelAlarm(context);
+            // make change in file
+            UpdateFile uf = new UpdateFile(
+                    ASYNC_TASK_UPDATE_REMINDER,     // save updated reminder
+                    r                               // reminder to be saved
+            );
+            uf.execute();
+            BusProvider.getInstance().post(new BusEvent(BusEvent.TYPE_REMOVE, BusEvent.TARGET_PENDING, r));
+        }
+    }
+
+    public class MyCardUndoSwipeListener implements OnUndoSwipeListListener {
+        @Override
+        public void onUndoSwipe(Card card) {
+            Log.d(TAG, "Card swipe undone");
+            ReminderCard rc = (ReminderCard) card;
+            Reminder r = rc.getReminder();
+
+            // set item not completed
+            r.setCompleted(false);
+            // reschedule alarm
+            r.setAlarm(context);
+
+            // make change in file
+            UpdateFile uf = new UpdateFile(
+                    ASYNC_TASK_UPDATE_REMINDER,     // save updated reminder
+                    r                               // reminder to be saved
+            );
+            uf.execute();
+
+            BusProvider.getInstance().post(new BusEvent(BusEvent.TYPE_ADD, BusEvent.TARGET_PENDING, r));
+        }
+    };
+
+
+    /** Asynchronous task for reading/writing to file **/
+    private class UpdateFile extends AsyncTask {
+
+        // Task to complete in the background
+        int task;
+        // Reminder to manipulate (if we need to)
+        Reminder reminder;
+
+        public UpdateFile(int task, Reminder r) {
+            super();
+            this.task = task;
+            this.reminder = r;
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            switch ( task ) {
+                case ASYNC_TASK_UPDATE_REMINDER:
+                    reminder.writeToFile(context);
+                    break;
+                case ASYNC_TASK_DELETE_REMINDER:
+                    reminder.removeFromFile(context);
+                    break;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Log.d(TAG, "AsyncTask onPreExecute");
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            Log.d(TAG, "AsyncTask onPostExecute");
+        }
+
+        @Override
+        protected void onProgressUpdate(Object[] values) {
+            super.onProgressUpdate(values);
+        }
     }
 }
