@@ -188,7 +188,8 @@ public class MainActivity extends FragmentActivity {
         }
 
         Log.d(TAG,"Setting reminder to completed");
-        r.setCompleted(true);
+        // check if we need to reschedule
+        r.checkRecurrence(this);
         r.writeToFile(getApplicationContext());
 
     }

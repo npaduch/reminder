@@ -38,7 +38,8 @@ public class NotificationDismissedReceiver extends BroadcastReceiver {
         }
 
         Log.d(TAG,"Setting reminder to completed");
-        r.setCompleted(true);
+        // check if we need to reschedule
+        r.checkRecurrence(context);
         r.writeToFile(context);
 
         // send event in case activity already running

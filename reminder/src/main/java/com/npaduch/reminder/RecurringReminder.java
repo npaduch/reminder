@@ -6,6 +6,7 @@ import android.text.format.Time;
 import android.util.Log;
 
 import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
+import com.doomonafireball.betterpickers.recurrencepicker.Utils;
 
 import java.util.Calendar;
 
@@ -17,6 +18,14 @@ import java.util.Calendar;
 public class RecurringReminder extends EventRecurrence {
 
     private final static String TAG = "RecurringReminder";
+
+    public final static int INVALID_TIME = 0;
+    public final static int FINAL_COUNT = -1;
+    public final static int LAST_WEEK = -1;
+
+    public final static int NOT_SPECIAL_CASE    = 0;
+    public final static int OFFSET_IN_WEEK      = 1;
+    public final static int MULTIPLE_DAYS       = 2;
 
     private boolean enabled;
 
@@ -82,6 +91,8 @@ public class RecurringReminder extends EventRecurrence {
             s += context.getResources().getString(R.string.time_for);
             s += " ";
             if(count == 1){
+                s += "1";
+                s += " ";
                 if(this.freq == this.DAILY){
                     s += context.getResources().getString(R.string.repeat_day);
                 } else if (this.freq == this.WEEKLY){
@@ -147,7 +158,7 @@ public class RecurringReminder extends EventRecurrence {
                 // special case of "the 4th monday of the month"
                 s += context.getResources().getString(R.string.time_the);
                 s += " ";
-                if(this.bydayNum[0] == -1){
+                if(this.bydayNum[0] == LAST_WEEK){
                     s += context.getResources().getString(R.string.time_last);
                 } else {
                     s += this.bydayNum[0]+suffixes[this.bydayNum[0]];
@@ -242,4 +253,145 @@ public class RecurringReminder extends EventRecurrence {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+    public long getNextAlertTime(Reminder r){
+
+        int specialCase = NOT_SPECIAL_CASE;
+        long previousTime = r.getMsTime();
+
+        // set the calendar to the previous time, so we can add time
+        Calendar nextReminderCal = Calendar.getInstance();
+        nextReminderCal.setTimeInMillis(previousTime);
+
+        // store previous calendar for comparison
+        Calendar prevReminder = Calendar.getInstance();
+        nextReminderCal.setTimeInMillis(previousTime);
+
+        // Get the current time
+        Calendar now = Calendar.getInstance();
+
+        // make sure this is a valid call
+        if(!isEnabled())
+            return INVALID_TIME;
+
+
+        // Check terminating conditions
+        // First check if we're doing this until a certain date
+        if (!TextUtils.isEmpty(this.until) && !this.until.equals("null")) {
+            Calendar cal = Calendar.getInstance();
+            Time t = new Time();
+            t.parse(this.until);
+            cal.setTimeInMillis(t.toMillis(false));
+
+            if(now.after(cal)){
+                return INVALID_TIME;
+            }
+        } else if (this.count != 0){
+            // second check if we've exceeded the specified amount
+            if(this.count == FINAL_COUNT){
+                // This guy is done
+                return INVALID_TIME;
+            } else if (count == 1){
+                // this is the last time we'll do this
+                this.count = FINAL_COUNT;
+            }
+        }
+
+        // Check if we are in either of these cases:
+        // 1. "Last" day of the month
+        // 2. Multiple days in a week
+        for(int i = 0; i < this.bydayCount; i++){
+            if(this.bydayNum[i] != 0){
+                // Case 1
+                specialCase = OFFSET_IN_WEEK;
+                break;
+            }
+        }
+        if(specialCase == OFFSET_IN_WEEK){
+            // get the next month's offset
+            if(this.bydayNum[0] == LAST_WEEK){
+                // increment by 1 week until the month changes (twice)
+                // then back off by one week
+                while(nextReminderCal.get(Calendar.MONTH) != prevReminder.get(Calendar.MONTH)+2){
+                    nextReminderCal.add(Calendar.WEEK_OF_YEAR, 1);
+                }
+                nextReminderCal.add(Calendar.WEEK_OF_YEAR, -1);
+            } else {
+                // specific offset in week
+                // increment until we hit next month
+                // then increment by offset in week
+                while(nextReminderCal.get(Calendar.MONTH) != prevReminder.get(Calendar.MONTH)+1) {
+                    nextReminderCal.add(Calendar.WEEK_OF_YEAR, 1);
+                }
+                nextReminderCal.add(Calendar.WEEK_OF_YEAR, this.bydayNum[0]);
+            }
+            // All done!
+            return nextReminderCal.getTimeInMillis();
+        }
+        // Check for case 2
+        if(this.bydayCount > 1){
+            specialCase = MULTIPLE_DAYS;
+            // find what day we are currently on
+            int currentDay = 0;
+            for(currentDay = 0; currentDay < this.bydayCount; currentDay++){
+                if(Utils.convertDayOfWeekFromTimeToCalendar(this.bydayNum[currentDay])
+                        == prevReminder.get(Calendar.DAY_OF_WEEK)){
+                    break;
+                }
+            }
+            // get next day
+            int nextDay = currentDay+1;
+            // wrap if necessary
+            if(nextDay == this.bydayCount)
+                nextDay = 0;
+
+            // now we have the day. Increment by 1 day until we hit the next one
+            while(nextReminderCal.get(Calendar.DAY_OF_WEEK)
+                    != Utils.convertDayOfWeekFromTimeToCalendar(this.bydayNum[nextDay])){
+                nextReminderCal.add(Calendar.DAY_OF_WEEK, 1);
+            }
+
+            // All done!
+            return nextReminderCal.getTimeInMillis();
+        }
+        if(specialCase != NOT_SPECIAL_CASE){
+            Log.e(TAG, "Special case set and not handled.");
+            return INVALID_TIME;
+        }
+
+        // easy mode
+        // just increment by the interval to get the next time
+
+        // an interval of 0 is actually one....
+        int amountToAdd = this.interval;
+        if(this.interval == 0)
+            amountToAdd++;
+
+        if(this.freq == this.DAILY){
+            nextReminderCal.add(Calendar.DAY_OF_YEAR, this.interval);
+        } else if (this.freq == this.WEEKLY){
+            nextReminderCal.add(Calendar.WEEK_OF_YEAR, this.interval);
+        } else if (this.freq == this.MONTHLY){
+            nextReminderCal.add(Calendar.MONTH, this.interval);
+        } else if (this.freq == this.YEARLY){
+            nextReminderCal.add(Calendar.YEAR, this.interval);
+        }
+
+        return nextReminderCal.getTimeInMillis();
+    }
+
+    /**
+     * TESTING:
+     *
+     * DAYS
+     * Repeat every day forever
+     * Repeat every day for count
+     * Repeat every day until
+     * --> Count + Until are now complete
+     * Repeat every X days forever
+     * --> Daily is now complete
+     *
+     *
+     * Repeat every
+     */
 }

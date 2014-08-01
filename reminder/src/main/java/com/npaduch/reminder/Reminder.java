@@ -318,6 +318,32 @@ public class Reminder {
     }
 
     /**
+     * Check if we need to reschedule the alarm,
+     * or if we can just mark it complete
+     */
+    public void checkRecurrence(Context context){
+        if(!recurrence.isEnabled()){
+            // no recurrence, mark complete
+            setCompleted(true);
+            return;
+        }
+
+        // there is some recurrence!
+        long ms = recurrence.getNextAlertTime(this);
+        if(ms == RecurringReminder.INVALID_TIME){
+            // just kidding, it's over now
+            recurrence.setEnabled(false);
+            setCompleted(true);
+            return;
+        }
+
+        // copy over new terminal time and set alarm
+        setMsTime(ms);
+        setAlarm(context);
+
+    }
+
+    /**
      * Use the MS time to calculate a user-friendly
      * string for the time the reminder is due.
      *
