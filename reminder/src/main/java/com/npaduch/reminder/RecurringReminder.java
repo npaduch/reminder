@@ -20,12 +20,11 @@ public class RecurringReminder extends EventRecurrence {
     private final static String TAG = "RecurringReminder";
 
     public final static int INVALID_TIME = 0;
-    public final static int FINAL_COUNT = -1;
-    public final static int LAST_WEEK = -1;
+    private final static int FINAL_COUNT = -1;
+    private final static int LAST_WEEK = -1;
 
-    public final static int NOT_SPECIAL_CASE    = 0;
-    public final static int OFFSET_IN_WEEK      = 1;
-    public final static int MULTIPLE_DAYS       = 2;
+    private final static int NOT_SPECIAL_CASE    = 0;
+    private final static int OFFSET_IN_WEEK      = 1;
 
     private boolean enabled;
 
@@ -46,13 +45,13 @@ public class RecurringReminder extends EventRecurrence {
             // repeat every
             // add frequency
             // Repeat every day/week/month/year
-            if (this.freq == this.DAILY) {
+            if (this.freq == RecurringReminder.DAILY) {
                 s += context.getResources().getString(R.string.repeat_day);
-            } else if (this.freq == this.WEEKLY) {
+            } else if (this.freq == RecurringReminder.WEEKLY) {
                 s += context.getResources().getString(R.string.repeat_week);
-            } else if (this.freq == this.MONTHLY) {
+            } else if (this.freq == RecurringReminder.MONTHLY) {
                 s += context.getResources().getString(R.string.repeat_month);
-            } else if (this.freq == this.YEARLY) {
+            } else if (this.freq == RecurringReminder.YEARLY) {
                 s += context.getResources().getString(R.string.repeat_year);
             }
         } else {
@@ -60,13 +59,13 @@ public class RecurringReminder extends EventRecurrence {
             // Repeat every X days/weeks/months/years
             s += this.interval;
             s += " ";
-            if (this.freq == this.DAILY) {
+            if (this.freq == RecurringReminder.DAILY) {
                 s += context.getResources().getString(R.string.repeat_days);
-            } else if (this.freq == this.WEEKLY) {
+            } else if (this.freq == RecurringReminder.WEEKLY) {
                 s += context.getResources().getString(R.string.repeat_weeks);
-            } else if (this.freq == this.MONTHLY) {
+            } else if (this.freq == RecurringReminder.MONTHLY) {
                 s += context.getResources().getString(R.string.repeat_months);
-            } else if (this.freq == this.YEARLY) {
+            } else if (this.freq == RecurringReminder.YEARLY) {
                 s += context.getResources().getString(R.string.repeat_years);
             }
         }
@@ -93,25 +92,25 @@ public class RecurringReminder extends EventRecurrence {
             if(count == 1){
                 s += "1";
                 s += " ";
-                if(this.freq == this.DAILY){
+                if(this.freq == RecurringReminder.DAILY){
                     s += context.getResources().getString(R.string.repeat_day);
-                } else if (this.freq == this.WEEKLY){
+                } else if (this.freq == RecurringReminder.WEEKLY){
                     s += context.getResources().getString(R.string.repeat_week);
-                } else if (this.freq == this.MONTHLY){
+                } else if (this.freq == RecurringReminder.MONTHLY){
                     s += context.getResources().getString(R.string.repeat_month);
-                } else if (this.freq == this.YEARLY){
+                } else if (this.freq == RecurringReminder.YEARLY){
                     s += context.getResources().getString(R.string.repeat_year);
                 }
             } else {
                 s += this.count;
                 s += " ";
-                if(this.freq == this.DAILY){
+                if(this.freq == RecurringReminder.DAILY){
                     s += context.getResources().getString(R.string.repeat_days);
-                } else if (this.freq == this.WEEKLY){
+                } else if (this.freq == RecurringReminder.WEEKLY){
                     s += context.getResources().getString(R.string.repeat_weeks);
-                } else if (this.freq == this.MONTHLY){
+                } else if (this.freq == RecurringReminder.MONTHLY){
                     s += context.getResources().getString(R.string.repeat_months);
-                } else if (this.freq == this.YEARLY){
+                } else if (this.freq == RecurringReminder.YEARLY){
                     s += context.getResources().getString(R.string.repeat_years);
                 }
             }
@@ -129,7 +128,7 @@ public class RecurringReminder extends EventRecurrence {
             boolean specialCase = false;
             for(int i = 0; i < this.bydayCount; i++){
                 if(this.bydayNum[i] != 0){
-                    Log.d(TAG, "bydaynum "+i+" "+this.bydayNum[i]);
+                    Log.d(TAG, "bydayNum "+i+" "+this.bydayNum[i]);
                     specialCase = true;
                 }
             }
@@ -217,7 +216,7 @@ public class RecurringReminder extends EventRecurrence {
             this.byday[i] = Integer.parseInt(sub[offset++]);
     }
 
-    public void dumpRecurrence(){
+    private void dumpRecurrence(){
         Log.d(TAG, "RECURRENCE START");
         Log.d(TAG, "Enabled: "+this.enabled);                   // recurrence enabled
         Log.d(TAG, "Interval: "+this.interval);                 // interval (i.e. every 3 days)
@@ -234,7 +233,7 @@ public class RecurringReminder extends EventRecurrence {
 
 
 
-    static String[] suffixes =
+    private static final String[] suffixes =
             //    0     1     2     3     4     5     6     7     8     9
             { "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th",
             //    10    11    12    13    14    15    16    17    18    19
@@ -243,7 +242,7 @@ public class RecurringReminder extends EventRecurrence {
             "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th",
             //    30    31
             "th", "st"
-            };
+    };
 
 
     public boolean isEnabled() {
@@ -330,9 +329,8 @@ public class RecurringReminder extends EventRecurrence {
         }
         // Check for case 2
         if(this.bydayCount > 1){
-            specialCase = MULTIPLE_DAYS;
             // find what day we are currently on
-            int currentDay = 0;
+            int currentDay;
             for(currentDay = 0; currentDay < this.bydayCount; currentDay++){
                 if(Utils.convertDayOfWeekFromTimeToCalendar(this.bydayNum[currentDay])
                         == prevReminder.get(Calendar.DAY_OF_WEEK)){
@@ -355,14 +353,10 @@ public class RecurringReminder extends EventRecurrence {
             int newInterval = this.interval;
             if(newInterval == 0)
                 newInterval++;
-            nextReminderCal.add(Calendar.WEEK_OF_YEAR, this.interval);
+            nextReminderCal.add(Calendar.WEEK_OF_YEAR, newInterval);
 
             // All done!
             return nextReminderCal.getTimeInMillis();
-        }
-        if(specialCase != NOT_SPECIAL_CASE){
-            Log.e(TAG, "Special case set and not handled.");
-            return INVALID_TIME;
         }
 
         // easy mode
@@ -373,14 +367,14 @@ public class RecurringReminder extends EventRecurrence {
         if(this.interval == 0)
             amountToAdd++;
 
-        if(this.freq == this.DAILY){
-            nextReminderCal.add(Calendar.DAY_OF_YEAR, this.interval);
-        } else if (this.freq == this.WEEKLY){
-            nextReminderCal.add(Calendar.WEEK_OF_YEAR, this.interval);
-        } else if (this.freq == this.MONTHLY){
-            nextReminderCal.add(Calendar.MONTH, this.interval);
-        } else if (this.freq == this.YEARLY){
-            nextReminderCal.add(Calendar.YEAR, this.interval);
+        if(this.freq == RecurringReminder.DAILY){
+            nextReminderCal.add(Calendar.DAY_OF_YEAR, amountToAdd);
+        } else if (this.freq == RecurringReminder.WEEKLY){
+            nextReminderCal.add(Calendar.WEEK_OF_YEAR, amountToAdd);
+        } else if (this.freq == RecurringReminder.MONTHLY){
+            nextReminderCal.add(Calendar.MONTH, amountToAdd);
+        } else if (this.freq == RecurringReminder.YEARLY){
+            nextReminderCal.add(Calendar.YEAR, amountToAdd);
         }
 
         return nextReminderCal.getTimeInMillis();
