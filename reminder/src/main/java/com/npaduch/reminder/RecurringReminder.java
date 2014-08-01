@@ -351,6 +351,12 @@ public class RecurringReminder extends EventRecurrence {
                 nextReminderCal.add(Calendar.DAY_OF_WEEK, 1);
             }
 
+            // we're only hear for weekly... bump number of weeks!
+            int newInterval = this.interval;
+            if(newInterval == 0)
+                newInterval++;
+            nextReminderCal.add(Calendar.WEEK_OF_YEAR, this.interval);
+
             // All done!
             return nextReminderCal.getTimeInMillis();
         }
@@ -383,14 +389,16 @@ public class RecurringReminder extends EventRecurrence {
     /**
      * TESTING:
      *
-     * DAYS
-     * Repeat every day forever
-     * Repeat every day for count
-     * Repeat every day until
+     * every day forever
+     * every day for count
+     * every day until
      * --> Count + Until are now complete
-     * Repeat every X days forever
+     * every X days forever
      * --> Daily is now complete
      *
+     * every week forever just one day
+     * every week multiple days
+     * every week multiple days
      *
      * Repeat every
      */
