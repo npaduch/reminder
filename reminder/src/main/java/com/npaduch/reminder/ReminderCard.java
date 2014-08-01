@@ -3,16 +3,12 @@ package com.npaduch.reminder;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardHeader;
-import it.gmariotti.cardslib.library.internal.base.BaseCard;
 
 /**
  * Created by nolanpaduch on 7/7/14.
@@ -27,30 +23,19 @@ public class ReminderCard extends Card {
     private static final int ASYNC_TASK_UPDATE_REMINDER = 0;
     private static final int ASYNC_TASK_DELETE_REMINDER = 1;
 
-    // views that will be presented
-    private TextView dateTimeTextView;
-
     // reminder details to be displayed
     private Reminder reminder;
 
     // application context
-    Context context;
+    private final Context context;
 
     /**
      * Constructor with a custom inner layout
-     * @param context
+     *
+     * @param context - activity context
      */
     public ReminderCard(Context context, Reminder reminder) {
-        this(context, R.layout.reminder_card_entry, reminder);
-    }
-
-    /**
-     *
-     * @param context
-     * @param innerLayout
-     */
-    public ReminderCard(Context context, int innerLayout, Reminder reminder) {
-        super(context, innerLayout);
+        super(context, R.layout.reminder_card_entry);
         this.context = context;
         this.reminder = reminder;
         init();
@@ -88,7 +73,7 @@ public class ReminderCard extends Card {
     @Override
     public void setupInnerViewElements(ViewGroup parent, View view) {
 
-        dateTimeTextView = (TextView) parent.findViewById(R.id.reminderCardDateTimeText);
+        TextView dateTimeTextView = (TextView) parent.findViewById(R.id.reminderCardDateTimeText);
 
         dateTimeTextView.setText(reminder.getDateTimeString(context));
     }
@@ -119,7 +104,7 @@ public class ReminderCard extends Card {
 
 
 
-    public class MyCardOnSwipeListener implements Card.OnSwipeListener {
+    private class MyCardOnSwipeListener implements Card.OnSwipeListener {
 
         @Override
         public void onSwipe(Card card) {
@@ -130,6 +115,8 @@ public class ReminderCard extends Card {
             r.setCompleted(true);
             // cancel alarm
             r.cancelAlarm(context);
+            // clear reminder
+            r.cancelNotification(context);
             // make change in file
             UpdateFile uf = new UpdateFile(
                     ASYNC_TASK_UPDATE_REMINDER,     // save updated reminder
@@ -140,7 +127,7 @@ public class ReminderCard extends Card {
         }
     }
 
-    public class MyCardUndoSwipeListener implements OnUndoSwipeListListener {
+    private class MyCardUndoSwipeListener implements OnUndoSwipeListListener {
         @Override
         public void onUndoSwipe(Card card) {
             Log.d(TAG, "Card swipe undone");
@@ -161,16 +148,16 @@ public class ReminderCard extends Card {
 
             BusProvider.getInstance().post(new BusEvent(BusEvent.TYPE_ADD, BusEvent.TARGET_PENDING, r));
         }
-    };
+    }
 
 
     /** Asynchronous task for reading/writing to file **/
     private class UpdateFile extends AsyncTask {
 
         // Task to complete in the background
-        int task;
+        final int task;
         // Reminder to manipulate (if we need to)
-        Reminder reminder;
+        final Reminder reminder;
 
         public UpdateFile(int task, Reminder r) {
             super();

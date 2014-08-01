@@ -1,6 +1,7 @@
 package com.npaduch.reminder;
 
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -300,10 +301,6 @@ public class Reminder {
     public void cancelAlarm(Context context){
         Log.d(TAG, "Cancelling alarm for reminder.");
 
-        // set time for a minute from now
-        Long time = getMsTime();
-
-
         // create an Intent and set the class which will execute when Alarm triggers
         Intent intentAlarm = new Intent(context, AlarmReceiver.class);
         intentAlarm.putExtra(INTENT_REMINDER_ID, getReminderID());
@@ -338,8 +335,18 @@ public class Reminder {
         }
 
         // copy over new terminal time and set alarm
+        Log.d(TAG, "Recurring reminder. Re-setting alarm.");
         setMsTime(ms);
         setAlarm(context);
+
+    }
+
+    public void cancelNotification(Context context){
+
+        NotificationManager mNotificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        mNotificationManager.cancel(getReminderID());
 
     }
 
@@ -563,7 +570,6 @@ public class Reminder {
     public static void initFile(Context context) {
 
         Log.d(TAG, "Initializing file "+context.getFilesDir()+File.pathSeparator+filename);
-        File file = new File(context.getFilesDir(), filename);
 
         ArrayList<Reminder> reminders = new ArrayList<Reminder>();
 
@@ -573,9 +579,8 @@ public class Reminder {
     public void removeFromFile(Context context) {
 
         Log.d(TAG, "Removing from file "+context.getFilesDir()+File.pathSeparator+filename);
-        File file = new File(context.getFilesDir(), filename);
 
-        ArrayList<Reminder> reminderList = null;
+        ArrayList<Reminder> reminderList;
 
         reminderList = handleFileOperation(context, false, null);
 
@@ -606,9 +611,8 @@ public class Reminder {
     public void writeToFile(Context context) {
 
         Log.d(TAG, "Adding to file "+context.getFilesDir()+File.pathSeparator+filename);
-        File file = new File(context.getFilesDir(), filename);
 
-        ArrayList<Reminder> reminderList = null;
+        ArrayList<Reminder> reminderList;
 
         // 1. Read in JSON file content
         reminderList = handleFileOperation(context, false, null);

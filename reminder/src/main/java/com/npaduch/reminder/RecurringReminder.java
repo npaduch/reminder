@@ -392,8 +392,15 @@ public class RecurringReminder extends EventRecurrence {
      *
      * every week forever just one day
      * every week multiple days
-     * every week multiple days
+     * every X weeks multiple days
      *
-     * Repeat every
+     * every month forever
+     * every month same day
+     * every month week offset
+     * every X months same day
+     * every X months week offset
+     *
+     * every year forever
+     * every X years
      */
 }

@@ -61,15 +61,6 @@ public class MainActivity extends FragmentActivity {
     public int currentFragment; // keep track of what we currently are
     public String currentTag; // keep track of what we currently are
 
-    // Message Passing (keys = String, values = int)
-    public static final String  MESSAGE_TASK = "Task";
-    public static final int TASK_CHANGE_FRAG = 10;
-    public static final int TASK_EDIT_REMINDER = 11;
-    public static final String TASK_INT = "int";
-    public static final String TASK_INITIATOR = "initiator";
-    public static final int PENDING_REMINDERS = 20;
-    public static final int COMPLETED_REMINDERS = 21;
-
     // Reminders
     public static ArrayList<Reminder> reminders;
     // pending
@@ -126,7 +117,8 @@ public class MainActivity extends FragmentActivity {
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 invalidateOptionsMenu();
-                getActionBar().setTitle(mTitle);
+                if(getActionBar() != null)
+                    getActionBar().setTitle(mTitle);
             }
 
             /** Called when a drawer has settled in a completely open state. */
@@ -136,7 +128,8 @@ public class MainActivity extends FragmentActivity {
                 // Hide keyboard if it was shown
                 if(newReminderFragment != null)
                     newReminderFragment.hideKeyboard();
-                getActionBar().setTitle(mDrawerTitle);
+                if(getActionBar() != null)
+                    getActionBar().setTitle(mDrawerTitle);
             }
         };
 
@@ -152,8 +145,10 @@ public class MainActivity extends FragmentActivity {
         tintManager.setTintColor(getResources().getColor(R.color.app_color_theme));
 
         // set to enable drawer from action bar
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+        if(getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setHomeButtonEnabled(true);
+        }
 
         // check if this was called from a notification
         // if it was, set the reminder to ALL DONE
@@ -190,6 +185,8 @@ public class MainActivity extends FragmentActivity {
         Log.d(TAG,"Setting reminder to completed");
         // check if we need to reschedule
         r.checkRecurrence(this);
+        if(r.isCompleted())
+            r.cancelNotification(this);
         r.writeToFile(getApplicationContext());
 
     }
@@ -265,7 +262,8 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void setTitle(CharSequence title) {
         mTitle = title;
-        getActionBar().setTitle(mTitle);
+        if(getActionBar() != null)
+            getActionBar().setTitle(mTitle);
     }
 
     /** Navigation Draw */
