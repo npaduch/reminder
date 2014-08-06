@@ -9,10 +9,10 @@ import it.gmariotti.cardslib.library.internal.Card;
  *
  * Simple class to hold event messages
  */
-public class BusEvent {
+class BusEvent {
 
     // targeted receiver
-    private ArrayList<Integer> targets;
+    private final ArrayList<Integer> targets;
 
     // hold type of event
     private int type;

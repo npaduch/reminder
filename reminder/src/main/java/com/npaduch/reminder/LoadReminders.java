@@ -10,7 +10,6 @@ package com.npaduch.reminder;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.TextView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,15 +17,15 @@ import java.util.ArrayList;
 import it.gmariotti.cardslib.library.internal.Card;
 
 /** Asynchronous task for loading reminders initially **/
-public class LoadReminders extends AsyncTask {
+class LoadReminders extends AsyncTask {
 
-    private String TAG = "LoadReminders";
+    private final String TAG = "LoadReminders";
 
-    Context context;
+    private final Context context;
 
-    int fragmentType;
+    private final int fragmentType;
 
-    ArrayList<Card> cards;
+    private ArrayList<Card> cards;
 
     public LoadReminders(Context context, int fragmentType) {
         this.context = context;

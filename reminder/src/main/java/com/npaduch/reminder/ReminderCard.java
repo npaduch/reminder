@@ -15,7 +15,7 @@ import it.gmariotti.cardslib.library.internal.CardHeader;
  *
  * Custom cardview to show the attributes of the reminder
  */
-public class ReminderCard extends Card {
+class ReminderCard extends Card {
 
     private final static String TAG = "ReminderCard";
 

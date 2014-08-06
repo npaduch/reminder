@@ -1,6 +1,5 @@
 package com.npaduch.reminder;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.SystemClock;
@@ -22,7 +21,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -31,8 +29,6 @@ import android.widget.Toast;
 import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
 import com.doomonafireball.betterpickers.radialtimepicker.RadialPickerLayout;
 import com.doomonafireball.betterpickers.radialtimepicker.RadialTimePickerDialog;
-import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
-import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrenceFormatter;
 import com.doomonafireball.betterpickers.recurrencepicker.RecurrencePickerDialog;
 
 import java.util.ArrayList;
@@ -55,16 +51,16 @@ import it.gmariotti.cardslib.library.view.CardView;
 // TODO: Recurring reminders
 // TODO: Verify date + time actually selected (i.e. back button clicked on specific date)
 
-public class NewReminderFragment extends Fragment
+class NewReminderFragment extends Fragment
         implements RadialTimePickerDialog.OnTimeSetListener,
         CalendarDatePickerDialog.OnDateSetListener,
         RecurrencePickerDialog.OnRecurrenceSetListener {
 
     // Logging
-    public final static String TAG = "NewReminderFragment";
+    private final static String TAG = "NewReminderFragment";
 
     // delay time for keyboard popup on entry
-    public final static int KEYBOARD_POPUP_DELAY = 200;
+    private final static int KEYBOARD_POPUP_DELAY = 200;
 
     // Time offsets
     public static final int TIME_MORNING    = 0;
@@ -76,7 +72,7 @@ public class NewReminderFragment extends Fragment
     // Date offsets
     public static final int DATE_TODAY    = 0;
     public static final int DATE_TOMORROW = 1;
-    public static final int DATE_OTHER    = 2;
+    private static final int DATE_OTHER    = 2;
 
     private static final String FRAG_TAG_TIME_PICKER = "timePickerDialogFragment";
     private static final String FRAG_TAG_DATE_PICKER = "datePickerDialogFragment";
@@ -94,23 +90,18 @@ public class NewReminderFragment extends Fragment
     private int spinner_month = 0;
     private int spinner_day = 0;
 
-    // Used to find bundled args
-    public static final String REMINDER_OFFSET = "reminder_bundle";
-    public static final int REMINDER_NOT_FOUND = -1;
-
     // Recurrence
-    public String recurrenceRule;
+    private String recurrenceRule;
     private RecurringReminder mEventRecurrence;
 
     // Main view
-    View rootView;
+    private View rootView;
     // spinners
-    ArrayAdapter<CharSequence> dayAdapter;
-    ArrayAdapter<CharSequence> timeAdapter;
+    private ArrayAdapter<CharSequence> dayAdapter;
+    private ArrayAdapter<CharSequence> timeAdapter;
     // handle the case if set by code
     private boolean daySpinnerSetInCode = false;
     private boolean timeSpinnerSetInCode = false;
-    private boolean checkboxSetInCode = false;
 
     // Application Context
     private Context context;
@@ -208,7 +199,7 @@ public class NewReminderFragment extends Fragment
     }
 
 
-    public  void initializeSpinners(View view){
+    void initializeSpinners(View view){
 
         // locate spinners
         AlwaysChangeSpinner daySpinner = (AlwaysChangeSpinner) view.findViewById(R.id.newReminderDaySpinner);
@@ -241,7 +232,7 @@ public class NewReminderFragment extends Fragment
         timeSpinner.setSelection(getNextTimeWindow());
     }
 
-    public void initializeEdit(Reminder r){
+    void initializeEdit(Reminder r){
         Log.d(TAG, "Filling in data for edit reminder");
         // Get views
         TextView descriptionTextView = (TextView)rootView.findViewById(R.id.newReminderEditText);
@@ -270,7 +261,6 @@ public class NewReminderFragment extends Fragment
         RecurringReminder rr = r.getRecurrence();
         if(rr.isEnabled()){
             CheckBox cb = (CheckBox)rootView.findViewById(R.id.newReminderRecurrenceCheckbox);
-            checkboxSetInCode = true;
             cb.setChecked(true);
             TextView recurringTextView = (TextView)rootView.findViewById(R.id.newReminderRecurrenceString);
             recurringTextView.setText(rr.makeString(getActivity()));
@@ -289,7 +279,7 @@ public class NewReminderFragment extends Fragment
     /***
      * On Click Listeners
      */
-    private View.OnClickListener newReminderOnClickListener = new View.OnClickListener() {
+    private final View.OnClickListener newReminderOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             switch (view.getId()) {
@@ -302,7 +292,7 @@ public class NewReminderFragment extends Fragment
         }
     };
 
-    private AdapterView.OnItemSelectedListener newReminderOnItemSelectedListener
+    private final AdapterView.OnItemSelectedListener newReminderOnItemSelectedListener
             = new AdapterView.OnItemSelectedListener(){
         @Override
         public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -405,7 +395,7 @@ public class NewReminderFragment extends Fragment
         }
     };
 
-    public class mOnCheckClickListener implements View.OnClickListener{
+    private class mOnCheckClickListener implements View.OnClickListener{
 
         @Override
         public void onClick(View view) {
@@ -599,8 +589,6 @@ public class NewReminderFragment extends Fragment
         dayAdapter.clear();
         dayAdapter.addAll(days);
         dayAdapter.notifyDataSetChanged();
-
-        return;
     }
 
     private void handleNewTime(Context context, int hour, int minute){
@@ -622,11 +610,9 @@ public class NewReminderFragment extends Fragment
         timeAdapter.clear();
         timeAdapter.addAll(times);
         timeAdapter.notifyDataSetChanged();
-
-        return;
     }
 
-    public int getNextTimeWindow() {
+    int getNextTimeWindow() {
         Calendar cal = Calendar.getInstance();
         int hour = cal.get(Calendar.HOUR_OF_DAY);
         if (hour < Reminder.TIME_MORNING_HOUR)
@@ -644,7 +630,7 @@ public class NewReminderFragment extends Fragment
             return TIME_MORNING;
     }
 
-    public int getNextDayWindow() {
+    int getNextDayWindow() {
         Calendar cal = Calendar.getInstance();
         int hour = cal.get(Calendar.HOUR_OF_DAY);
         if (hour < Reminder.TIME_NIGHT_HOUR)
@@ -711,7 +697,7 @@ public class NewReminderFragment extends Fragment
     private class SaveReminder extends AsyncTask {
 
         // Reminder to save
-        Reminder reminder;
+        final Reminder reminder;
 
         public SaveReminder(Reminder r) {
             super();

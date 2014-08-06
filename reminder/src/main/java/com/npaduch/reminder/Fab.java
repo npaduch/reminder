@@ -23,12 +23,13 @@ import android.view.animation.DecelerateInterpolator;
 // https://github.com/FaizMalkani/FloatingActionButton
 public class Fab extends View
 {
-    Context _context;
-    Paint mButtonPaint, mDrawablePaint;
-    Bitmap  mBitmap;
-    int mScreenHeight;
-    float currentY;;
-    boolean mHidden = false;
+    private final Context _context;
+    private Paint mButtonPaint;
+    private Paint mDrawablePaint;
+    private Bitmap  mBitmap;
+    private int mScreenHeight;
+    private float currentY;
+    private boolean mHidden = false;
 
     public Fab(Context context, AttributeSet attributeSet)
     {
@@ -52,13 +53,12 @@ public class Fab extends View
 
     public void setFabDrawable(Drawable fabDrawable)
     {
-        Drawable myDrawable = fabDrawable;
-        mBitmap = ((BitmapDrawable) myDrawable).getBitmap();
+        mBitmap = ((BitmapDrawable) fabDrawable).getBitmap();
         invalidate();
     }
 
 
-    public void init(int fabColor)
+    void init(int fabColor)
     {
         setWillNotDraw(false);
         this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
@@ -103,13 +103,12 @@ public class Fab extends View
     public int dpToPx(int dp)
     {
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-        return px;
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
     public void hideFab()
     {
-        if(mHidden == false)
+        if(!mHidden)
         {
             currentY = getY();
             ObjectAnimator mHideAnimation = ObjectAnimator.ofFloat(this, "Y", mScreenHeight);
@@ -121,7 +120,7 @@ public class Fab extends View
 
     public void showFab()
     {
-        if(mHidden == true)
+        if(mHidden)
         {
             ObjectAnimator mShowAnimation = ObjectAnimator.ofFloat(this, "Y", currentY);
             mShowAnimation.setInterpolator(new DecelerateInterpolator());

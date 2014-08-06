@@ -35,31 +35,31 @@ import java.util.ArrayList;
 public class MainActivity extends FragmentActivity {
 
     // Debugging attributes
-    String TAG = "MainActivity";
+    private final String TAG = "MainActivity";
 
     // Drawer Label Offsets
-    public static int NEW_REMINDER_TITLE = 0;
-    public static int PENDING_REMINDERS_TITLE = 1;
-    public static int COMPLETED_REMINDERS_TITLE = 2;
+    private static final int NEW_REMINDER_TITLE = 0;
+    private static final int PENDING_REMINDERS_TITLE = 1;
+    private static final int COMPLETED_REMINDERS_TITLE = 2;
     public static int SETTINGS_TITLE = 3;
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
-    public CharSequence mTitle;
-    public CharSequence mDrawerTitle;
+    private CharSequence mTitle;
+    private CharSequence mDrawerTitle;
     private ActionBarDrawerToggle mDrawerToggle;
 
     /* Fragment Transitions */
-    public static final String PENDING_TAG = "PENDING_TAG";
-    public static final String NEW_REMINDER_TAG = "NEW_REMINDER_TAG";
-    public static final String COMPLETED_TAG = "COMPLETED_TAG";
+    private static final String PENDING_TAG = "PENDING_TAG";
+    private static final String NEW_REMINDER_TAG = "NEW_REMINDER_TAG";
+    private static final String COMPLETED_TAG = "COMPLETED_TAG";
 
     // Holders for fragments to preserve state
-    NewReminderFragment newReminderFragment;
-    public static CardListFragment pendingFragment;
-    public static CardListFragment completedFragment;
-    public int currentFragment; // keep track of what we currently are
-    public String currentTag; // keep track of what we currently are
+    private NewReminderFragment newReminderFragment;
+    private static CardListFragment pendingFragment;
+    private static CardListFragment completedFragment;
+    private int currentFragment; // keep track of what we currently are
+    private String currentTag; // keep track of what we currently are
 
     // Reminders
     public static ArrayList<Reminder> reminders;
@@ -304,7 +304,7 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    public void changeFragment(int fragmentTo, int fragmentFrom, boolean resetNewFragment){
+    void changeFragment(int fragmentTo, int fragmentFrom, boolean resetNewFragment){
 
         Fragment fragment;  // holder for fragment
         String fragmentTag; // holder for fragment tag
@@ -417,7 +417,7 @@ public class MainActivity extends FragmentActivity {
 
     // prepare to change fragment to new fragemnt
     // pre-populate fields first
-    public void handleEditReminder(Reminder r){
+    void handleEditReminder(Reminder r){
         // reinitialize so we can fill with edit data
         newReminderFragment = new NewReminderFragment();
         newReminderFragment.setReminderToEdit(r);

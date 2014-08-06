@@ -50,7 +50,7 @@ public class AlarmReceiver extends BroadcastReceiver{
         throwNotification(context, r);
     }
 
-    public void throwNotification(Context context, Reminder r){
+    void throwNotification(Context context, Reminder r){
 
         // Create instance of notification builder
         // TODO: replace with a real notification icon
@@ -100,9 +100,8 @@ public class AlarmReceiver extends BroadcastReceiver{
         Intent intent = new Intent(context, NotificationDismissedReceiver.class);
         intent.putExtra(Reminder.INTENT_REMINDER_ID, reminderID);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(),
+        return PendingIntent.getBroadcast(context.getApplicationContext(),
                         reminderID, intent, 0);
-        return pendingIntent;
     }
 
 }

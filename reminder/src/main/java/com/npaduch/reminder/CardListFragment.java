@@ -1,8 +1,6 @@
 package com.npaduch.reminder;
 
-import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -38,8 +36,8 @@ public class CardListFragment extends Fragment {
     private final static String TAG = "CardListFragment";
 
     // Card adapter and listview
-    public CardArrayAdapter mCardArrayAdapter;
-    public CardListView mCardListView;
+    private CardArrayAdapter mCardArrayAdapter;
+    private CardListView mCardListView;
 
     // Arguments
     public static final String LIST_TYPE = "list_type";
@@ -47,9 +45,9 @@ public class CardListFragment extends Fragment {
     public static final int LIST_COMPLETED = 1;
 
     // list type
-    public int fragmentType = LIST_PENDING;
+    private int fragmentType = LIST_PENDING;
 
-    public static Context context;
+    private static Context context;
 
     public CardListFragment() {
     }
@@ -137,6 +135,7 @@ public class CardListFragment extends Fragment {
 
     private void startLoad(){
         getActivity().setProgressBarIndeterminateVisibility(true);
+        //noinspection unchecked
         new LoadReminders(getActivity(), fragmentType).execute();
     }
 
@@ -163,7 +162,7 @@ public class CardListFragment extends Fragment {
     }
 
 
-    public void addReminderCard(Reminder r){
+    void addReminderCard(Reminder r){
 
         // Check if reminder already exists
         boolean found = false;
@@ -188,7 +187,7 @@ public class CardListFragment extends Fragment {
         mCardArrayAdapter.notifyDataSetChanged();
     }
 
-    public void removeReminderCard(Reminder r){
+    void removeReminderCard(Reminder r){
 
         // search for reminder and remove it
         for(int i = 0; i < mCardArrayAdapter.getCount(); i++){
@@ -208,7 +207,7 @@ public class CardListFragment extends Fragment {
 
 
 
-    public static Card.OnCardClickListener cardClickListener = new Card.OnCardClickListener(){
+    public static final Card.OnCardClickListener cardClickListener = new Card.OnCardClickListener(){
         @Override
         public void onClick(Card card, View view) {
             ReminderCard rc = (ReminderCard) card;
@@ -219,7 +218,7 @@ public class CardListFragment extends Fragment {
         }
     };
 
-    public static CardHeader.OnClickCardHeaderPopupMenuListener cardOverflowClickListener
+    public static final CardHeader.OnClickCardHeaderPopupMenuListener cardOverflowClickListener
             = new CardHeader.OnClickCardHeaderPopupMenuListener(){
         @Override
         public void onMenuItemClick(BaseCard baseCard, MenuItem menuItem) {
@@ -240,7 +239,7 @@ public class CardListFragment extends Fragment {
     };
 
     // to do, replace this with bus
-    public static void switchToEditFragment(Reminder r){
+    private static void switchToEditFragment(Reminder r){
         BusEvent event = new BusEvent(BusEvent.TYPE_EDIT_REMINDER, BusEvent.TARGET_MAIN);
         event.setReminder(r);
         BusProvider.getInstance().post(event);

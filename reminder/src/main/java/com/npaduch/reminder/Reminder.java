@@ -31,8 +31,8 @@ import java.util.Random;
 public class Reminder {
 
     // initialize values
-    public static final String STRING_INIT = "STRING_INVALID";
-    public static final int INT_INIT = -1;
+    private static final String STRING_INIT = "STRING_INVALID";
+    private static final int INT_INIT = -1;
 
     private String description;
 
@@ -80,15 +80,15 @@ public class Reminder {
 
     // time definitions
     public static final int TIME_MORNING_HOUR = 9;
-    public static final int TIME_MORNING_MINUTE = 0;
+    private static final int TIME_MORNING_MINUTE = 0;
     public static final int TIME_NOON_HOUR = 12;
-    public static final int TIME_NOON_MINUTE = 0;
+    private static final int TIME_NOON_MINUTE = 0;
     public static final int TIME_AFTERNOON_HOUR =15;
-    public static final int TIME_AFTERNOON_MINUTE = 0;
+    private static final int TIME_AFTERNOON_MINUTE = 0;
     public static final int TIME_EVENING_HOUR = 18;
-    public static final int TIME_EVENING_MINUTE = 0;
+    private static final int TIME_EVENING_MINUTE = 0;
     public static final int TIME_NIGHT_HOUR = 20;
-    public static final int TIME_NIGHT_MINUTE = 0;
+    private static final int TIME_NIGHT_MINUTE = 0;
 
     // Called when reminder created for the first time
     public Reminder() {
@@ -106,25 +106,6 @@ public class Reminder {
         // random value greater than 0
         // TODO: make sure reminder ID not already in use
         setReminderID(new Random().nextInt(Integer.MAX_VALUE));
-    }
-
-    // Called when read from file
-    public Reminder(String description, boolean completed,
-                    int reminderID, long msTime, int dateOffset, int timeOffset){
-        this.description = description;
-        this.completed = completed;
-        this.reminderID = reminderID;
-        this.msTime = msTime;
-        this.dateOffset = dateOffset;
-        this.timeOffset = timeOffset;
-
-        setYear(INT_INIT);
-        setMonth(INT_INIT);
-        setMonthDay(INT_INIT);
-        setHour(INT_INIT);
-        setMinute(INT_INIT);
-
-        setCompleted(false);
     }
 
     public int getDateOffset() {
@@ -203,7 +184,7 @@ public class Reminder {
         return reminderID;
     }
 
-    public void setReminderID(int reminderID) {
+    void setReminderID(int reminderID) {
         this.reminderID = reminderID;
     }
 
@@ -211,7 +192,7 @@ public class Reminder {
         return msTime;
     }
 
-    public void setMsTime(long msTime) {
+    void setMsTime(long msTime) {
         this.msTime = msTime;
     }
 
@@ -319,7 +300,7 @@ public class Reminder {
      * or if we can just mark it complete
      */
     public void checkRecurrence(Context context){
-        Log.d(TAG, "Recurrence: "+recurrence.isEnabled());
+        Log.d(TAG, "Recurrence: " + recurrence.isEnabled());
         if(!recurrence.isEnabled()){
             // no recurrence, mark complete
             setCompleted(true);
@@ -629,7 +610,7 @@ public class Reminder {
         handleFileOperation(context, true, reminderList);
     }
 
-    public ArrayList<Reminder> insertReminder(ArrayList<Reminder> rList){
+    ArrayList<Reminder> insertReminder(ArrayList<Reminder> rList){
         boolean found = false;
         // first, check if the reminder already exists
         for(int i = 0; i < rList.size(); i++){
@@ -647,7 +628,7 @@ public class Reminder {
     }
 
     /** All required for JSON Parsing **/
-    public static ArrayList<Reminder> readJsonStream(InputStream in) throws IOException {
+    private static ArrayList<Reminder> readJsonStream(InputStream in) throws IOException {
         if(JSON_DEBUG) Log.d(TAG, "Begin readJsonStream");
         // TODO: WHY AM I NOT READING>>>>>
         JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
@@ -659,7 +640,7 @@ public class Reminder {
         }
     }
 
-    public static ArrayList<Reminder> readRemindersArray(JsonReader reader) throws IOException {
+    private static ArrayList<Reminder> readRemindersArray(JsonReader reader) throws IOException {
         if(JSON_DEBUG)Log.d(TAG,"Begin readReminderArray");
         ArrayList<Reminder> reminderList = new ArrayList<Reminder>();
 
@@ -673,7 +654,7 @@ public class Reminder {
         return reminderList;
     }
 
-    public static Reminder readReminder(JsonReader reader) throws IOException {
+    private static Reminder readReminder(JsonReader reader) throws IOException {
 
         Reminder r = new Reminder();
 
@@ -720,14 +701,14 @@ public class Reminder {
     }
 
     /** JSON Writing **/
-    public static void writeJsonStream(OutputStream out, ArrayList<Reminder> reminders) throws IOException {
+    private static void writeJsonStream(OutputStream out, ArrayList<Reminder> reminders) throws IOException {
         JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
         writer.setIndent("  ");
         writeMessagesArray(writer, reminders);
         writer.close();
     }
 
-    public static void writeMessagesArray(JsonWriter writer, ArrayList<Reminder> reminders) throws IOException {
+    private static void writeMessagesArray(JsonWriter writer, ArrayList<Reminder> reminders) throws IOException {
         writer.beginArray();
 
         for (Reminder r : reminders){
@@ -736,7 +717,7 @@ public class Reminder {
         writer.endArray();
     }
 
-    public static void writeMessage(JsonWriter writer, Reminder reminder) throws IOException {
+    private static void writeMessage(JsonWriter writer, Reminder reminder) throws IOException {
         writer.beginObject();
         writer.name(JSON_DESCRIPTION).value(reminder.getDescription());
         writer.name(JSON_COMPLETED).value(reminder.isCompleted());
@@ -763,7 +744,7 @@ public class Reminder {
         Log.d(TAG,"Reminder: END");
     }
 
-    public static synchronized ArrayList<Reminder> handleFileOperation(Context context, boolean write, ArrayList<Reminder> reminderList){
+    private static synchronized ArrayList<Reminder> handleFileOperation(Context context, boolean write, ArrayList<Reminder> reminderList){
 
         File file = new File(context.getFilesDir(), filename);
         if(write){

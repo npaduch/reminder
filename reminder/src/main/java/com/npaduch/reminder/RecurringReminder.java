@@ -6,7 +6,6 @@ import android.text.format.Time;
 import android.util.Log;
 
 import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
-import com.doomonafireball.betterpickers.recurrencepicker.Utils;
 
 import java.util.Calendar;
 
