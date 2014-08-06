@@ -48,8 +48,6 @@ public class AlarmReceiver extends BroadcastReceiver{
         }
 
         throwNotification(context, r);
-
-        //vibrateDevice(context);
     }
 
     public void throwNotification(Context context, Reminder r){

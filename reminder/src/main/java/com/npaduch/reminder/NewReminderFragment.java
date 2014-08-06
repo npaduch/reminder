@@ -32,6 +32,7 @@ import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDi
 import com.doomonafireball.betterpickers.radialtimepicker.RadialPickerLayout;
 import com.doomonafireball.betterpickers.radialtimepicker.RadialTimePickerDialog;
 import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
+import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrenceFormatter;
 import com.doomonafireball.betterpickers.recurrencepicker.RecurrencePickerDialog;
 
 import java.util.ArrayList;
@@ -143,7 +144,6 @@ public class NewReminderFragment extends Fragment
         TextView createButton = (TextView) rootView.findViewById(R.id.newReminderCreateButton);
         createButton.setOnClickListener(newReminderOnClickListener);
         CheckBox repeatCheckbox = (CheckBox) rootView.findViewById(R.id.newReminderRecurrenceCheckbox);
-        //repeatCheckbox.setOnCheckedChangeListener(mOnCheckedChangeListener);
         repeatCheckbox.setOnClickListener(new mOnCheckClickListener());
 
         // for time picker
@@ -171,6 +171,7 @@ public class NewReminderFragment extends Fragment
 
         // initialize Reminder
         reminderHolder = new Reminder();
+        mEventRecurrence = new RecurringReminder();
 
         // Check if we're actually editing a note
         if(getReminderToEdit() != null) {
@@ -180,7 +181,6 @@ public class NewReminderFragment extends Fragment
 
         // save off context
         this.context = getActivity();
-        mEventRecurrence = new RecurringReminder();
 
         return rootView;
     }
@@ -279,6 +279,7 @@ public class NewReminderFragment extends Fragment
 
             recurrenceString.setText(rr.makeString(getActivity()));
             recurrenceString.setVisibility(View.VISIBLE);
+            mEventRecurrence = rr;
         }
 
         button.setText(R.string.edit_reminder_save);
@@ -424,7 +425,7 @@ public class NewReminderFragment extends Fragment
                 Bundle b = new Bundle();
                 Time time = new Time();
                 time.setToNow();
-                b.putLong(RecurrencePickerDialog.BUNDLE_START_TIME_MILLIS, time.toMillis(false));
+                b.putLong(RecurrencePickerDialog.BUNDLE_START_TIME_MILLIS, getRecurringTime());
                 b.putString(RecurrencePickerDialog.BUNDLE_TIME_ZONE, time.timezone);
 
                 // may be more efficient to serialize and pass in EventRecurrence?
@@ -490,6 +491,17 @@ public class NewReminderFragment extends Fragment
         r.setCompleted(false);
 
         // set recurrence (populated via handler)
+        // if recurrence is count based, decrement by one now since we're setting alarm
+        if(mEventRecurrence.count != 0){
+            if(mEventRecurrence.count == 1){
+                // in this case, make it never repeat!
+                mEventRecurrence.count = RecurringReminder.FINAL_COUNT;
+            }
+            else {
+                // just decrement and move on
+                mEventRecurrence.count--;
+            }
+        }
         r.setRecurrence(mEventRecurrence);
 
         // Log and save reminder
@@ -639,6 +651,26 @@ public class NewReminderFragment extends Fragment
             return DATE_TODAY;
         else
             return DATE_TOMORROW;
+    }
+
+    private long getRecurringTime(){
+
+        Reminder temp = new Reminder();
+
+        // Get Day
+        Spinner sDate = (Spinner)rootView.findViewById(R.id.newReminderDaySpinner);
+        int day = sDate.getSelectedItemPosition();
+        temp.setDateOffset(day);
+
+        // Get Time
+        Spinner sTime = (Spinner)rootView.findViewById(R.id.newReminderTimeSpinner);
+        int time = sTime.getSelectedItemPosition();
+        temp.setTimeOffset(time);
+
+        // find time for reminder
+        temp.calculateMsTime(spinner_year, spinner_month, spinner_day, spinner_hour, spinner_minute);
+
+        return temp.getMsTime();
     }
 
     @Override

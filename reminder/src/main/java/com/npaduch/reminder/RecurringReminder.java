@@ -20,7 +20,7 @@ public class RecurringReminder extends EventRecurrence {
     private final static String TAG = "RecurringReminder";
 
     public final static int INVALID_TIME = 0;
-    private final static int FINAL_COUNT = -1;
+    public final static int FINAL_COUNT = -1;
     private final static int LAST_WEEK = -1;
 
     private final static int NOT_SPECIAL_CASE    = 0;
@@ -264,7 +264,7 @@ public class RecurringReminder extends EventRecurrence {
 
         // store previous calendar for comparison
         Calendar prevReminder = Calendar.getInstance();
-        nextReminderCal.setTimeInMillis(previousTime);
+        prevReminder.setTimeInMillis(previousTime);
 
         // Get the current time
         Calendar now = Calendar.getInstance();
@@ -283,6 +283,7 @@ public class RecurringReminder extends EventRecurrence {
             cal.setTimeInMillis(t.toMillis(false));
 
             if(now.after(cal)){
+                Log.d(TAG, "Date is after terminating date.");
                 return INVALID_TIME;
             }
         } else if (this.count != 0){
@@ -293,6 +294,9 @@ public class RecurringReminder extends EventRecurrence {
             } else if (count == 1){
                 // this is the last time we'll do this
                 this.count = FINAL_COUNT;
+            } else {
+                // decrement count
+                this.count--;
             }
         }
 
@@ -307,11 +311,17 @@ public class RecurringReminder extends EventRecurrence {
             }
         }
         if(specialCase == OFFSET_IN_WEEK){
+            Log.d(TAG, "Special case: Offset in week");
+            // get interval
+            int newInterval = this.interval;
+            if(newInterval == 0)
+                newInterval++;
             // get the next month's offset
             if(this.bydayNum[0] == LAST_WEEK){
-                // increment by 1 week until the month changes (twice)
+                // increment by 1 week until the month changes (interval+1)
                 // then back off by one week
-                while(nextReminderCal.get(Calendar.MONTH) != prevReminder.get(Calendar.MONTH)+2){
+                while(nextReminderCal.get(Calendar.MONTH) != prevReminder.get(Calendar.MONTH)+newInterval+1){
+                    Log.d(TAG,"We're on the last week.");
                     nextReminderCal.add(Calendar.WEEK_OF_YEAR, 1);
                 }
                 nextReminderCal.add(Calendar.WEEK_OF_YEAR, -1);
@@ -319,41 +329,53 @@ public class RecurringReminder extends EventRecurrence {
                 // specific offset in week
                 // increment until we hit next month
                 // then increment by offset in week
-                while(nextReminderCal.get(Calendar.MONTH) != prevReminder.get(Calendar.MONTH)+1) {
+                while(nextReminderCal.get(Calendar.MONTH) != prevReminder.get(Calendar.MONTH)+newInterval) {
                     nextReminderCal.add(Calendar.WEEK_OF_YEAR, 1);
                 }
-                nextReminderCal.add(Calendar.WEEK_OF_YEAR, this.bydayNum[0]);
+                // we're already on the first week, so bump by week offset -1
+                nextReminderCal.add(Calendar.WEEK_OF_YEAR, this.bydayNum[0]-1);
             }
+
             // All done!
             return nextReminderCal.getTimeInMillis();
         }
         // Check for case 2
         if(this.bydayCount > 1){
             // find what day we are currently on
-            int currentDay;
-            for(currentDay = 0; currentDay < this.bydayCount; currentDay++){
-                if(Utils.convertDayOfWeekFromTimeToCalendar(this.bydayNum[currentDay])
-                        == prevReminder.get(Calendar.DAY_OF_WEEK)){
-                    break;
+            int currentDay = now.get(Calendar.DAY_OF_WEEK);
+            // build map array. Position 0 is reserved since days are 1-based
+            int days[] = {0,0,0,0,0,0,0,0};
+            for(int i = 0; i < this.bydayCount; i++) {
+                days[day2CalendarDay(this.byday[i])] = 1;
+            }
+            // in case today is one of the days, increment current day to
+            currentDay++;
+            if(currentDay == days.length)
+                currentDay = 1;
+            while(days[currentDay] != 1){
+                currentDay++;
+                if(currentDay == days.length)
+                    currentDay = 1;
+            }
+
+            // at this point, current day should be equal to the next reminder day
+            int nextDay = currentDay;
+
+            // now we have the day. Increment by at least 1 day until we hit the next one
+            nextReminderCal.add(Calendar.DAY_OF_WEEK, 1);
+            while(nextReminderCal.get(Calendar.DAY_OF_WEEK)
+                    != nextDay){
+                // Check if we need to increment # weeks
+                nextReminderCal.add(Calendar.DAY_OF_WEEK, 1);
+                if(nextReminderCal.getFirstDayOfWeek() == nextReminderCal.get(Calendar.DAY_OF_WEEK)){
+                    int newInterval = this.interval;
+                    if(newInterval != 0){
+                        // subtract one week, since we're already cycling around the week
+                        newInterval--;
+                    }
+                    nextReminderCal.add(Calendar.WEEK_OF_YEAR, newInterval);
                 }
             }
-            // get next day
-            int nextDay = currentDay+1;
-            // wrap if necessary
-            if(nextDay == this.bydayCount)
-                nextDay = 0;
-
-            // now we have the day. Increment by 1 day until we hit the next one
-            while(nextReminderCal.get(Calendar.DAY_OF_WEEK)
-                    != Utils.convertDayOfWeekFromTimeToCalendar(this.bydayNum[nextDay])){
-                nextReminderCal.add(Calendar.DAY_OF_WEEK, 1);
-            }
-
-            // we're only hear for weekly... bump number of weeks!
-            int newInterval = this.interval;
-            if(newInterval == 0)
-                newInterval++;
-            nextReminderCal.add(Calendar.WEEK_OF_YEAR, newInterval);
 
             // All done!
             return nextReminderCal.getTimeInMillis();
@@ -383,24 +405,24 @@ public class RecurringReminder extends EventRecurrence {
     /**
      * TESTING:
      *
-     * every day forever
-     * every day for count
-     * every day until
-     * --> Count + Until are now complete
-     * every X days forever
-     * --> Daily is now complete
+     * every day forever                    - DONE
+     * every day for count                  - DONE
+     * every day until                      - DONE
+     * --> Count + Until are now complete   - DONE
+     * every X days forever                 - DONE
+     * --> Daily is now complete            - DONE
      *
-     * every week forever just one day
-     * every week multiple days
-     * every X weeks multiple days
+     * every week forever just one day      - DONE
+     * every week multiple days             - DONE
+     * every X weeks multiple days          - DONE
      *
-     * every month forever
-     * every month same day
-     * every month week offset
-     * every X months same day
-     * every X months week offset
+     * every month forever                  - DONE
+     * every month same day                 - DONE (same as above)
+     * every month week offset              - DONE (including last)
+     * every X months same day              - DONE
+     * every X months week offset           - DONE
      *
-     * every year forever
-     * every X years
+     * every year forever                   - DONE
+     * every X years                        - DONE
      */
 }

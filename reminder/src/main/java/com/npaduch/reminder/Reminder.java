@@ -319,6 +319,7 @@ public class Reminder {
      * or if we can just mark it complete
      */
     public void checkRecurrence(Context context){
+        Log.d(TAG, "Recurrence: "+recurrence.isEnabled());
         if(!recurrence.isEnabled()){
             // no recurrence, mark complete
             setCompleted(true);
