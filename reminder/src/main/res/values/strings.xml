@@ -16,6 +16,7 @@
     </string-array>
     <!-- Titles for other reasons -->
     <string name="edit_title">Edit Reminder</string>
+    <string name="new_title">New Reminder</string>
     <string name="completed_title">Completed</string>
     <string name="pending_title">Pending</string>
 

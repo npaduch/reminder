@@ -28,8 +28,6 @@ import it.gmariotti.cardslib.library.view.CardListView;
  */
 
 // TODO: Add samples if first time launching
-// TODO: BUG: hitting back on listview clears view
-// TODO: change transaction to hide to preserve fragment state
 
 public class CardListFragment extends Fragment {
 
@@ -108,6 +106,13 @@ public class CardListFragment extends Fragment {
         Log.d(TAG, "OnResume");
         super.onResume();
         BusProvider.getInstance().register(this);
+
+        // set title
+        if(fragmentType == LIST_PENDING) {
+            getActivity().getActionBar().setTitle(R.string.pending_title);
+        } else {
+            getActivity().getActionBar().setTitle(R.string.completed_title);
+        }
     }
 
     @Override

@@ -110,6 +110,8 @@ class NewReminderFragment extends Fragment
 
     private Reminder reminderToEdit;
 
+    private boolean isEdit = false;
+
     public NewReminderFragment() {
     }
 
@@ -168,6 +170,7 @@ class NewReminderFragment extends Fragment
         if(getReminderToEdit() != null) {
             initializeEdit(getReminderToEdit());
             reminderHolder = getReminderToEdit();
+            isEdit = true;
         }
 
         // save off context
@@ -681,6 +684,12 @@ class NewReminderFragment extends Fragment
             rpd.setOnRecurrenceSetListener(this);
         }
 
+        // set title
+        if(isEdit) {
+            getActivity().getActionBar().setTitle(R.string.edit_title);
+        } else {
+            getActivity().getActionBar().setTitle(R.string.new_title);
+        }
         // get event bus
         BusProvider.getInstance().register(this);
     }
