@@ -29,9 +29,6 @@ import java.util.ArrayList;
  * Main Activity to spawn necessary fragments
  */
 
-// TODO: set fragment tags
-// TODO: Replace frag communication with a BUS
-
 public class MainActivity extends FragmentActivity {
 
     // Debugging attributes

@@ -630,7 +630,6 @@ public class Reminder {
     /** All required for JSON Parsing **/
     private static ArrayList<Reminder> readJsonStream(InputStream in) throws IOException {
         if(JSON_DEBUG) Log.d(TAG, "Begin readJsonStream");
-        // TODO: WHY AM I NOT READING>>>>>
         JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
         try {
             return readRemindersArray(reader);
