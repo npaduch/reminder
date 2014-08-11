@@ -146,10 +146,21 @@ public class CardListFragment extends Fragment {
 
     private void endLoad(ArrayList<Card> cards){
 
-        // TODO: modify to sort
         mCardArrayAdapter.clear();
         for(Card c : cards){
-            mCardArrayAdapter.add(c);
+            int i = 0;
+            // for pending list, we want earliest at the top
+            // for completed, we want latest at the top
+            if(fragmentType == LIST_PENDING) {
+                while (i < mCardArrayAdapter.getCount() &&
+                        ((ReminderCard) c).getReminder().getMsTime() > ((ReminderCard) mCardArrayAdapter.getItem(i)).getReminder().getMsTime())
+                    i++;
+            } else {
+                while (i < mCardArrayAdapter.getCount() &&
+                        ((ReminderCard) c).getReminder().getMsTime() < ((ReminderCard) mCardArrayAdapter.getItem(i)).getReminder().getMsTime())
+                    i++;
+            }
+            mCardArrayAdapter.insert(c, i);
         }
 
         // update listview
@@ -184,9 +195,30 @@ public class CardListFragment extends Fragment {
         }
 
         // if we didn't find it, it must be new! Add it.
-        // TODO: sort, adding to beginning for now
-        if(!found)
-            mCardArrayAdapter.insert(new ReminderCard(getActivity(), r), 0);
+        if(!found) {
+            boolean inserted = false;
+            if(fragmentType == LIST_PENDING) {
+                for (int i = 0; i < mCardArrayAdapter.getCount(); i++) {
+                    if (r.getMsTime() < ((ReminderCard) mCardArrayAdapter.getItem(i)).getReminder().getMsTime()) {
+                        mCardArrayAdapter.insert(new ReminderCard(getActivity(), r), i);
+                        inserted = true;
+                        break;
+                    }
+                }
+            } else {
+                for (int i = 0; i < mCardArrayAdapter.getCount(); i++) {
+                    if (r.getMsTime() > ((ReminderCard) mCardArrayAdapter.getItem(i)).getReminder().getMsTime()) {
+                        mCardArrayAdapter.insert(new ReminderCard(getActivity(), r), i);
+                        inserted = true;
+                        break;
+                    }
+                }
+            }
+            // check if it was inserted anywhere. If not, just add it to the end
+            if(!inserted){
+                mCardArrayAdapter.insert(new ReminderCard(getActivity(), r), mCardArrayAdapter.getCount());
+            }
+        }
 
         // update view
         mCardArrayAdapter.notifyDataSetChanged();
