@@ -265,7 +265,6 @@ public class Reminder {
         // set time for a minute from now
         Long time = getMsTime();
 
-
         // create an Intent and set the class which will execute when Alarm triggers
         Intent intentAlarm = new Intent(context, AlarmReceiver.class);
         intentAlarm.putExtra(INTENT_REMINDER_ID, getReminderID());

@@ -15,8 +15,6 @@ import java.util.ArrayList;
  *
  */
 
-// TODO: Does this need to be done when the app is updated?
-
 public class BootCompletedReceiver extends BroadcastReceiver {
 
     private static final String TAG = "BootCompletedReceiver";

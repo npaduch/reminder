@@ -425,7 +425,6 @@ public class MainActivity extends FragmentActivity {
     @Subscribe
     public void BusEvent(BusEvent event){
         // check if it's for us
-        // TODO: compare for pending or completed
         if(!event.getTargets().contains(BusEvent.TARGET_MAIN))
             return;
         Log.d(TAG, "Message received: " + event.getType());
