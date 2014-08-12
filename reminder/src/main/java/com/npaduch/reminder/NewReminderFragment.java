@@ -50,9 +50,6 @@ import it.gmariotti.cardslib.library.view.CardView;
 
 /** To-do list for this fragment */
 
-// TODO: Make sure time is in the future
-// TODO: Verify date + time actually selected (i.e. back button clicked on specific date)
-
 public class NewReminderFragment extends Fragment
         implements RadialTimePickerDialog.OnTimeSetListener,
         CalendarDatePickerDialog.OnDateSetListener,
@@ -118,7 +115,8 @@ public class NewReminderFragment extends Fragment
     private boolean editTextReady = false;
     private boolean daySpinnerReady = false;
     private boolean timeSpinnerReady = false;
-    private boolean timeInPast = true;
+    // time is valid by default
+    private boolean timeInPast = false;
 
     public NewReminderFragment() {
     }
@@ -189,6 +187,7 @@ public class NewReminderFragment extends Fragment
             timeSpinnerReady = true;
             editTextReady = false;
         }
+        timeInPast = false;
         toggleSaveButton();
 
         // save off context
