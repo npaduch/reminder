@@ -30,5 +30,6 @@
 
     <!-- New reminder colors -->
     <color name="create_reminder_button">#0066FF</color>
+    <color name="faded_button">#2433ccff</color>
 
 </resources>

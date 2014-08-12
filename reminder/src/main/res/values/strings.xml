@@ -49,6 +49,7 @@
     <string name="new_reminder_button">Remind Me</string>
     <string name="new_reminder_details">Details</string>
     <string name="new_reminder_time">When</string>
+    <string name="new_reminder_time_warning">This time is in the past. Please select a time in the future.</string>
     <!-- Recurring reminders -->
     <string name="new_reminder_recurrence_base">Repeats every</string>
     <string name="new_reminder_repeat">Repeat</string>

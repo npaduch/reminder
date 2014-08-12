@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.text.format.Time;
 import android.util.Log;
@@ -20,6 +22,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -111,6 +114,12 @@ public class NewReminderFragment extends Fragment
 
     private boolean isEdit = false;
 
+    // globals to tell if we can enable save button
+    private boolean editTextReady = false;
+    private boolean daySpinnerReady = false;
+    private boolean timeSpinnerReady = false;
+    private boolean timeInPast = true;
+
     public NewReminderFragment() {
     }
 
@@ -157,6 +166,7 @@ public class NewReminderFragment extends Fragment
                 editText.setSelection(editText.getText().length());
             }
         }, KEYBOARD_POPUP_DELAY);
+        et.addTextChangedListener(mTextWatcher);
 
         // Enable menu items for this fragment
         setHasOptionsMenu(true);
@@ -170,7 +180,16 @@ public class NewReminderFragment extends Fragment
             initializeEdit(getReminderToEdit());
             reminderHolder = getReminderToEdit();
             isEdit = true;
+            daySpinnerReady = true;
+            timeSpinnerReady = true;
+            editTextReady = true;
+        } else {
+            // spinners are set to valid defaults, text isn't
+            daySpinnerReady = true;
+            timeSpinnerReady = true;
+            editTextReady = false;
         }
+        toggleSaveButton();
 
         // save off context
         this.context = getActivity();
@@ -336,6 +355,9 @@ public class NewReminderFragment extends Fragment
                             timePickerDialog.show(getActivity().getSupportFragmentManager(), FRAG_TAG_TIME_PICKER);
                         }
                         customTimeSelected = true;
+                        // set to not valid in case a time isn't selected
+                        timeSpinnerReady = false;
+                        toggleSaveButton();
                     }
                     else{
                         // update spinner
@@ -346,6 +368,9 @@ public class NewReminderFragment extends Fragment
                         timeAdapter.addAll(times);
                         timeAdapter.notifyDataSetChanged();
                         customTimeSelected = false;
+                        checkTimeInPast();
+                        timeSpinnerReady = true;
+                        toggleSaveButton();
                     }
                     break;
                 case R.id.newReminderDaySpinner:
@@ -377,6 +402,9 @@ public class NewReminderFragment extends Fragment
                         }
                         calendarDatePickerDialog.show(fm, FRAG_TAG_DATE_PICKER);
                         customDateSelected = true;
+                        // set to not ready
+                        daySpinnerReady = false;
+                        toggleSaveButton();
                     }
                     else{
                         // update spinner
@@ -387,6 +415,9 @@ public class NewReminderFragment extends Fragment
                         dayAdapter.addAll(days);
                         dayAdapter.notifyDataSetChanged();
                         customDateSelected = false;
+                        daySpinnerReady = true;
+                        checkTimeInPast();
+                        toggleSaveButton();
                     }
             }
         }
@@ -528,6 +559,45 @@ public class NewReminderFragment extends Fragment
 
     }
 
+    private void toggleSaveButton(){
+        TextView button = (TextView)rootView.findViewById(R.id.newReminderCreateButton);
+        if(editTextReady && daySpinnerReady && timeSpinnerReady && !timeInPast) {
+            button.setEnabled(true);
+            button.setBackgroundColor(getActivity().getResources().getColor(R.color.app_color_theme));
+        } else {
+            button.setEnabled(false);
+            button.setBackgroundColor(getActivity().getResources().getColor(R.color.faded_button));
+        }
+    }
+
+    private TextWatcher mTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            // check Fields For Empty Values
+            checkFieldsForEmptyValues();
+        }
+    };
+
+    void checkFieldsForEmptyValues(){
+
+        EditText et = (EditText) rootView.findViewById(R.id.newReminderEditText);
+
+        if(!et.getText().toString().equals("")){
+            editTextReady = true;
+            toggleSaveButton();
+        } else {
+            editTextReady = false;
+            toggleSaveButton();
+        }
+    }
 
     /**
      * Date and Time Dialog handlers
@@ -591,6 +661,12 @@ public class NewReminderFragment extends Fragment
         dayAdapter.clear();
         dayAdapter.addAll(days);
         dayAdapter.notifyDataSetChanged();
+
+        // check if time is in the past
+        checkTimeInPast();
+
+        daySpinnerReady = true;
+        toggleSaveButton();
     }
 
     private void handleNewTime(Context context, int hour, int minute){
@@ -612,6 +688,12 @@ public class NewReminderFragment extends Fragment
         timeAdapter.clear();
         timeAdapter.addAll(times);
         timeAdapter.notifyDataSetChanged();
+
+        // check if time is in the past
+        checkTimeInPast();
+
+        timeSpinnerReady = true;
+        toggleSaveButton();
     }
 
     int getNextTimeWindow() {
@@ -659,6 +741,69 @@ public class NewReminderFragment extends Fragment
         temp.calculateMsTime(spinner_year, spinner_month, spinner_day, spinner_hour, spinner_minute);
 
         return temp.getMsTime();
+    }
+
+    public void checkTimeInPast(){
+        // This initializes the class with the time RIGHT NOW
+        Calendar newTime = Calendar.getInstance();
+
+        Spinner sDay = (Spinner)rootView.findViewById(R.id.newReminderDaySpinner);
+        Spinner sTime = (Spinner)rootView.findViewById(R.id.newReminderTimeSpinner);
+
+        // handle day
+        if(sDay.getSelectedItemPosition() == NewReminderFragment.DATE_TODAY){
+            // we don't have to change anything
+            Log.d(TAG,"Date is today");
+        } else if(sDay.getSelectedItemPosition() == NewReminderFragment.DATE_TOMORROW) {
+            // add time for 1 day
+            // this will increment across months/years accordingly
+            newTime.add(Calendar.DAY_OF_YEAR, 1);
+        } else {
+            // Custom date was given
+            newTime.set(spinner_year, spinner_month, spinner_day);
+        }
+
+
+        // handle time
+        // TODO: Make these settings
+        switch(sTime.getSelectedItemPosition()){
+            case NewReminderFragment.TIME_MORNING:
+                newTime.set(Calendar.HOUR_OF_DAY, Reminder.TIME_MORNING_HOUR);
+                newTime.set(Calendar.MINUTE, Reminder.TIME_MORNING_MINUTE);
+                break;
+            case NewReminderFragment.TIME_NOON:
+                newTime.set(Calendar.HOUR_OF_DAY, Reminder.TIME_NOON_HOUR);
+                newTime.set(Calendar.MINUTE, Reminder.TIME_NOON_MINUTE);
+                break;
+            case NewReminderFragment.TIME_AFTERNOON:
+                newTime.set(Calendar.HOUR_OF_DAY, Reminder.TIME_AFTERNOON_HOUR);
+                newTime.set(Calendar.MINUTE, Reminder.TIME_AFTERNOON_MINUTE);
+                break;
+            case NewReminderFragment.TIME_EVENING:
+                newTime.set(Calendar.HOUR_OF_DAY, Reminder.TIME_EVENING_HOUR);
+                newTime.set(Calendar.MINUTE, Reminder.TIME_EVENING_MINUTE);
+                break;
+            case NewReminderFragment.TIME_NIGHT:
+                newTime.set(Calendar.HOUR_OF_DAY, Reminder.TIME_NIGHT_HOUR);
+                newTime.set(Calendar.MINUTE, Reminder.TIME_NIGHT_MINUTE);
+                break;
+            case NewReminderFragment.TIME_OTHER:
+                newTime.set(Calendar.HOUR_OF_DAY, spinner_hour);
+                newTime.set(Calendar.MINUTE, spinner_minute);
+                break;
+        }
+
+        Calendar now = Calendar.getInstance();
+        if(newTime.before(now)){
+            timeInPast = true;
+            TextView tv = (TextView)rootView.findViewById(R.id.newReminderTimeWarning);
+            tv.setVisibility(View.VISIBLE);
+        } else {
+            timeInPast = false;
+            TextView tv = (TextView)rootView.findViewById(R.id.newReminderTimeWarning);
+            tv.setVisibility(View.GONE);
+        }
+        toggleSaveButton();
     }
 
     @Override

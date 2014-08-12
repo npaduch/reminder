@@ -80,15 +80,15 @@ public class Reminder {
 
     // time definitions
     public static final int TIME_MORNING_HOUR = 9;
-    private static final int TIME_MORNING_MINUTE = 0;
+    public static final int TIME_MORNING_MINUTE = 0;
     public static final int TIME_NOON_HOUR = 12;
-    private static final int TIME_NOON_MINUTE = 0;
+    public static final int TIME_NOON_MINUTE = 0;
     public static final int TIME_AFTERNOON_HOUR =15;
-    private static final int TIME_AFTERNOON_MINUTE = 0;
+    public static final int TIME_AFTERNOON_MINUTE = 0;
     public static final int TIME_EVENING_HOUR = 18;
-    private static final int TIME_EVENING_MINUTE = 0;
+    public static final int TIME_EVENING_MINUTE = 0;
     public static final int TIME_NIGHT_HOUR = 20;
-    private static final int TIME_NIGHT_MINUTE = 0;
+    public static final int TIME_NIGHT_MINUTE = 0;
 
     // Called when reminder created for the first time
     public Reminder() {
@@ -215,7 +215,7 @@ public class Reminder {
         } else if(getDateOffset() == NewReminderFragment.DATE_TOMORROW) {
             // add time for 1 day
             // this will increment across months/years accordingly
-            reminderCal.add(Calendar.DAY_OF_MONTH, 1);
+            reminderCal.add(Calendar.DAY_OF_YEAR, 1);
         } else {
             // Custom date was given
             reminderCal.set(year, month, day);

@@ -85,6 +85,18 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/newReminderTimeWarning"
+        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:paddingBottom="8dp"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/holo_red_dark"
+        android:text="@string/new_reminder_time_warning"
+        android:visibility="gone"/>
+
+    <TextView
         android:id="@+id/newReminderCreateButton"
         android:layout_height="0dp"
         android:layout_width="match_parent"
@@ -92,7 +104,7 @@
         android:paddingBottom="8dp"
         android:gravity="center"
         android:textSize="22sp"
-        android:background="@drawable/shape_textview_background"
+        android:background="@color/app_color_theme"
         android:textColor="@android:color/white"
         android:text="@string/new_reminder_button"/>
 
