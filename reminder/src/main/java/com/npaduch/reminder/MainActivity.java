@@ -309,8 +309,15 @@ public class MainActivity extends FragmentActivity {
         String fragmentTag; // holder for fragment tag
 
         // Check for trying to change to the fragment we're already one
-        if(fragmentTo == currentFragment)
-            return;
+        if(fragmentTo == currentFragment){
+            // check if we're going from edit to new
+            // Check whether to set to New or Edit
+            if(newReminderFragment.getReminderToEdit() != null) {
+                newReminderFragment = null;
+            }
+            else
+                return;
+        }
 
         // 1. Init frag if neccessary, set title, set fragment
         switch (fragmentTo) {
