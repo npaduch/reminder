@@ -29,8 +29,6 @@ import java.util.ArrayList;
  * Main Activity to spawn necessary fragments
  */
 
-// TODO: Reload fragment if switching from NEW to EDIT
-
 public class MainActivity extends FragmentActivity {
 
     // Debugging attributes
