@@ -169,8 +169,9 @@ public class NewReminderFragment extends Fragment
         // Enable menu items for this fragment
         setHasOptionsMenu(true);
 
-        // initialize Reminder
-        reminderHolder = new Reminder();
+        // initialize Reminder with next reminder ID
+        SettingsHandler settingsHandler = new SettingsHandler();
+        reminderHolder = new Reminder(settingsHandler.getNextId(getActivity()));
         mEventRecurrence = new RecurringReminder();
 
         // Check if we're actually editing a note
@@ -724,7 +725,8 @@ public class NewReminderFragment extends Fragment
 
     private long getRecurringTime(){
 
-        Reminder temp = new Reminder();
+        // pass in a dummy ID since we don't care
+        Reminder temp = new Reminder(Reminder.BAD_REMINDER_ID);
 
         // Get Day
         Spinner sDate = (Spinner)rootView.findViewById(R.id.newReminderDaySpinner);

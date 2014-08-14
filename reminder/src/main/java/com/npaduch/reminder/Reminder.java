@@ -74,6 +74,7 @@ public class Reminder {
     public final static String INTENT_REMINDER_ID = "intent_reminder_id";
     // reminder ID should be greater than 0
     public static final int BAD_REMINDER_ID = -1;
+    private int idOffset = 987751314;   // randomly generated
 
     // logging
     private final static String TAG = "ReminderClass";
@@ -91,7 +92,7 @@ public class Reminder {
     public static final int TIME_NIGHT_MINUTE = 0;
 
     // Called when reminder created for the first time
-    public Reminder() {
+    public Reminder(int reminderID) {
         setDescription(STRING_INIT);
         setYear(INT_INIT);
         setMonth(INT_INIT);
@@ -103,9 +104,8 @@ public class Reminder {
 
         setCompleted(false);
 
-        // random value greater than 0
-        // TODO: make sure reminder ID not already in use
-        setReminderID(new Random().nextInt(Integer.MAX_VALUE));
+        // ID is stored in shared preferences. It's basically just a counter that we add to our offset.
+        setReminderID(idOffset+reminderID);
     }
 
     public int getDateOffset() {
@@ -654,7 +654,7 @@ public class Reminder {
 
     private static Reminder readReminder(JsonReader reader) throws IOException {
 
-        Reminder r = new Reminder();
+        Reminder r = new Reminder(Reminder.BAD_REMINDER_ID);
 
         if(JSON_DEBUG) Log.d(TAG, "Begin to read reminder");
         reader.beginObject();
