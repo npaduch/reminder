@@ -19,6 +19,7 @@
     <string name="new_title">New Reminder</string>
     <string name="completed_title">Completed</string>
     <string name="pending_title">Pending</string>
+    <string name="settings_title">Settings</string>
 
     <!-- Reminder Card Strings -->
     <string name="reminder_time_beginning">Today in the Morning</string>
@@ -120,4 +121,13 @@
     <string name="toast_new_reminder_no_description">Please enter a description</string>
     <string name="toast_saving_reminder">Saving Reminder…</string>
     <string name="toast_new_reminder_created">Reminder Saved</string>
+
+    <!-- Preference Strings -->
+    <string name="pref_times_category">Timing</string>
+    <string name="pref_times_category_summary">Set the time a reminder will alert you for general time periods</string>
+    <string name="pref_times_morning">Morning</string>
+    <string name="pref_times_noon">Noon</string>
+    <string name="pref_times_afternoon">Afternoon</string>
+    <string name="pref_times_evening">Evening</string>
+    <string name="pref_times_night">Night</string>
 </resources>

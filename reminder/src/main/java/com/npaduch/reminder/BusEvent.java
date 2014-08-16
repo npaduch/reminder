@@ -48,6 +48,7 @@ class BusEvent {
     public static final int FRAGMENT_PENDING        = 0;
     public static final int FRAGMENT_COMPLETED      = 1;
     public static final int FRAGMENT_NEW_REMINDER   = 2;
+    public static final int FRAGMENT_SETTINGS       = 3;
 
 
 

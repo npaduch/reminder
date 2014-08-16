@@ -5,9 +5,10 @@
         android:fromYDelta="100%p"
         android:toYDelta="0"
         android:duration="400" />
+
     <alpha
         android:fromAlpha="0.0"
         android:toAlpha="1.0"
-        android:duration="100"
-        android:startOffset="200" />
+        android:duration="400" />
+
 </set>

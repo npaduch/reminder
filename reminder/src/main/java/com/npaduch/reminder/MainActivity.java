@@ -50,11 +50,13 @@ public class MainActivity extends FragmentActivity {
     private static final String PENDING_TAG = "PENDING_TAG";
     private static final String NEW_REMINDER_TAG = "NEW_REMINDER_TAG";
     private static final String COMPLETED_TAG = "COMPLETED_TAG";
+    private static final String SETTINGS_TAG = "SETTINGS_TAG";
 
     // Holders for fragments to preserve state
     private NewReminderFragment newReminderFragment;
     private static CardListFragment pendingFragment;
     private static CardListFragment completedFragment;
+    private static MainSettingsFragment mainSettingsFragment;
     private int currentFragment; // keep track of what we currently are
     private String currentTag; // keep track of what we currently are
 
@@ -250,6 +252,8 @@ public class MainActivity extends FragmentActivity {
         else if(position == COMPLETED_REMINDERS_TITLE) {
             changeFragment(BusEvent.FRAGMENT_COMPLETED, currentFragment, false);
         }
+        else if(position == SETTINGS_TITLE) {
+            changeFragment(BusEvent.FRAGMENT_SETTINGS, currentFragment, false);        }
 
         mDrawerList.setItemChecked(position, true);
         mDrawerLayout.closeDrawer(mDrawerList);
@@ -310,7 +314,7 @@ public class MainActivity extends FragmentActivity {
         if(fragmentTo == currentFragment){
             // check if we're going from edit to new
             // Check whether to set to New or Edit
-            if(newReminderFragment.getReminderToEdit() != null) {
+            if(newReminderFragment != null && newReminderFragment.getReminderToEdit() != null) {
                 newReminderFragment = null;
             }
             else
@@ -319,6 +323,14 @@ public class MainActivity extends FragmentActivity {
 
         // 1. Init frag if neccessary, set title, set fragment
         switch (fragmentTo) {
+            case BusEvent.FRAGMENT_SETTINGS:
+                if (mainSettingsFragment == null) {
+                    mainSettingsFragment = new MainSettingsFragment();
+                }
+                setTitle(getResources().getStringArray(R.array.drawer_titles)[SETTINGS_TITLE]);
+                fragment = mainSettingsFragment;
+                fragmentTag = SETTINGS_TAG;
+                break;
             case BusEvent.FRAGMENT_NEW_REMINDER:
                 if (newReminderFragment == null) {
                     newReminderFragment = new NewReminderFragment();
@@ -374,6 +386,8 @@ public class MainActivity extends FragmentActivity {
             ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
         else if(fragmentTo == BusEvent.FRAGMENT_COMPLETED)
             ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+        else if(fragmentTo == BusEvent.FRAGMENT_SETTINGS)
+            ft.setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_top);
         else
             Log.e(TAG, "Invalid fragment tyoe. This should never happen...");
 

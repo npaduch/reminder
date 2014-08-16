@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/pref_times_category"
+        android:summary="@string/pref_times_category_summary"
+        android:key="pref_key_times_category">
+        <Preference
+            android:key="pref_key_times_morning"
+            android:title="@string/pref_times_morning"
+            android:defaultValue="32400" />
+        <Preference
+            android:key="pref_key_times_noon"
+            android:title="@string/pref_times_noon"
+            android:defaultValue="32400" />
+        <Preference
+            android:key="pref_key_times_morning"
+            android:title="@string/pref_times_afternoon"
+            android:defaultValue="32400" />
+        <Preference
+            android:key="pref_key_times_morning"
+            android:title="@string/pref_times_evening"
+            android:defaultValue="32400" />
+        <Preference
+            android:key="pref_key_times_morning"
+            android:title="@string/pref_times_night"
+            android:defaultValue="32400" />
+    </PreferenceCategory>
+</PreferenceScreen>

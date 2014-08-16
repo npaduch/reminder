@@ -11,7 +11,7 @@
         <item name="android:actionOverflowButtonStyle">@style/AppTheme.OverFlow</item>
     </style>
 
-    <style name="AppTheme.OverFlow" parent="Widget.AppCompat.ActionButton.Overflow">
+    <style name="AppTheme.OverFlow" parent="android:style/Widget.Holo.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_action_overflow</item>
     </style>
 
