@@ -7,7 +7,7 @@
 
     <!-- TextView colors -->
     <color name="textview_background">#FFFFFF</color>
-    <color name="textview_medium_text">#808080</color>
+    <color name="textview_medium_text">@color/gray</color>
     <color name="textview_selected">#D8D8D8</color>
 
 
@@ -18,6 +18,8 @@
     <color name="orange">#ffd060</color>
     <color name="red">#ff7979</color>
     <color name="transparent">#00000000</color>
+    <color name="gray">#808080</color>
+    <color name="light_gray">#C0C0C0</color>
 
     <!-- colors for white scheme -->
     <color name="new_reminder_option_text">@color/textview_medium_text</color>

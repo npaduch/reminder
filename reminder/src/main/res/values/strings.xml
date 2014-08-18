@@ -125,9 +125,4 @@
     <!-- Preference Strings -->
     <string name="pref_times_category">Timing</string>
     <string name="pref_times_category_summary">Set the time a reminder will alert you for general time periods</string>
-    <string name="pref_times_morning">Morning</string>
-    <string name="pref_times_noon">Noon</string>
-    <string name="pref_times_afternoon">Afternoon</string>
-    <string name="pref_times_evening">Evening</string>
-    <string name="pref_times_night">Night</string>
 </resources>

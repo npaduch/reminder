@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/timePreference"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/timePreferenceTitle"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:paddingBottom="8dp"
+        android:paddingLeft="8dp"
+        android:text="@string/pref_times_category"
+        android:textSize="20sp"
+        android:textColor="@color/textview_medium_text"
+        android:textStyle="bold"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@color/gray" />
+
+    <LinearLayout
+        android:id="@+id/timePreferenceMorning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/timePreferenceLabelMorning"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:paddingTop="8dp"
+            android:paddingLeft="16dp"
+            android:text="@string/time_morning"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <TextView
+            android:id="@+id/timePreferenceValueMorning"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:paddingBottom="8dp"
+            android:paddingRight="16dp"
+            android:gravity="right"
+            android:text="@string/new_reminder_repeat"
+            android:textSize="16sp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/textview_medium_text"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@color/light_gray" />
+
+    <LinearLayout
+        android:id="@+id/timePreferenceNoon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/timePreferenceLabelNoon"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:paddingTop="8dp"
+            android:paddingLeft="16dp"
+            android:text="@string/time_noon"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <TextView
+            android:id="@+id/timePreferenceValueNoon"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:paddingBottom="8dp"
+            android:paddingRight="16dp"
+            android:gravity="right"
+            android:text="@string/new_reminder_repeat"
+            android:textSize="16sp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/textview_medium_text"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@color/light_gray" />
+
+
+    <LinearLayout
+        android:id="@+id/timePreferenceAfternoon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/timePreferenceLabelAfternoon"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:paddingTop="8dp"
+            android:paddingLeft="16dp"
+            android:text="@string/time_afternoon"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <TextView
+            android:id="@+id/timePreferenceValueAfternoon"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:paddingBottom="8dp"
+            android:paddingRight="16dp"
+            android:gravity="right"
+            android:text="@string/new_reminder_repeat"
+            android:textSize="16sp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/textview_medium_text"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@color/light_gray" />
+
+
+    <LinearLayout
+        android:id="@+id/timePreferenceEvening"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/timePreferenceLabelEvening"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:paddingTop="8dp"
+            android:paddingLeft="16dp"
+            android:text="@string/time_evening"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <TextView
+            android:id="@+id/timePreferenceValueEvening"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:paddingBottom="8dp"
+            android:paddingRight="16dp"
+            android:gravity="right"
+            android:text="@string/new_reminder_repeat"
+            android:textSize="16sp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/textview_medium_text"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@color/light_gray" />
+
+
+    <LinearLayout
+        android:id="@+id/timePreferenceNight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/timePreferenceLabelNight"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:paddingTop="8dp"
+            android:paddingLeft="16dp"
+            android:text="@string/time_night"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <TextView
+            android:id="@+id/timePreferenceValueNight"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:paddingBottom="8dp"
+            android:paddingRight="16dp"
+            android:gravity="right"
+            android:text="@string/new_reminder_repeat"
+            android:textSize="16sp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/textview_medium_text"/>
+    </LinearLayout>
+
+</LinearLayout>
