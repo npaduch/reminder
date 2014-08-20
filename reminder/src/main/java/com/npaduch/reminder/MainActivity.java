@@ -77,6 +77,9 @@ public class MainActivity extends FragmentActivity {
 
         setContentView(R.layout.activity_main);
 
+        loadSettings();
+        incrementAppLaunchCounter();
+
         /** Navigation Drawer */
         String[] mDrawerLabels = getResources().getStringArray(R.array.drawer_titles);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -441,6 +444,27 @@ public class MainActivity extends FragmentActivity {
         newReminderFragment.setReminderToEdit(r);
         changeFragment(BusEvent.FRAGMENT_NEW_REMINDER, currentFragment, false);
     }
+
+    public void loadSettings(){
+        SettingsHandler settingsHandler = new SettingsHandler();
+
+        // Time settings
+        settingsHandler.getTimeMorning(this);
+        settingsHandler.getTimeNoon(this);
+        settingsHandler.getTimeAfternoon(this);
+        settingsHandler.getTimeEvening(this);
+        settingsHandler.getTimeNight(this);
+
+        // App counter
+        settingsHandler.getAppLaunchCounter(this);
+        Log.d(TAG, "App launch counter: "+settingsHandler.getAppLaunchCounter(this));
+    }
+
+    public void incrementAppLaunchCounter(){
+        SettingsHandler settingsHandler = new SettingsHandler();
+        settingsHandler.incrementAppLaunchCounter(this);
+    }
+
 
     /** Event bus listener **/
     @Subscribe

@@ -204,7 +204,7 @@ public class Reminder {
         this.recurrence = recurrence;
     }
 
-    public void calculateMsTime(int year, int month, int day, int hour, int minute){
+    public void calculateMsTime(Context context, int year, int month, int day, int hour, int minute){
         // This initializes the class with the time RIGHT NOW
         Calendar reminderCal = Calendar.getInstance();
 
@@ -223,27 +223,33 @@ public class Reminder {
 
 
         // handle time
-        // TODO: Make these settings
+        SettingsHandler settingsHandler = new SettingsHandler();
+        Calendar tempCal = Calendar.getInstance();
         switch(getTimeOffset()){
             case NewReminderFragment.TIME_MORNING:
-                reminderCal.set(Calendar.HOUR_OF_DAY, TIME_MORNING_HOUR);
-                reminderCal.set(Calendar.MINUTE, TIME_MORNING_MINUTE);
+                tempCal.setTimeInMillis(settingsHandler.getTimeMorning(context));
+                reminderCal.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
+                reminderCal.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
                 break;
             case NewReminderFragment.TIME_NOON:
-                reminderCal.set(Calendar.HOUR_OF_DAY, TIME_NOON_HOUR);
-                reminderCal.set(Calendar.MINUTE, TIME_NOON_MINUTE);
+                tempCal.setTimeInMillis(settingsHandler.getTimeNoon(context));
+                reminderCal.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
+                reminderCal.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
                 break;
             case NewReminderFragment.TIME_AFTERNOON:
-                reminderCal.set(Calendar.HOUR_OF_DAY, TIME_AFTERNOON_HOUR);
-                reminderCal.set(Calendar.MINUTE, TIME_AFTERNOON_MINUTE);
+                tempCal.setTimeInMillis(settingsHandler.getTimeAfternoon(context));
+                reminderCal.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
+                reminderCal.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
                 break;
             case NewReminderFragment.TIME_EVENING:
-                reminderCal.set(Calendar.HOUR_OF_DAY, TIME_EVENING_HOUR);
-                reminderCal.set(Calendar.MINUTE, TIME_EVENING_MINUTE);
+                tempCal.setTimeInMillis(settingsHandler.getTimeEvening(context));
+                reminderCal.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
+                reminderCal.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
                 break;
             case NewReminderFragment.TIME_NIGHT:
-                reminderCal.set(Calendar.HOUR_OF_DAY, TIME_NIGHT_HOUR);
-                reminderCal.set(Calendar.MINUTE, TIME_NIGHT_MINUTE);
+                tempCal.setTimeInMillis(settingsHandler.getTimeNight(context));
+                reminderCal.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
+                reminderCal.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
                 break;
             case NewReminderFragment.TIME_OTHER:
                 reminderCal.set(Calendar.HOUR_OF_DAY, hour);

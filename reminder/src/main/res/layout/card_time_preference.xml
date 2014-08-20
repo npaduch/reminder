@@ -19,7 +19,6 @@
         android:text="@string/pref_times_category"
         android:textSize="20sp"
         android:textColor="@color/textview_medium_text"
-        android:textStyle="bold"
         android:textAppearance="?android:attr/textAppearanceMedium"/>
 
     <View
