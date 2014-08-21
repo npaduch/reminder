@@ -265,17 +265,16 @@ public class NewReminderFragment extends Fragment
         if(r.getDateOffset() == DATE_OTHER){
             handleNewDate(getActivity(), r.getYear(), r.getMonth(), r.getMonthDay());
             daySpinnerSetInCode = true;
-            daySpinner.setSelection(r.getDateOffset());
-        } else {
-            daySpinner.setSelection(r.getDateOffset());
         }
-        if(r.getTimeOffset() == TIME_OTHER){
-            handleNewTime(getActivity(), r.getHour(), r.getMinute());
+        daySpinner.setSelection(r.getDateOffset());
+
+        if(r.getTimeRange(getActivity()) == TIME_OTHER){
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(r.getMsTime());
+            handleNewTime(getActivity(), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
             timeSpinnerSetInCode = true;
-            timeSpinner.setSelection(r.getTimeOffset());
-        } else {
-            timeSpinner.setSelection(r.getTimeOffset());
         }
+        timeSpinner.setSelection(r.getTimeRange(getActivity()));
 
         // check recurrence
         RecurringReminder rr = r.getRecurrence();
@@ -695,7 +694,7 @@ public class NewReminderFragment extends Fragment
         toggleSaveButton();
     }
 
-    // TODO: update with settings
+    // TODO: update with new settings
     int getNextTimeWindow() {
         Calendar cal = Calendar.getInstance();
         int hour = cal.get(Calendar.HOUR_OF_DAY);

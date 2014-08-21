@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.text.format.DateFormat;
 import android.util.JsonReader;
 import android.util.JsonWriter;
@@ -391,7 +392,7 @@ public class Reminder {
         }
 
         if(isToday){
-            switch(getTimeOffset()){
+            switch(getTimeRange(context)){
                 case NewReminderFragment.TIME_MORNING:
                 case NewReminderFragment.TIME_AFTERNOON:
                 case NewReminderFragment.TIME_EVENING:
@@ -408,7 +409,7 @@ public class Reminder {
                     break;
             }
         } else if (isTomorrow){
-            switch(getTimeOffset()){
+            switch(getTimeRange(context)){
                 case NewReminderFragment.TIME_MORNING:
                 case NewReminderFragment.TIME_AFTERNOON:
                 case NewReminderFragment.TIME_EVENING:
@@ -425,7 +426,7 @@ public class Reminder {
 
         } else {
             // we have a specific day
-            switch (getTimeOffset()) {
+            switch (getTimeRange(context)) {
                 case NewReminderFragment.TIME_MORNING:
                 case NewReminderFragment.TIME_AFTERNOON:
                 case NewReminderFragment.TIME_EVENING:
@@ -446,7 +447,7 @@ public class Reminder {
         // space between date and time
         s += ' ';
 
-        switch(getTimeOffset()){
+        switch(getTimeRange(context)){
             case NewReminderFragment.TIME_MORNING:
                 s += context.getResources().getString(R.string.time_morning);
                 break;
@@ -510,6 +511,42 @@ public class Reminder {
         }
         return timeString;
     }
+
+    private boolean inRange(Calendar cal){
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        int min = cal.get(Calendar.MINUTE);
+        Calendar rCal = Calendar.getInstance();
+        rCal.setTimeInMillis(getMsTime());
+
+        if(hour == rCal.get(Calendar.HOUR_OF_DAY) &&
+                min == rCal.get(Calendar.MINUTE))
+            return true;
+
+        return false;
+    }
+
+    public int getTimeRange(Context context){
+        SettingsHandler settingsHandler = new SettingsHandler();
+        Calendar range = Calendar.getInstance();
+        range.setTimeInMillis(settingsHandler.getTimeMorning(context));
+        if(inRange(range))
+            return NewReminderFragment.TIME_MORNING;
+        range.setTimeInMillis(settingsHandler.getTimeNoon(context));
+        if(inRange(range))
+            return NewReminderFragment.TIME_NOON;
+        range.setTimeInMillis(settingsHandler.getTimeAfternoon(context));
+        if(inRange(range))
+            return NewReminderFragment.TIME_AFTERNOON;
+        range.setTimeInMillis(settingsHandler.getTimeEvening(context));
+        if(inRange(range))
+            return NewReminderFragment.TIME_EVENING;
+        range.setTimeInMillis(settingsHandler.getTimeNight(context));
+        if(inRange(range))
+            return NewReminderFragment.TIME_NIGHT;
+
+        return NewReminderFragment.TIME_OTHER;
+    }
+
     /************************************************************
      *
      *          FILE HANDLING
