@@ -1,0 +1,5 @@
+Pending feature ideas:
+1. When reminder created, scroll and highlight it in the main list
+2. Quick add widget
+3. Quick add view in extended action bar
+4. Actionable notifications (snooze..., snooze for <time>)
