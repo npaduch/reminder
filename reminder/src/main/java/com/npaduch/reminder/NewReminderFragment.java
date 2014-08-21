@@ -694,19 +694,26 @@ public class NewReminderFragment extends Fragment
         toggleSaveButton();
     }
 
-    // TODO: update with new settings
     int getNextTimeWindow() {
+        SettingsHandler settingsHandler = new SettingsHandler();
+        Calendar sCal = Calendar.getInstance();
         Calendar cal = Calendar.getInstance();
+        sCal.setTimeInMillis(settingsHandler.getTimeMorning(getActivity()));
         int hour = cal.get(Calendar.HOUR_OF_DAY);
-        if (hour < Reminder.TIME_MORNING_HOUR)
+
+        if (hour < sCal.get(Calendar.HOUR_OF_DAY))
             return TIME_MORNING;
-        else if (hour < Reminder.TIME_NOON_HOUR)
+        sCal.setTimeInMillis(settingsHandler.getTimeNoon(getActivity()));
+        if (hour < sCal.get(Calendar.HOUR_OF_DAY))
             return TIME_NOON;
-        else if (hour < Reminder.TIME_AFTERNOON_HOUR)
+        sCal.setTimeInMillis(settingsHandler.getTimeAfternoon(getActivity()));
+        if (hour < sCal.get(Calendar.HOUR_OF_DAY))
             return TIME_AFTERNOON;
-        else if (hour < Reminder.TIME_EVENING_HOUR)
+        sCal.setTimeInMillis(settingsHandler.getTimeEvening(getActivity()));
+        if (hour < sCal.get(Calendar.HOUR_OF_DAY))
             return TIME_EVENING;
-        else if (hour < Reminder.TIME_NIGHT_HOUR)
+        sCal.setTimeInMillis(settingsHandler.getTimeNight(getActivity()));
+        if (hour < sCal.get(Calendar.HOUR_OF_DAY))
             return TIME_NIGHT;
         // default to tomorrow morning
         else
