@@ -125,4 +125,9 @@
     <!-- Preference Strings -->
     <string name="pref_times_category">Timing</string>
     <string name="pref_times_category_summary">Set the time a reminder will alert you for general time periods</string>
+    <string name="pref_times_bad_time_title">Whoops!</string>
+    <string name="pref_times_bad_time_body1_before">The time you entered must be later than the time you have set for</string>
+    <string name="pref_times_bad_time_body1_after">The time you entered must be earlier than the time you have set for</string>
+    <string name="pref_times_bad_time_body2">Please choose a new time.</string>
+    <string name="pref_times_bad_time_button">Okay</string>
 </resources>

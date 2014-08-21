@@ -695,6 +695,7 @@ public class NewReminderFragment extends Fragment
         toggleSaveButton();
     }
 
+    // TODO: update with settings
     int getNextTimeWindow() {
         Calendar cal = Calendar.getInstance();
         int hour = cal.get(Calendar.HOUR_OF_DAY);
@@ -769,27 +770,27 @@ public class NewReminderFragment extends Fragment
         Calendar tempCal = Calendar.getInstance();
         switch(sTime.getSelectedItemPosition()){
             case NewReminderFragment.TIME_MORNING:
-                tempCal.setTimeInMillis(settingsHandler.getTimeMorning(context));
+                tempCal.setTimeInMillis(settingsHandler.getTimeMorning(getActivity()));
                 newTime.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
                 newTime.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
                 break;
             case NewReminderFragment.TIME_NOON:
-                tempCal.setTimeInMillis(settingsHandler.getTimeNoon(context));
+                tempCal.setTimeInMillis(settingsHandler.getTimeNoon(getActivity()));
                 newTime.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
                 newTime.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
                 break;
             case NewReminderFragment.TIME_AFTERNOON:
-                tempCal.setTimeInMillis(settingsHandler.getTimeAfternoon(context));
+                tempCal.setTimeInMillis(settingsHandler.getTimeAfternoon(getActivity()));
                 newTime.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
                 newTime.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
                 break;
             case NewReminderFragment.TIME_EVENING:
-                tempCal.setTimeInMillis(settingsHandler.getTimeEvening(context));
+                tempCal.setTimeInMillis(settingsHandler.getTimeEvening(getActivity()));
                 newTime.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
                 newTime.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
                 break;
             case NewReminderFragment.TIME_NIGHT:
-                tempCal.setTimeInMillis(settingsHandler.getTimeNight(context));
+                tempCal.setTimeInMillis(settingsHandler.getTimeNight(getActivity()));
                 newTime.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
                 newTime.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
                 break;
