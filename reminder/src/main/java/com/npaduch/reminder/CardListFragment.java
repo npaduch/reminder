@@ -242,19 +242,6 @@ public class CardListFragment extends Fragment {
         mCardArrayAdapter.notifyDataSetChanged();
     }
 
-
-
-    public static final Card.OnCardClickListener cardClickListener = new Card.OnCardClickListener(){
-        @Override
-        public void onClick(Card card, View view) {
-            ReminderCard rc = (ReminderCard) card;
-            Reminder r = rc.getReminder();
-            Log.d(TAG, "Reminder clicked, will edit:");
-            r.outputReminderToLog();
-            switchToEditFragment(r);
-        }
-    };
-
     public static final CardHeader.OnClickCardHeaderPopupMenuListener cardOverflowClickListener
             = new CardHeader.OnClickCardHeaderPopupMenuListener(){
         @Override
