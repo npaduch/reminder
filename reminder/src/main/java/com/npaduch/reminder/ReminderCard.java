@@ -3,12 +3,14 @@ package com.npaduch.reminder;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardHeader;
+import it.gmariotti.cardslib.library.internal.base.BaseCard;
 
 /**
  * Created by nolanpaduch on 7/7/14.
@@ -47,23 +49,21 @@ class ReminderCard extends Card {
     private void init(){
 
         //Set a OnClickListener listener
-        setOnClickListener(CardListFragment.cardClickListener);
+        setOnClickListener(new MyCardClickListener());
 
         /** Card Header **/
         //Create a CardHeader
         ReminderCardHeader header = new ReminderCardHeader(context);
 
         //Add a popup menu. This method set OverFlow button to visible
-        header.setPopupMenu(R.menu.card_menu, CardListFragment.cardOverflowClickListener);
+        header.setPopupMenu(R.menu.card_menu, new MyOnClickCardHeaderPopupMenuListener());
         addCardHeader(header);
 
         /** Swipe to undo **/
         // set ID
         setId(Integer.toString(reminder.getReminderID()));
         setSwipeable(true);
-        //setOnSwipeListener(CardListFragment.cardOnSwipeListener);
         setOnSwipeListener(new MyCardOnSwipeListener());
-        //setOnUndoSwipeListListener(new MyCardUndoSwipeListener());
 
         setOnUndoSwipeListListener(new MyCardUndoSwipeListener());
 
@@ -123,7 +123,10 @@ class ReminderCard extends Card {
                     r                               // reminder to be saved
             );
             uf.execute();
-            BusProvider.getInstance().post(new BusEvent(BusEvent.TYPE_REMOVE, BusEvent.TARGET_PENDING, r));
+            // send to both since only the active one will receive it
+            BusEvent busEvent = new BusEvent(BusEvent.TYPE_REMOVE, BusEvent.TARGET_PENDING, r);
+            busEvent.addTarget(BusEvent.TARGET_COMPLETED);
+            BusProvider.getInstance().post(busEvent);
         }
     }
 
@@ -146,8 +149,48 @@ class ReminderCard extends Card {
             );
             uf.execute();
 
-            BusProvider.getInstance().post(new BusEvent(BusEvent.TYPE_ADD, BusEvent.TARGET_PENDING, r));
+            // send to both since only the active one will receive it
+            BusEvent busEvent = new BusEvent(BusEvent.TYPE_ADD, BusEvent.TARGET_PENDING, r);
+            busEvent.addTarget(BusEvent.TARGET_COMPLETED);
+            BusProvider.getInstance().post(busEvent);
         }
+    }
+
+    private class MyCardClickListener implements Card.OnCardClickListener {
+        @Override
+        public void onClick(Card card, View view) {
+            ReminderCard rc = (ReminderCard) card;
+            Reminder r = rc.getReminder();
+            Log.d(TAG, "Reminder clicked, will edit:");
+            r.outputReminderToLog();
+            editReminder(r);
+        }
+    };
+
+    private class MyOnClickCardHeaderPopupMenuListener implements CardHeader.OnClickCardHeaderPopupMenuListener {
+        @Override
+        public void onMenuItemClick(BaseCard baseCard, MenuItem menuItem) {
+            Log.d(TAG, "Card menu item clicked: "+menuItem.toString());
+            ReminderCard rc = (ReminderCard) baseCard;
+            Reminder r = rc.getReminder();
+            r.outputReminderToLog();
+            switch(menuItem.getItemId()){
+                case R.id.action_share_reminder:
+                    break;
+                case R.id.action_edit_reminder:
+                    editReminder(r);
+                    break;
+                case R.id.action_delete_reminder:
+                    break;
+            }
+        }
+    };
+
+    private void editReminder(Reminder r){
+        // send to completed or pending, since only one is active right now
+        BusEvent busEvent = new BusEvent(BusEvent.TYPE_EDIT_REMINDER, BusEvent.TARGET_PENDING, r);
+        busEvent.addTarget(BusEvent.TARGET_COMPLETED);
+        BusProvider.getInstance().post(busEvent);
     }
 
 

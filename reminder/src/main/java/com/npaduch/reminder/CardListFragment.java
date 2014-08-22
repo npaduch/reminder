@@ -242,26 +242,6 @@ public class CardListFragment extends Fragment {
         mCardArrayAdapter.notifyDataSetChanged();
     }
 
-    public static final CardHeader.OnClickCardHeaderPopupMenuListener cardOverflowClickListener
-            = new CardHeader.OnClickCardHeaderPopupMenuListener(){
-        @Override
-        public void onMenuItemClick(BaseCard baseCard, MenuItem menuItem) {
-            Log.d(TAG, "Card menu item clicked: "+menuItem.toString());
-            ReminderCard rc = (ReminderCard) baseCard;
-            Reminder r = rc.getReminder();
-            r.outputReminderToLog();
-            switch(menuItem.getItemId()){
-                case R.id.action_share_reminder:
-                    break;
-                case R.id.action_edit_reminder:
-                    switchToEditFragment(r);
-                    break;
-                case R.id.action_delete_reminder:
-                    break;
-            }
-        }
-    };
-
     // to do, replace this with bus
     private static void switchToEditFragment(Reminder r){
         BusEvent event = new BusEvent(BusEvent.TYPE_EDIT_REMINDER, BusEvent.TARGET_MAIN);
@@ -284,6 +264,10 @@ public class CardListFragment extends Fragment {
                     break;
                 case BusEvent.TYPE_LOAD_REMINDERS:
                     endLoad(event.getCardList());
+                    break;
+                case BusEvent.TYPE_EDIT_REMINDER:
+                    switchToEditFragment(event.getReminder());
+                    break;
             }
         } else if (event.getTargets().contains(BusEvent.TARGET_COMPLETED)) {
             Log.d(TAG, "Message received: " + event.getType());
@@ -296,6 +280,10 @@ public class CardListFragment extends Fragment {
                     break;
                 case BusEvent.TYPE_LOAD_REMINDERS:
                     endLoad(event.getCardList());
+                    break;
+                case BusEvent.TYPE_EDIT_REMINDER:
+                    switchToEditFragment(event.getReminder());
+                    break;
             }
         }
     }
