@@ -474,6 +474,34 @@ public class Reminder {
         return s;
     }
 
+    public String getSpecificDateTimeString(Context context){
+        StringBuilder sb = new StringBuilder();
+
+        // Check if the time was never set
+        long msTime = getMsTime();
+        if(msTime == INT_INIT){
+            Log.e(TAG, "MS Time not set. Can't build string.");
+            return STRING_INIT;
+        }
+
+        // We need three calendar entries, reminder, today, tomorrow
+        // This will allow us to calculate if it's for today or tomorrow
+        // reminder
+        Calendar calReminder = Calendar.getInstance();
+        calReminder.setTimeInMillis(msTime);
+
+        sb.append(buildDateString(context, calReminder));
+        sb.append(' ');
+        sb.append(context.getResources().getString(R.string.time_at));
+
+        // space between date and time
+        sb.append(' ');
+
+        sb.append(buildTimeString(context, calReminder));
+
+        return sb.toString();
+    }
+
     public static String buildDateString(Context context, Calendar cal){
         String dateString = "";
         // Format = Month Day, Year

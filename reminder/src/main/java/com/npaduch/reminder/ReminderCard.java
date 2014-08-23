@@ -1,6 +1,7 @@
 package com.npaduch.reminder;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.MenuItem;
@@ -185,6 +186,7 @@ class ReminderCard extends Card {
             r.outputReminderToLog();
             switch(menuItem.getItemId()){
                 case R.id.action_share_reminder:
+                    sendShareIntent(r);
                     break;
                 case R.id.action_edit_reminder:
                     editReminder(r);
@@ -195,6 +197,14 @@ class ReminderCard extends Card {
             }
         }
     };
+
+    private void sendShareIntent(Reminder r){
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, buildReminderString(r));
+        sendIntent.setType("text/plain");
+        context.startActivity(sendIntent);
+    }
 
     private void editReminder(Reminder r){
         // send to completed or pending, since only one is active right now
@@ -210,6 +220,20 @@ class ReminderCard extends Card {
         BusProvider.getInstance().post(busEvent);
         UpdateFile updateFile = new UpdateFile(ASYNC_TASK_DELETE_REMINDER, r);
         updateFile.execute();
+    }
+
+    private String buildReminderString(Reminder r){
+        StringBuilder sb = new StringBuilder();
+        sb.append(context.getResources().getString(R.string.share_reminder_title));
+        sb.append("\n");
+        sb.append(context.getResources().getString(R.string.share_reminder_description));
+        sb.append(" ");
+        sb.append(r.getDescription());
+        sb.append("\n");
+        sb.append(context.getResources().getString(R.string.share_reminder_time));
+        sb.append(" ");
+        sb.append(r.getSpecificDateTimeString(context));
+        return sb.toString();
     }
 
 
