@@ -190,6 +190,7 @@ class ReminderCard extends Card {
                     editReminder(r);
                     break;
                 case R.id.action_delete_reminder:
+                    deleteReminder(r);
                     break;
             }
         }
@@ -200,6 +201,15 @@ class ReminderCard extends Card {
         BusEvent busEvent = new BusEvent(BusEvent.TYPE_EDIT_REMINDER, BusEvent.TARGET_PENDING, r);
         busEvent.addTarget(BusEvent.TARGET_COMPLETED);
         BusProvider.getInstance().post(busEvent);
+    }
+
+    private void deleteReminder(Reminder r){
+        // send to completed or pending, since only one is active right now
+        BusEvent busEvent = new BusEvent(BusEvent.TYPE_REMOVE, BusEvent.TARGET_PENDING, r);
+        busEvent.addTarget(BusEvent.TARGET_COMPLETED);
+        BusProvider.getInstance().post(busEvent);
+        UpdateFile updateFile = new UpdateFile(ASYNC_TASK_DELETE_REMINDER, r);
+        updateFile.execute();
     }
 
 
