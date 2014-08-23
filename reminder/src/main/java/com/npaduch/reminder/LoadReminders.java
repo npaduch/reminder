@@ -123,7 +123,7 @@ class LoadReminders extends AsyncTask {
 
         // create cards
         for ( Reminder r : reminders ){
-            cards.add(new ReminderCard(context, r));
+            cards.add(new ReminderCard(context, r, fragmentType));
         }
 
         return cards;

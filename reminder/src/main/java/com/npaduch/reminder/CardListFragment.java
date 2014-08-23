@@ -200,7 +200,7 @@ public class CardListFragment extends Fragment {
             if(fragmentType == LIST_PENDING) {
                 for (int i = 0; i < mCardArrayAdapter.getCount(); i++) {
                     if (r.getMsTime() < ((ReminderCard) mCardArrayAdapter.getItem(i)).getReminder().getMsTime()) {
-                        mCardArrayAdapter.insert(new ReminderCard(getActivity(), r), i);
+                        mCardArrayAdapter.insert(new ReminderCard(getActivity(), r, fragmentType), i);
                         inserted = true;
                         break;
                     }
@@ -208,7 +208,7 @@ public class CardListFragment extends Fragment {
             } else {
                 for (int i = 0; i < mCardArrayAdapter.getCount(); i++) {
                     if (r.getMsTime() > ((ReminderCard) mCardArrayAdapter.getItem(i)).getReminder().getMsTime()) {
-                        mCardArrayAdapter.insert(new ReminderCard(getActivity(), r), i);
+                        mCardArrayAdapter.insert(new ReminderCard(getActivity(), r, fragmentType), i);
                         inserted = true;
                         break;
                     }
@@ -216,7 +216,7 @@ public class CardListFragment extends Fragment {
             }
             // check if it was inserted anywhere. If not, just add it to the end
             if(!inserted){
-                mCardArrayAdapter.insert(new ReminderCard(getActivity(), r), mCardArrayAdapter.getCount());
+                mCardArrayAdapter.insert(new ReminderCard(getActivity(), r, fragmentType), mCardArrayAdapter.getCount());
             }
         }
 

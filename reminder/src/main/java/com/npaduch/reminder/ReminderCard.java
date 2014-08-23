@@ -31,15 +31,19 @@ class ReminderCard extends Card {
     // application context
     private final Context context;
 
+    // fragment type the card will be shown in
+    private final int fragmentType;
+
     /**
      * Constructor with a custom inner layout
      *
      * @param context - activity context
      */
-    public ReminderCard(Context context, Reminder reminder) {
+    public ReminderCard(Context context, Reminder reminder, int fragmentType) {
         super(context, R.layout.reminder_card_entry);
         this.context = context;
         this.reminder = reminder;
+        this.fragmentType = fragmentType;
         init();
     }
 
@@ -60,12 +64,15 @@ class ReminderCard extends Card {
         addCardHeader(header);
 
         /** Swipe to undo **/
-        // set ID
-        setId(Integer.toString(reminder.getReminderID()));
-        setSwipeable(true);
-        setOnSwipeListener(new MyCardOnSwipeListener());
+        if(fragmentType == CardListFragment.LIST_PENDING) {
+            // set ID
+            setId(Integer.toString(reminder.getReminderID()));
+            setSwipeable(true);
+            setOnSwipeListener(new MyCardOnSwipeListener());
 
-        setOnUndoSwipeListListener(new MyCardUndoSwipeListener());
+
+            setOnUndoSwipeListListener(new MyCardUndoSwipeListener());
+        }
 
 
     }
@@ -76,6 +83,8 @@ class ReminderCard extends Card {
         TextView dateTimeTextView = (TextView) parent.findViewById(R.id.reminderCardDateTimeText);
 
         dateTimeTextView.setText(reminder.getDateTimeString(context));
+
+
     }
 
     public class ReminderCardHeader extends CardHeader {
