@@ -1,6 +1,7 @@
 package com.npaduch.reminder;
 
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -91,19 +92,6 @@ public class MainActivity extends FragmentActivity {
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-        /* Fragment Manager */
-        // load initial fragment
-        if (savedInstanceState == null) {
-            initPendingFragment();
-            // Insert the fragment by replacing any existing fragment
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.add(R.id.content_frame, pendingFragment, PENDING_TAG);
-            ft.commit();
-            setTitle(getResources().getString(R.string.pending_title));
-            currentFragment = BusEvent.FRAGMENT_PENDING;
-            currentTag = PENDING_TAG;
-        }
-
         /** Handle open and close drawer events */
         mTitle = mDrawerTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -156,6 +144,34 @@ public class MainActivity extends FragmentActivity {
         // if it was, set the reminder to ALL DONE
         checkIfNotification();
 
+        // Check if we're triggering off shared intent
+        // In this case, we don't want to launch pending reminders first
+        Reminder reminderToShare = checkIfSharedIntent();
+        if(reminderToShare != null){
+            newReminderFragment = new NewReminderFragment();
+            newReminderFragment.setReminderToEdit(reminderToShare);
+            // Insert the fragment by replacing any existing fragment
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(R.id.content_frame, newReminderFragment, NEW_REMINDER_TAG);
+            ft.commit();
+            setTitle(getResources().getStringArray(R.array.drawer_titles)[NEW_REMINDER_TITLE]);
+            currentFragment = BusEvent.FRAGMENT_NEW_REMINDER;
+            currentTag = NEW_REMINDER_TAG;
+            return;
+        }
+
+        /* Fragment Manager */
+        // load initial fragment
+        if (savedInstanceState == null) {
+            initPendingFragment();
+            // Insert the fragment by replacing any existing fragment
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(R.id.content_frame, pendingFragment, PENDING_TAG);
+            ft.commit();
+            setTitle(getResources().getString(R.string.pending_title));
+            currentFragment = BusEvent.FRAGMENT_PENDING;
+            currentTag = PENDING_TAG;
+        }
     }
 
     // TODO: Move this to background
@@ -191,6 +207,29 @@ public class MainActivity extends FragmentActivity {
             r.cancelNotification(this);
         r.writeToFile(getApplicationContext());
 
+    }
+
+    private Reminder checkIfSharedIntent(){
+        // Get intent, action and MIME type
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+
+        if (!(Intent.ACTION_SEND.equals(action) && type != null)) {
+            return null;
+        }
+        if (!"text/plain".equals(type)) {
+            return null;
+        }
+
+        // Handle text shared intent
+        String s = intent.getStringExtra(Intent.EXTRA_TEXT);
+        if (s != null) {
+            SettingsHandler settingsHandler = new SettingsHandler();
+            Reminder r = new Reminder(settingsHandler.getNextId(this));
+            return r;
+        }
+        return null;
     }
 
     /** Called whenever we call invalidateOptionsMenu() */
@@ -233,6 +272,10 @@ public class MainActivity extends FragmentActivity {
     public void onPause() {
         super.onPause();
         BusProvider.getInstance().unregister(this);
+        // we want to reload our contents on every view change
+        // set to null to force this
+        pendingFragment = null;
+        completedFragment = null;
     }
 
     /** Navigation Drawer Item Click Listener */
@@ -309,6 +352,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     void changeFragment(int fragmentTo, int fragmentFrom, boolean resetNewFragment){
+        Log.d(TAG, "Changing fragment from: "+fragmentFrom+" to: "+fragmentTo);
 
         Fragment fragment;  // holder for fragment
         String fragmentTag; // holder for fragment tag
