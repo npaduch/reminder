@@ -22,6 +22,7 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  *
@@ -227,6 +228,8 @@ public class MainActivity extends FragmentActivity {
         if (s != null) {
             SettingsHandler settingsHandler = new SettingsHandler();
             Reminder r = new Reminder(settingsHandler.getNextId(this));
+            r.setDescription(s);
+            setReminderTime(r);
             return r;
         }
         return null;
@@ -509,6 +512,69 @@ public class MainActivity extends FragmentActivity {
         settingsHandler.incrementAppLaunchCounter(this);
     }
 
+    private boolean isNextRange(Calendar cal){
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        int min = cal.get(Calendar.MINUTE);
+        Calendar rCal = Calendar.getInstance();
+
+        if(rCal.get(Calendar.HOUR_OF_DAY) < hour){
+            return true;
+        } else if(rCal.get(Calendar.HOUR_OF_DAY) == hour){
+            if(rCal.get(Calendar.MINUTE) < min)
+                return true;
+        }
+
+        return false;
+    }
+
+    private void setReminderTime(Reminder r) {
+        SettingsHandler settingsHandler = new SettingsHandler();
+        Calendar sCal = Calendar.getInstance();
+        Calendar nCal = Calendar.getInstance();
+        sCal.setTimeInMillis(settingsHandler.getTimeMorning(this));
+        if(isNextRange(sCal)){
+            nCal.set(Calendar.HOUR_OF_DAY, sCal.get(Calendar.HOUR_OF_DAY));
+            nCal.set(Calendar.MINUTE, sCal.get(Calendar.MINUTE));
+            r.setMsTime(nCal.getTimeInMillis());
+            return;
+        }
+        sCal.setTimeInMillis(settingsHandler.getTimeNoon(this));
+        if(isNextRange(sCal)){
+            nCal.set(Calendar.HOUR_OF_DAY, sCal.get(Calendar.HOUR_OF_DAY));
+            nCal.set(Calendar.MINUTE, sCal.get(Calendar.MINUTE));
+            r.setMsTime(nCal.getTimeInMillis());
+            return;
+        }
+        sCal.setTimeInMillis(settingsHandler.getTimeAfternoon(this));
+        if(isNextRange(sCal)){
+            nCal.set(Calendar.HOUR_OF_DAY, sCal.get(Calendar.HOUR_OF_DAY));
+            nCal.set(Calendar.MINUTE, sCal.get(Calendar.MINUTE));
+            r.setMsTime(nCal.getTimeInMillis());
+            return;
+        }
+        sCal.setTimeInMillis(settingsHandler.getTimeEvening(this));
+        if(isNextRange(sCal)){
+            nCal.set(Calendar.HOUR_OF_DAY, sCal.get(Calendar.HOUR_OF_DAY));
+            nCal.set(Calendar.MINUTE, sCal.get(Calendar.MINUTE));
+            r.setMsTime(nCal.getTimeInMillis());
+            return;
+        }
+        sCal.setTimeInMillis(settingsHandler.getTimeNight(this));
+        if(isNextRange(sCal)){
+            nCal.set(Calendar.HOUR_OF_DAY, sCal.get(Calendar.HOUR_OF_DAY));
+            nCal.set(Calendar.MINUTE, sCal.get(Calendar.MINUTE));
+            r.setMsTime(nCal.getTimeInMillis());
+            return;
+        }
+
+        // if we haven't returned yet, set it to tomorrow morning
+        sCal.setTimeInMillis(settingsHandler.getTimeMorning(this));
+        nCal.set(Calendar.HOUR_OF_DAY, sCal.get(Calendar.HOUR_OF_DAY));
+        nCal.set(Calendar.MINUTE, sCal.get(Calendar.MINUTE));
+        nCal.add(Calendar.DAY_OF_YEAR, 1);
+        r.setMsTime(nCal.getTimeInMillis());
+        return;
+    }
 
     /** Event bus listener **/
     @Subscribe

@@ -15,6 +15,7 @@
         android:layout_marginBottom="10dp"
         android:text="@string/reminder_example"
         android:layout_alignParentTop="true"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:autoLink="web"/>
 
 </LinearLayout>

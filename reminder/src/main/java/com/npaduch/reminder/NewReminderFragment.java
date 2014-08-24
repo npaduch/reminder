@@ -236,7 +236,7 @@ public class NewReminderFragment extends Fragment
         daySpinner.setOnItemSelectedListener(newReminderOnItemSelectedListener);
         // we need to set the default after the listener is assigned
         daySpinnerSetInCode = true;
-        daySpinner.setSelection(getNextDayWindow());
+        daySpinner.setSelection(getNextDayWindow(getActivity()));
 
         // setup time spin adapter
         ArrayList<String> times = new ArrayList<String>(
@@ -249,7 +249,7 @@ public class NewReminderFragment extends Fragment
         timeSpinner.setOnItemSelectedListener(newReminderOnItemSelectedListener);
         // we need to set the default after the listener is assigned
         timeSpinnerSetInCode = true;
-        timeSpinner.setSelection(getNextTimeWindow());
+        timeSpinner.setSelection(getNextTimeWindow(getActivity()));
     }
 
     void initializeEdit(Reminder r){
@@ -694,40 +694,54 @@ public class NewReminderFragment extends Fragment
         toggleSaveButton();
     }
 
-    int getNextTimeWindow() {
-        SettingsHandler settingsHandler = new SettingsHandler();
-        Calendar sCal = Calendar.getInstance();
-        Calendar cal = Calendar.getInstance();
-        sCal.setTimeInMillis(settingsHandler.getTimeMorning(getActivity()));
+    private static boolean isNextRange(Calendar cal){
         int hour = cal.get(Calendar.HOUR_OF_DAY);
+        int min = cal.get(Calendar.MINUTE);
+        Calendar rCal = Calendar.getInstance();
 
-        if (hour < sCal.get(Calendar.HOUR_OF_DAY))
-            return TIME_MORNING;
-        sCal.setTimeInMillis(settingsHandler.getTimeNoon(getActivity()));
-        if (hour < sCal.get(Calendar.HOUR_OF_DAY))
-            return TIME_NOON;
-        sCal.setTimeInMillis(settingsHandler.getTimeAfternoon(getActivity()));
-        if (hour < sCal.get(Calendar.HOUR_OF_DAY))
-            return TIME_AFTERNOON;
-        sCal.setTimeInMillis(settingsHandler.getTimeEvening(getActivity()));
-        if (hour < sCal.get(Calendar.HOUR_OF_DAY))
-            return TIME_EVENING;
-        sCal.setTimeInMillis(settingsHandler.getTimeNight(getActivity()));
-        if (hour < sCal.get(Calendar.HOUR_OF_DAY))
-            return TIME_NIGHT;
-        // default to tomorrow morning
-        else
-            return TIME_MORNING;
+        if(rCal.get(Calendar.HOUR_OF_DAY) < hour){
+            return true;
+        } else if(rCal.get(Calendar.HOUR_OF_DAY) == hour){
+            if(rCal.get(Calendar.MINUTE) < min)
+                return true;
+        }
+
+        return false;
     }
 
-    int getNextDayWindow() {
+    public static int getNextTimeWindow(Context context) {
+        SettingsHandler settingsHandler = new SettingsHandler();
+        Calendar sCal = Calendar.getInstance();
+        sCal.setTimeInMillis(settingsHandler.getTimeMorning(context));
+        if(isNextRange(sCal))
+            return TIME_MORNING;
+        sCal.setTimeInMillis(settingsHandler.getTimeNoon(context));
+        if(isNextRange(sCal))
+            return TIME_NOON;
+        sCal.setTimeInMillis(settingsHandler.getTimeAfternoon(context));
+        if(isNextRange(sCal))
+            return TIME_AFTERNOON;
+        sCal.setTimeInMillis(settingsHandler.getTimeEvening(context));
+        if(isNextRange(sCal))
+            return TIME_EVENING;
+        sCal.setTimeInMillis(settingsHandler.getTimeNight(context));
+        if(isNextRange(sCal))
+            return TIME_NIGHT;
+        // default to tomorrow morning
+        return TIME_MORNING;
+    }
+
+    public static int getNextDayWindow(Context context) {
         Calendar cal = Calendar.getInstance();
         int hour = cal.get(Calendar.HOUR_OF_DAY);
-        if (hour < Reminder.TIME_NIGHT_HOUR)
+        SettingsHandler settingsHandler = new SettingsHandler();
+        cal.setTimeInMillis(settingsHandler.getTimeNight(context));
+        if (hour < cal.get(Calendar.HOUR_OF_DAY))
             return DATE_TODAY;
         else
             return DATE_TOMORROW;
     }
+
 
     private long getRecurringTime(){
 
