@@ -69,6 +69,10 @@ public class MainActivity extends FragmentActivity {
     // completed
     public static ArrayList<Reminder> completedReminders;
 
+    // Intent Actions
+    public final static String ACTION_SNOOZE_CUSTOM = "action_snooze_custom";
+    public final static String ACTION_SNOOZE_STATIC = "action_snooze_static";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,7 +147,19 @@ public class MainActivity extends FragmentActivity {
 
         // check if this was called from a notification
         // if it was, set the reminder to ALL DONE
-        checkIfNotification();
+        Reminder reminderToSnooze = checkIfNotification();
+        if(reminderToSnooze != null){
+            newReminderFragment = new NewReminderFragment();
+            newReminderFragment.setReminderToEdit(reminderToSnooze);
+            // Insert the fragment by replacing any existing fragment
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(R.id.content_frame, newReminderFragment, NEW_REMINDER_TAG);
+            ft.commit();
+            setTitle(getResources().getStringArray(R.array.drawer_titles)[NEW_REMINDER_TITLE]);
+            currentFragment = BusEvent.FRAGMENT_NEW_REMINDER;
+            currentTag = NEW_REMINDER_TAG;
+            return;
+        }
 
         // Check if we're triggering off shared intent
         // In this case, we don't want to launch pending reminders first
@@ -176,13 +192,13 @@ public class MainActivity extends FragmentActivity {
     }
 
     // TODO: Move this to background
-    private void checkIfNotification(){
+    private Reminder checkIfNotification(){
         int reminderId = getIntent().getIntExtra(
                 Reminder.INTENT_REMINDER_ID,
                 Reminder.BAD_REMINDER_ID);
         if(reminderId == Reminder.BAD_REMINDER_ID){
             // this wasn't called started from a notification
-            return;
+            return null;
         }
 
         Log.d(TAG, "Activity opened from notification");
@@ -191,14 +207,30 @@ public class MainActivity extends FragmentActivity {
         ArrayList<Reminder> reminders = Reminder.getJSONFileContents(getApplicationContext());
         if(reminders == null){
             Log.e(TAG, "Reminder list null, can't set reminder to complete.");
-            return;
+            return null;
         }
 
         // find reminder
         Reminder r = Reminder.findReminder( reminderId, reminders);
         if(r == null){
             Log.e(TAG, "Couldn't find reminder. Can't set reminder to complete.");
-            return;
+            return null;
+        }
+
+        // Check to see if we are snoozing
+        if(getIntent().getAction() == ACTION_SNOOZE_STATIC){
+            Log.d(TAG, "Snoozing reminder for default snooze time...");
+            Calendar cal = Calendar.getInstance();
+            SettingsHandler settingsHandler = new SettingsHandler();
+            r.setMsTime(cal.getTimeInMillis()+settingsHandler.getCustomReminderSnooze(this));
+            r.setAlarm(this);
+            return null;
+        }
+
+        // Check to see if we are snoozing
+        if(getIntent().getAction() == ACTION_SNOOZE_CUSTOM){
+            Log.d(TAG, "Snoozing reminder for custom snooze time...");
+            return r;
         }
 
         Log.d(TAG,"Check to see if reminder is recurring");
@@ -207,6 +239,7 @@ public class MainActivity extends FragmentActivity {
         if(r.isCompleted())
             r.cancelNotification(this);
         r.writeToFile(getApplicationContext());
+        return null;
 
     }
 

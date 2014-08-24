@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.audiofx.BassBoost;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
@@ -82,6 +83,38 @@ public class AlarmReceiver extends BroadcastReceiver{
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
         mBuilder.setContentIntent(resultPendingIntent);
+
+        // create intents for actionable buttons (snooze)
+        Intent snoozeStaticIntent = new Intent(context, MainActivity.class);
+        snoozeStaticIntent.putExtra(Reminder.INTENT_REMINDER_ID, r.getReminderID());
+        snoozeStaticIntent.setAction(MainActivity.ACTION_SNOOZE_STATIC);
+        PendingIntent piSnoozeStatic = PendingIntent.getActivity(
+                context,
+                0,
+                snoozeStaticIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        Intent snoozeCustomIntent = new Intent(context, MainActivity.class);
+        snoozeCustomIntent.putExtra(Reminder.INTENT_REMINDER_ID, r.getReminderID());
+        snoozeCustomIntent.setAction(MainActivity.ACTION_SNOOZE_CUSTOM);
+        PendingIntent piSnoozeCustom = PendingIntent.getActivity(
+                context,
+                0,
+                snoozeCustomIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        SettingsHandler settingsHandler = new SettingsHandler();
+        StringBuilder sb = new StringBuilder();
+        sb.append(context.getResources().getString(R.string.notification_snooze_static));
+        sb.append(settingsHandler.getSnoozeString(context));
+        mBuilder.setStyle(new NotificationCompat.BigTextStyle()
+                .bigText(r.getDateTimeString(context)))
+                .addAction (R.drawable.ic_action_alarms,
+                        sb.toString(), piSnoozeStatic)
+                .addAction (R.drawable.ic_action_alarms,
+                        context.getResources().getString(R.string.notification_snooze_custom), piSnoozeCustom);
 
         // set default alert tones/lights/vibrations
         mBuilder.setLights(LED_COLOR, LED_ON_TIME, LED_OFF_TIME);

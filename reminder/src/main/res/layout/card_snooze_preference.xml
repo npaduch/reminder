@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/timePreference"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/snoozePreferenceTitle"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:paddingBottom="8dp"
+        android:paddingLeft="8dp"
+        android:text="@string/pref_snooze_category"
+        android:textSize="20sp"
+        android:textColor="@color/textview_medium_text"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@color/gray" />
+
+    <LinearLayout
+        android:id="@+id/preferenceSnoozeCustom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/preferenceSnoozeCustomLabel"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:paddingTop="8dp"
+            android:paddingLeft="16dp"
+            android:text="@string/pref_snooze_snooze_time"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <TextView
+            android:id="@+id/preferenceSnoozeCustomValue"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:paddingBottom="8dp"
+            android:paddingRight="16dp"
+            android:gravity="right"
+            android:text="@string/new_reminder_repeat"
+            android:textSize="16sp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/textview_medium_text"/>
+    </LinearLayout>
+
+
+</LinearLayout>

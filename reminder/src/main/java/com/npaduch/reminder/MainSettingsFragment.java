@@ -13,10 +13,13 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.doomonafireball.betterpickers.hmspicker.HmsPickerBuilder;
+import com.doomonafireball.betterpickers.hmspicker.HmsPickerDialogFragment;
 import com.doomonafireball.betterpickers.radialtimepicker.RadialPickerLayout;
 import com.doomonafireball.betterpickers.radialtimepicker.RadialTimePickerDialog;
 
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.view.CardView;
@@ -28,7 +31,8 @@ import it.gmariotti.cardslib.library.view.CardView;
  */
 
 public class MainSettingsFragment extends Fragment
-        implements RadialTimePickerDialog.OnTimeSetListener {
+        implements  RadialTimePickerDialog.OnTimeSetListener,
+                    HmsPickerDialogFragment.HmsPickerDialogHandler {
 
     private final static String TAG = "MainSettings";
 
@@ -65,14 +69,19 @@ public class MainSettingsFragment extends Fragment
         // save off context
         this.context = getActivity();
 
-        // Create a Card
-        Card card = new Card(getActivity(), R.layout.card_time_preference);
+        // Create Cards
+        Card timeCard = new Card(getActivity(), R.layout.card_time_preference);
+        Card snoozeCard = new Card(getActivity(), R.layout.card_snooze_preference);
 
-        // Set card in the cardView
-        CardView cardView = (CardView) rootView.findViewById(R.id.preferenceTimeLayout);
-        cardView.setCard(card);
+        // Set card contents
+        CardView timeCardView = (CardView) rootView.findViewById(R.id.preferenceTimeLayout);
+        timeCardView.setCard(timeCard);
+        CardView snoozeCardView = (CardView) rootView.findViewById(R.id.preferenceSnoozeLayout);
+        snoozeCardView.setCard(snoozeCard);
 
         initTimes();
+
+        initSnooze();
 
         assignOnClickListener(rootView);
 
@@ -101,19 +110,29 @@ public class MainSettingsFragment extends Fragment
         nightValue.setText(Reminder.buildTimeString(context, cal));
     }
 
+    private void initSnooze(){
+        SettingsHandler settingsHandler = new SettingsHandler();
+        TextView snoozeValue = (TextView) rootView.findViewById(R.id.preferenceSnoozeCustomValue);
+        snoozeValue.setText(settingsHandler.getSnoozeString(context));
+    }
+
     public void assignOnClickListener(View rootView){
         LinearLayout morningView = (LinearLayout)rootView.findViewById(R.id.timePreferenceMorning);
         LinearLayout noonView = (LinearLayout)rootView.findViewById(R.id.timePreferenceNoon);
         LinearLayout afternoonView = (LinearLayout)rootView.findViewById(R.id.timePreferenceAfternoon);
         LinearLayout eveningView = (LinearLayout)rootView.findViewById(R.id.timePreferenceEvening);
         LinearLayout nightView = (LinearLayout)rootView.findViewById(R.id.timePreferenceNight);
+        LinearLayout snoozeView = (LinearLayout)rootView.findViewById(R.id.preferenceSnoozeCustom);
 
-        TimeOnClickListener onClickListener = new TimeOnClickListener();
-        morningView.setOnClickListener(onClickListener);
-        noonView.setOnClickListener(onClickListener);
-        afternoonView.setOnClickListener(onClickListener);
-        eveningView.setOnClickListener(onClickListener);
-        nightView.setOnClickListener(onClickListener);
+        TimeOnClickListener timeOnClickListener = new TimeOnClickListener();
+        morningView.setOnClickListener(timeOnClickListener);
+        noonView.setOnClickListener(timeOnClickListener);
+        afternoonView.setOnClickListener(timeOnClickListener);
+        eveningView.setOnClickListener(timeOnClickListener);
+        nightView.setOnClickListener(timeOnClickListener);
+
+        SnoozeOnClickListener snoozeOnClickListener = new SnoozeOnClickListener();
+        snoozeView.setOnClickListener(snoozeOnClickListener);
     }
 
     public class TimeOnClickListener implements View.OnClickListener{
@@ -159,6 +178,18 @@ public class MainSettingsFragment extends Fragment
             } else {
                 timePickerDialog.show(getActivity().getSupportFragmentManager(), FRAG_TAG_TIME_PICKER);
             }
+        }
+    }
+
+    public class SnoozeOnClickListener implements View.OnClickListener{
+
+        @Override
+        public void onClick(View view) {Calendar now = Calendar.getInstance();
+            HmsPickerBuilder hpb = new HmsPickerBuilder()
+                    .setFragmentManager(getChildFragmentManager())
+                    .setStyleResId(R.style.BetterPickersDialogFragment)
+                    .setTargetFragment(MainSettingsFragment.this);
+            hpb.show();
         }
     }
 
@@ -255,13 +286,13 @@ public class MainSettingsFragment extends Fragment
 
         StringBuilder sb = new StringBuilder();
         if(time == BEFORE)
-            sb.append(getActivity().getResources().getString(R.string.pref_times_bad_time_body1_before));
+            sb.append(context.getResources().getString(R.string.pref_times_bad_time_body1_before));
         else
-            sb.append(getActivity().getResources().getString(R.string.pref_times_bad_time_body1_after));
+            sb.append(context.getResources().getString(R.string.pref_times_bad_time_body1_after));
         sb.append(" ");
         sb.append(nextTime.toLowerCase());
         sb.append(".\n\n");
-        sb.append(getActivity().getResources().getString(R.string.pref_times_bad_time_body2));
+        sb.append(context.getResources().getString(R.string.pref_times_bad_time_body2));
 
         builder.setMessage(sb.toString())
                 .setTitle(R.string.pref_times_bad_time_title)
@@ -295,6 +326,35 @@ public class MainSettingsFragment extends Fragment
         }
 
         return TIME_AFTER;
+    }
+
+
+
+    @Override
+    public void onDialogHmsSet(int reference, int hours, int minutes, int seconds) {
+        SettingsHandler settingsHandler = new SettingsHandler();
+        long msTime = hours * 60 * 60 * 1000;
+        msTime += minutes * 60 * 1000;
+        msTime += seconds * 1000;
+
+        if(msTime <= 0)
+            throwBadSnoozeDialog();
+        else{
+            settingsHandler.setCustomReminderSnooze(context, msTime);
+            initSnooze();
+        }
+    }
+
+    public void throwBadSnoozeDialog(){
+        Log.d(TAG, "Selected snooze time is <= 0");
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setMessage(R.string.pref_snooze_error_message)
+                .setTitle(R.string.pref_times_bad_time_title)
+                .setPositiveButton(R.string.pref_times_bad_time_button, null)
+                .create()
+                .show();
     }
 
 }

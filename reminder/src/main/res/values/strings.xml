@@ -103,7 +103,7 @@
     <string name="time_afternoon">Afternoon</string>
     <string name="time_evening">Evening</string>
     <string name="time_night">Night</string>
-    <!-- time conjuctions -->
+    <!-- time conjunctions -->
     <string name="time_at">at</string>
     <string name="time_in_the">in the</string>
     <string name="time_on">on</string>
@@ -130,9 +130,25 @@
     <string name="pref_times_bad_time_body1_after">The time you entered must be earlier than the time you have set for</string>
     <string name="pref_times_bad_time_body2">Please choose a new time.</string>
     <string name="pref_times_bad_time_button">Okay</string>
+    <string name="pref_snooze_category">Snoozing</string>
+    <string name="pref_snooze_snooze_time">Snooze Amount</string>
+    <string name="pref_snooze_error_message">The snooze time you entered is invalid.</string>
 
     <!-- Share Strings -->
     <string name="share_reminder_title">REMINDER</string>
     <string name="share_reminder_description">Description:</string>
     <string name="share_reminder_time">When:</string>
+
+    <!-- Notification Strings -->
+    <string name="notification_snooze_custom">Snooze...</string>
+    <string name="notification_snooze_static">Snooze for</string>
+
+    <!-- Snooze Strings -->
+    <string name="snooze_hour">Hour</string>
+    <string name="snooze_hours">Hours</string>
+    <string name="snooze_min">Minute</string>
+    <string name="snooze_mins">Minutes</string>
+    <string name="snooze_second">Second</string>
+    <string name="snooze_seconds">Seconds</string>
+
 </resources>
