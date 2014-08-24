@@ -187,7 +187,7 @@ public class MainSettingsFragment extends Fragment
         public void onClick(View view) {Calendar now = Calendar.getInstance();
             HmsPickerBuilder hpb = new HmsPickerBuilder()
                     .setFragmentManager(getChildFragmentManager())
-                    .setStyleResId(R.style.BetterPickersDialogFragment)
+                    .setStyleResId(R.style.BetterPickersDialogFragment_Light)
                     .setTargetFragment(MainSettingsFragment.this);
             hpb.show();
         }

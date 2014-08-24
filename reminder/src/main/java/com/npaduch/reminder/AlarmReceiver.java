@@ -85,6 +85,7 @@ public class AlarmReceiver extends BroadcastReceiver{
         mBuilder.setContentIntent(resultPendingIntent);
 
         // create intents for actionable buttons (snooze)
+        // TODO: change these to spawn service so we don't launch app
         Intent snoozeStaticIntent = new Intent(context, MainActivity.class);
         snoozeStaticIntent.putExtra(Reminder.INTENT_REMINDER_ID, r.getReminderID());
         snoozeStaticIntent.setAction(MainActivity.ACTION_SNOOZE_STATIC);
