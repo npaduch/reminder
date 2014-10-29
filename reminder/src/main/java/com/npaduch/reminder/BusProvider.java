@@ -9,9 +9,9 @@ import com.squareup.otto.Bus;
  * such as through injection directly into interested classes.
  */
 final class BusProvider {
-    private static final Bus BUS = new Bus();
+    private static final MainBus BUS = new MainBus();
 
-    public static Bus getInstance() {
+    public static MainBus getInstance() {
         return BUS;
     }
 

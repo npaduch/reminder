@@ -217,15 +217,10 @@ public class MainActivity extends FragmentActivity {
             return null;
         }
 
-        // Check to see if we are snoozing
-        if(getIntent().getAction() == ACTION_SNOOZE_STATIC){
-            Log.d(TAG, "Snoozing reminder for default snooze time...");
-            Calendar cal = Calendar.getInstance();
-            SettingsHandler settingsHandler = new SettingsHandler();
-            r.setMsTime(cal.getTimeInMillis()+settingsHandler.getCustomReminderSnooze(this));
-            r.setAlarm(this);
-            return null;
-        }
+        // no matter what, clear the notification here
+        // if we were passed an intent with a valid ID,
+        // we must have received a notification click/snooze
+        r.cancelNotification(this);
 
         // Check to see if we are snoozing
         if(getIntent().getAction() == ACTION_SNOOZE_CUSTOM){
@@ -236,8 +231,6 @@ public class MainActivity extends FragmentActivity {
         Log.d(TAG,"Check to see if reminder is recurring");
         // check if we need to reschedule
         r.checkRecurrence(this);
-        if(r.isCompleted())
-            r.cancelNotification(this);
         r.writeToFile(getApplicationContext());
         return null;
 

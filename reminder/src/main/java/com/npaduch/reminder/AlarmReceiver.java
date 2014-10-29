@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.media.audiofx.BassBoost;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
@@ -86,10 +85,10 @@ public class AlarmReceiver extends BroadcastReceiver{
 
         // create intents for actionable buttons (snooze)
         // TODO: change these to spawn service so we don't launch app
-        Intent snoozeStaticIntent = new Intent(context, MainActivity.class);
+        Intent snoozeStaticIntent = new Intent(context, ReminderNotificationService.class);
         snoozeStaticIntent.putExtra(Reminder.INTENT_REMINDER_ID, r.getReminderID());
         snoozeStaticIntent.setAction(MainActivity.ACTION_SNOOZE_STATIC);
-        PendingIntent piSnoozeStatic = PendingIntent.getActivity(
+        PendingIntent piSnoozeStatic = PendingIntent.getService(
                 context,
                 0,
                 snoozeStaticIntent,
@@ -108,13 +107,12 @@ public class AlarmReceiver extends BroadcastReceiver{
 
         SettingsHandler settingsHandler = new SettingsHandler();
         StringBuilder sb = new StringBuilder();
-        sb.append(context.getResources().getString(R.string.notification_snooze_static));
         sb.append(settingsHandler.getSnoozeString(context));
         mBuilder.setStyle(new NotificationCompat.BigTextStyle()
                 .bigText(r.getDateTimeString(context)))
                 .addAction (R.drawable.ic_action_alarms,
                         sb.toString(), piSnoozeStatic)
-                .addAction (R.drawable.ic_action_alarms,
+                .addAction(R.drawable.ic_action_alarms,
                         context.getResources().getString(R.string.notification_snooze_custom), piSnoozeCustom);
 
         // set default alert tones/lights/vibrations
@@ -137,5 +135,6 @@ public class AlarmReceiver extends BroadcastReceiver{
         return PendingIntent.getBroadcast(context.getApplicationContext(),
                         reminderID, intent, 0);
     }
+
 
 }

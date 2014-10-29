@@ -140,7 +140,7 @@
     <string name="share_reminder_time">When:</string>
 
     <!-- Notification Strings -->
-    <string name="notification_snooze_custom">Snooze...</string>
+    <string name="notification_snooze_custom">Custom</string>
     <string name="notification_snooze_static">Snooze for</string>
 
     <!-- Snooze Strings -->

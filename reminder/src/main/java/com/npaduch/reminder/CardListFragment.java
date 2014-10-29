@@ -27,8 +27,6 @@ import it.gmariotti.cardslib.library.view.CardListView;
  *
  */
 
-// TODO: Add samples if first time launching
-
 public class CardListFragment extends Fragment {
 
     private final static String TAG = "CardListFragment";
@@ -268,6 +266,9 @@ public class CardListFragment extends Fragment {
                 case BusEvent.TYPE_EDIT_REMINDER:
                     switchToEditFragment(event.getReminder());
                     break;
+                case BusEvent.TYPE_REFRESH_REMINDERS:
+                    startLoad();
+                    break;
             }
         } else if (event.getTargets().contains(BusEvent.TARGET_COMPLETED)) {
             Log.d(TAG, "Message received: " + event.getType());
@@ -283,6 +284,9 @@ public class CardListFragment extends Fragment {
                     break;
                 case BusEvent.TYPE_EDIT_REMINDER:
                     switchToEditFragment(event.getReminder());
+                    break;
+                case BusEvent.TYPE_REFRESH_REMINDERS:
+                    startLoad();
                     break;
             }
         }

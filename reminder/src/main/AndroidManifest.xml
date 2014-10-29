@@ -44,6 +44,12 @@
             </intent-filter>
         </receiver>
 
+        <!-- Notification handler service -->
+        <service
+            android:name="ReminderNotificationService"
+            >
+        </service>
+
     </application>
 
 </manifest>

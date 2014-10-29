@@ -37,7 +37,7 @@ class BusEvent {
     // For completed and pending fragments
     public static final int TYPE_ADD                = 0;
     public static final int TYPE_REMOVE             = 1;
-    public static final int TYPE_REFRESH            = 2;
+    public static final int TYPE_REFRESH_REMINDERS  = 2;
     public static final int TYPE_LOAD_REMINDERS     = 4;
     public static final int TYPE_ADD_CARD           = 5;
     // For main activity
