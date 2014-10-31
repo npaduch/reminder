@@ -3,6 +3,7 @@ package com.npaduch.reminder;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
@@ -147,19 +148,7 @@ public class MainActivity extends FragmentActivity {
 
         // check if this was called from a notification
         // if it was, set the reminder to ALL DONE
-        Reminder reminderToSnooze = checkIfNotification();
-        if(reminderToSnooze != null){
-            newReminderFragment = new NewReminderFragment();
-            newReminderFragment.setReminderToEdit(reminderToSnooze);
-            // Insert the fragment by replacing any existing fragment
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.add(R.id.content_frame, newReminderFragment, NEW_REMINDER_TAG);
-            ft.commit();
-            setTitle(getResources().getStringArray(R.array.drawer_titles)[NEW_REMINDER_TITLE]);
-            currentFragment = BusEvent.FRAGMENT_NEW_REMINDER;
-            currentTag = NEW_REMINDER_TAG;
-            return;
-        }
+        checkIfNotification();
 
         // Check if we're triggering off shared intent
         // In this case, we don't want to launch pending reminders first
@@ -191,48 +180,21 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    // TODO: Move this to background
-    private Reminder checkIfNotification(){
+
+    private void checkIfNotification(){
         int reminderId = getIntent().getIntExtra(
                 Reminder.INTENT_REMINDER_ID,
                 Reminder.BAD_REMINDER_ID);
         if(reminderId == Reminder.BAD_REMINDER_ID){
             // this wasn't called started from a notification
-            return null;
+            return;
         }
 
-        Log.d(TAG, "Activity opened from notification");
-
-        // Load in reminders
-        ArrayList<Reminder> reminders = Reminder.getJSONFileContents(getApplicationContext());
-        if(reminders == null){
-            Log.e(TAG, "Reminder list null, can't set reminder to complete.");
-            return null;
-        }
-
-        // find reminder
-        Reminder r = Reminder.findReminder( reminderId, reminders);
-        if(r == null){
-            Log.e(TAG, "Couldn't find reminder. Can't set reminder to complete.");
-            return null;
-        }
-
-        // no matter what, clear the notification here
-        // if we were passed an intent with a valid ID,
-        // we must have received a notification click/snooze
-        r.cancelNotification(this);
-
-        // Check to see if we are snoozing
-        if(getIntent().getAction() == ACTION_SNOOZE_CUSTOM){
-            Log.d(TAG, "Snoozing reminder for custom snooze time...");
-            return r;
-        }
-
-        Log.d(TAG,"Check to see if reminder is recurring");
-        // check if we need to reschedule
-        r.checkRecurrence(this);
-        r.writeToFile(getApplicationContext());
-        return null;
+        // we have a valid reminder...
+        // process in background
+        FindAndEditReminder task = new FindAndEditReminder(reminderId);
+        task.execute();
+        return;
 
     }
 
@@ -619,6 +581,83 @@ public class MainActivity extends FragmentActivity {
             case BusEvent.TYPE_EDIT_REMINDER:
                 handleEditReminder(event.getReminder());
                 break;
+        }
+    }
+    /** Asynchronous task for reading/writing to file **/
+    private class FindAndEditReminder extends AsyncTask {
+
+        // Reminder to find
+        private int reminderId = Reminder.BAD_REMINDER_ID;
+        private boolean launchEdit = false;
+        private Reminder reminderToEdit = null;
+
+        public FindAndEditReminder(int reminderId) {
+            super();
+            this.reminderId = reminderId;
+        }
+
+        @Override
+        protected Object doInBackground(Object[] o) {
+
+            // Load in reminders
+            ArrayList<Reminder> reminders = Reminder.getJSONFileContents(getApplicationContext());
+            if(reminders == null){
+                Log.e(TAG, "Reminder list null, can't set reminder to complete.");
+                return null;
+            }
+
+            // find reminder
+            Reminder r = Reminder.findReminder( reminderId, reminders);
+            if(r == null){
+                Log.e(TAG, "Couldn't find reminder. Can't set reminder to complete.");
+                return null;
+            }
+
+            // no matter what, clear the notification here
+            // if we were passed an intent with a valid ID,
+            // we must have received a notification click/snooze
+            r.cancelNotification(getApplicationContext());
+
+            // Check to see if we are snoozing
+            if(getIntent().getAction() == ACTION_SNOOZE_CUSTOM){
+                Log.d(TAG, "Snoozing reminder for custom snooze time...");
+                reminderToEdit = r;
+                launchEdit = true;
+                return r;
+            }
+
+            Log.d(TAG,"Check to see if reminder is recurring");
+            // check if we need to reschedule
+            r.checkRecurrence(getApplicationContext());
+            r.writeToFile(getApplicationContext());
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Log.d(TAG, "AsyncTask onPreExecute");
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            if(launchEdit){
+                newReminderFragment = new NewReminderFragment();
+                newReminderFragment.setReminderToEdit(reminderToEdit);
+                // Insert the fragment by replacing any existing fragment
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.add(R.id.content_frame, newReminderFragment, NEW_REMINDER_TAG);
+                ft.commit();
+                setTitle(getResources().getStringArray(R.array.drawer_titles)[NEW_REMINDER_TITLE]);
+                currentFragment = BusEvent.FRAGMENT_NEW_REMINDER;
+                currentTag = NEW_REMINDER_TAG;
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(Object[] values) {
+            super.onProgressUpdate(values);
         }
     }
 
