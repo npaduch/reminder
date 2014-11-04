@@ -158,7 +158,7 @@ public class MainActivity extends FragmentActivity {
             newReminderFragment.setReminderToEdit(reminderToShare);
             // Insert the fragment by replacing any existing fragment
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.add(R.id.content_frame, newReminderFragment, NEW_REMINDER_TAG);
+            ft.replace(R.id.content_frame, newReminderFragment, NEW_REMINDER_TAG);
             ft.commit();
             setTitle(getResources().getStringArray(R.array.drawer_titles)[NEW_REMINDER_TITLE]);
             currentFragment = BusEvent.FRAGMENT_NEW_REMINDER;
@@ -172,7 +172,7 @@ public class MainActivity extends FragmentActivity {
             initPendingFragment();
             // Insert the fragment by replacing any existing fragment
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.add(R.id.content_frame, pendingFragment, PENDING_TAG);
+            ft.replace(R.id.content_frame, pendingFragment, PENDING_TAG);
             ft.commit();
             setTitle(getResources().getString(R.string.pending_title));
             currentFragment = BusEvent.FRAGMENT_PENDING;
@@ -602,7 +602,7 @@ public class MainActivity extends FragmentActivity {
             // Load in reminders
             ArrayList<Reminder> reminders = Reminder.getJSONFileContents(getApplicationContext());
             if(reminders == null){
-                Log.e(TAG, "Reminder list null, can't set reminder to complete.");
+                Log.e(TAG, "Reminder list is null, can't set reminder to complete.");
                 return null;
             }
 
@@ -618,7 +618,7 @@ public class MainActivity extends FragmentActivity {
             // we must have received a notification click/snooze
             r.cancelNotification(getApplicationContext());
 
-            // Check to see if we are snoozing
+            // Check to see if we are doing a custom snooze
             if(getIntent().getAction() == ACTION_SNOOZE_CUSTOM){
                 Log.d(TAG, "Snoozing reminder for custom snooze time...");
                 reminderToEdit = r;
@@ -647,7 +647,7 @@ public class MainActivity extends FragmentActivity {
                 newReminderFragment.setReminderToEdit(reminderToEdit);
                 // Insert the fragment by replacing any existing fragment
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.add(R.id.content_frame, newReminderFragment, NEW_REMINDER_TAG);
+                ft.replace(R.id.content_frame, newReminderFragment, NEW_REMINDER_TAG);
                 ft.commit();
                 setTitle(getResources().getStringArray(R.array.drawer_titles)[NEW_REMINDER_TITLE]);
                 currentFragment = BusEvent.FRAGMENT_NEW_REMINDER;
