@@ -184,7 +184,7 @@ public class MainSettingsFragment extends Fragment
     public class SnoozeOnClickListener implements View.OnClickListener{
 
         @Override
-        public void onClick(View view) {Calendar now = Calendar.getInstance();
+        public void onClick(View view) {
             HmsPickerBuilder hpb = new HmsPickerBuilder()
                     .setFragmentManager(getChildFragmentManager())
                     .setStyleResId(R.style.BetterPickersDialogFragment_Light)
